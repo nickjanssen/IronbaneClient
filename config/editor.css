@@ -1,0 +1,9 @@
+﻿.editorWYSIWYG {font: 10pt Verdana;border:none;}
+.editorBBCODE {font: 9pt "Courier New";}
+
+div.richeditor div.editbar {color:#66ff66;margin-top:2px;background-image:url('images/table_cell_bg1.jpg');border-left:1px solid #01180d;border-right:1px solid #01180d;border-top:1px solid #01180d;border-bottom:1px solid #01180d;}
+div.richeditor div button{color:#66ff66;vertical-align:middle;width:25px;height:22px;border:1px solid transparent;background-color:Transparent;cursor:pointer;background-position:center;background-repeat:no-repeat;background-image:none;}
+div.richeditor div button:hover{border:1px solid #66ff66;}
+div.richeditor div.container {border-top:none;border-bottom:0px solid #01180d;border-left:0px solid #01180d;border-right:0px solid #01180d;}
+div.richeditor textarea{padding:0px 0px 0px 0px;border:none;}
+div.richeditor iframe{background-color:#ffffff;border:none;}

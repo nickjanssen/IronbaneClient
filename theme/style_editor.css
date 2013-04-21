@@ -1,0 +1,619 @@
+body {
+
+
+    font-family: "Verdana",Verdana, Arial, Helvetica, sans-serif;	
+
+    color: #33cc99;        
+
+    font-size : 12px;
+
+    background-color: #051d1c;
+
+
+
+}
+
+
+
+#topmiddle ul { list-style: none; z-index:10; margin: 0; padding: 0;}
+
+
+img {
+    border:0;
+}
+
+#pagecontainer {
+
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+
+
+}
+
+#topcontainer {
+
+
+    height:226px;
+
+    margin-left:auto;
+    margin-right:auto;
+
+    width:956px;
+}
+
+#topleftpillar {
+
+    height:226px;
+    width:125px;    
+    float:left;
+
+    background-image : url(images/top_left.png);       
+}
+#topmiddle{
+
+    height:226px;
+    width:706px;  
+    float:left;    
+    text-align:center;
+}
+#toprightpillar {
+
+    height:226px;
+    width:125px;    
+    float:left;
+
+    background-image : url(images/top_right.png);       
+}
+
+#middlecontainer {
+    width:892px;
+    margin-left:auto;
+    margin-right:auto;
+
+
+}
+
+#bottombg {
+    width:1000px;
+    height:64px;
+    background-image : url(images/bottombg.png);    
+}
+
+#middleleftpillar {
+
+    width:44px;    
+    float:left;
+
+    min-height:200px;    
+
+    background-image : url(images/pillarleftloop.png);     
+}
+
+#content {
+
+    width:784px;
+    float:left;
+
+    padding: 10px;
+
+    min-height:200px;    
+
+    background-color:#103c32;
+
+    background-image : url(images/content_bg.png);         
+}
+
+#middlerightpillar {
+
+    width:44px;    
+    float:left;
+
+    min-height:200px;    
+
+    background-image : url(images/pillarrightloop.png);     
+}
+
+#bottomcontainer {
+
+
+    height:56px;
+
+    margin-left:auto;
+    margin-right:auto;
+
+    width:956px;
+}
+
+#bottomleftpillar {
+
+    height:56px;
+    width:125px;    
+    float:left;
+
+    background-image : url(images/bottom_left.png);       
+}
+#bottommiddle{
+
+    height:56px;
+    width:706px;  
+    float:left;    
+    text-align:center;
+}
+#bottomrightpillar {
+
+    height:56px;
+    width:125px;    
+    float:left;
+
+    background-image : url(images/bottom_right.png);       
+}
+hr {
+
+    height:2px;
+    border-style:dashed none none none; 
+    border-width:2px;
+    border-color:#257541;
+
+}
+
+#topgradient {
+
+    z-index: -1;
+
+
+    height:40px;
+    width:100%;
+    position:absolute;
+
+    background-image : url(images/topgradient.png);     
+}
+#topcontent {
+
+
+    height:10px;
+    width:804px;
+    position:absolute;
+    
+    z-index:0;
+
+    background-image : url(images/content_top.png);     
+}
+#adminpane {
+
+    outline: 2px dashed #257541;
+
+    position:absolute;
+
+    margin-top:10px;
+
+    padding:5px;
+
+    background-color: #051d1c;
+
+    width:140px;
+    height:140px;
+
+    text-align:left;
+
+
+
+}
+#otherpane {
+
+    outline: 2px dashed #257541;
+
+    position:absolute;
+
+    margin-top:10px;
+
+
+    padding:5px;
+
+
+    background-color: #051d1c;
+
+    width:140px;
+    height:63px;
+
+    text-align:left;
+
+
+
+}
+#playbuttoncontainer {
+
+    position:absolute;
+
+    margin-top:100px;
+
+    width:214px;
+    height:63px;
+
+
+}
+.navleft {    
+    height:83px;
+    width:100px;    
+    float:left;
+
+    background-image : url(images/nav_left.png);       
+}
+.navright {    
+    height:83px;
+    width:100px;    
+    float:left;
+
+    background-image : url(images/nav_right.png);       
+}
+#navwrapper {
+
+    position:relative;
+    float:left;
+    left:50%;
+
+    margin-top:-10px;
+    text-align:left;
+
+
+}
+#navcontainer {
+
+    position:relative;
+    float:left;
+    left:-50%;
+
+
+    margin-top:-20px;
+    text-align:left;
+
+
+}
+.navfill {    
+    height:68px;
+    
+    padding-top:15px;
+
+    float:left;
+
+
+    background-image : url(images/nav_fill.png);       
+}
+.navsplit {    
+    height:83px;
+    width:4px;    
+    float:left;
+
+    background-image : url(images/nav_split.png);       
+}
+.playbutton {    
+    height:214px;
+    width:75px;    
+    float:left;
+
+    background-image : url(images/buttons/play.png);       
+}
+
+#footer {
+
+    margin-top:0px;
+
+    text-align:center;
+
+    margin-left: auto;
+    margin-right:auto;
+
+
+    outline: 2px dashed #257541;
+
+
+    background-color: #051d1c;    
+
+
+
+    width:300px;
+    padding:10px;
+
+    margin-bottom:20px;
+
+
+}
+
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.genbig { font-size : 18px; font-weight: normal; letter-spacing: 0px;  }
+
+a {    
+    text-decoration: none;
+    color:#66ff66;
+}
+a:hover {
+    text-decoration: underline;
+
+}
+
+portlet {
+
+
+
+}
+
+.spacer {
+    height:10px;
+
+}
+
+.tableborder {
+
+    padding:10px;
+
+}
+
+.forumcolumns {
+    font-size:9px;
+    background-color:#083420;
+    text-align:center;
+    border:1px;
+    border-style: solid;
+    border-color:#01180d;
+}
+
+.forumcontainer {
+    border-collapse:collapse;
+    border-style: solid;
+    border-color:#01180d;    
+}
+
+.categorybar {
+    background-image : url(images/table_cell_bg1.jpg);
+    background-repeat : repeat-x;
+    background-color : #0C0C0C;
+    border: 1px solid #0f201c;
+}
+
+th	
+{
+    border: 1px solid #0f201c;    
+    font-size: 11px; font-weight : bold;
+    background-color: #0C0C0C;
+    background-image: url(images/table_cell_bg1.jpg);
+}
+cat,td.catHead,.catSides,.catLeft,.catRight,.catBottom {
+    background-image: url(images/table_cell_bg1.jpg);
+    border: 1px solid #0f201c;  
+    height:25px;
+}
+
+td.row1	{ 
+    border:1px;
+    border-style: solid;
+    border-color:#01180d;    
+    background-color : #083420; 
+}
+td li {
+    margin-left:20px;    
+}
+
+td.row2	{ 
+    border:1px;
+    border-style: solid;
+    border-color:#01180d;    
+    background-color : #08342c; 
+}
+td.row3	{ 
+    border:1px;
+    border-style: solid;
+    border-color:#01180d;    
+    background-color : #083420; 
+}
+input,textarea, select {
+    color : #33ff99;
+    font: normal 11px "Verdana",Verdana, Arial, Helvetica, sans-serif;
+    background-color : #006633;
+    border-color: #33ff99;
+}
+
+The text input fields background colour 
+input.post, textarea.post, select {
+    background-color : #111111;
+}
+
+input { text-indent : 2px; }
+
+The buttons used for bbCode styling in message post 
+input.button {
+    background-color : #111111;
+    color : #DDDDDD;
+    font-size: 11px; font-family: "Verdana",Verdana, Arial, Helvetica, sans-serif;
+}
+
+
+input.liteoption {
+    background-color : #111111;
+    font-weight : normal;
+    border : 1px solid #999999;	 
+}
+
+input.mainoption {
+    font-weight : bold;
+    font-size: 16px;
+    padding:5px;
+}
+
+input.hugeoption {
+    font-weight : bold;
+    font-size: 24px;
+    padding:10px;
+}
+
+input.regfield {
+    font-weight : bold;
+    font-size: 20px;
+    padding:10px;      
+    height:30px;
+}
+
+input.checkbox {
+    background-color : #006633;
+}
+
+.maintitle,h1,h2,h3,h4,h5,h6 {
+    font-weight: bold; 
+    font-family: "Verdana","Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+    text-decoration: none; 
+    line-height : 120%; 
+    color : #33ff99;
+}
+.maintitle, h1 {
+    font-size: 20px;
+}
+h2 {
+    font-size: 18px;
+}
+h3 {
+    font-size: 16px;
+}
+h4 {
+    font-size: 14px;
+}
+h5 {
+    font-size: 12px;
+}
+h6 {
+    font-size: 10px;
+}
+
+.quote {
+    font-family: "Verdana",Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #99cc99; line-height: 125%;
+    background-color: #083420; 
+    outline: 2px dashed #257541;
+}
+
+.helpline {background-color: #083420;  border-style: none;  color : White;  }
+
+.widget {
+    float:left;
+    margin:10px;
+    padding:10px;
+    border:1px;
+    border-style: dashed;
+}
+
+.rpgitem {
+    float:left;
+    margin:5px;
+    padding:5px;
+    border:1px;
+    border-style: solid;
+    border-color: gray;
+    width:200px;
+}
+.rpgshopitem {
+    float:left;
+    margin:5px;
+    padding:5px;
+    border:1px;
+    border-style: solid;
+    border-color: gray;
+    width:320px;
+}
+
+.equipitem {
+    float:left;
+    margin:5px;
+    padding:5px;
+    border:1px;
+
+    height:180px;
+    border-style: solid;
+    border-color: gray;
+    width:30%;
+}
+
+.stepnumber {
+    float:left;
+    width:50px;
+    height:50px;
+    color:#33ffcc;
+    border: 1px solid #33ffcc;
+    background-color: #006666;
+    font-size: 40px;
+    text-align: center;
+}
+
+.errormessage {
+    color:#ff3300;
+    border: 1px solid #ff3300;
+    background-color: transparent;
+    font-size: 20px;
+    text-align: center;
+    font-weight : bold;    
+}
+
+form {display:inline; margin:0px; padding:0px;}
+
+/* 
+        LEVEL ONE
+    height:83px;
+
+    float:left;
+
+    padding-top:20px;
+
+    font-size:20px;
+
+    background-image : url(images/nav_fill.png);   
+*/
+
+
+
+ul.dropdown                         { position: relative; }
+ul.dropdown li                      { 
+    font-weight: bold; 
+    float: left; 
+    
+    font-size:15px;
+    
+
+    padding:0px 0px 0px 0px;
+    
+    height:30px;
+    
+}
+ul.dropdown a:hover		            {   text-decoration: none;}
+/*ul.dropdown a:active                { color: #ffa500; }*/
+ul.dropdown li a                    { 
+    display: block; 
+    padding:5px 5px 5px 5px;
+}
+
+ul.dropdown li:last-child a         { border-right: none; } /* Doesn't work in IE */
+ul.dropdown li.hover,
+ul.dropdown li:hover                { 
+    background-image : url(images/nav_fill_hover.png);    
+
+    position: relative; 
+}
+
+ul.dropdown li.hover a              { color: #37ffad;  }
+
+
+/* 
+        LEVEL TWO
+*/
+ul.dropdown ul 						{ width: 200px; visibility: hidden; position: absolute; top: 100%; left: 0px; }
+ul.dropdown ul li 					{ font-weight: normal; background: #357768;  
+                         float: none; }
+ul.dropdown ul li:hover 					{ background: #5ba997;
+                         float: none; }
+ul.dropdown ul li:hover a					{  color:#1f453c; font-weight:bold;
+                         }
+/* IE 6 & 7 Needs Inline Block */
+ul.dropdown ul li a					{width: 100%; display: inline-block;} 
+
+/* 
+        LEVEL THREE
+*/
+ul.dropdown ul ul 					{ left: 100%; top: 0; }
+ul.dropdown li:hover > ul 			{ visibility: visible; }
