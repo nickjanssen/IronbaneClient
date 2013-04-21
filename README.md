@@ -23,6 +23,6 @@ Play the game at <http://www.ironbane.com/>.
 
 ## Note
 
-A lot of code in this repository is somewhat ancient and majorite of it needs to be improved/rewritten.
+A lot of code in this repository is somewhat ancient and majority of it needs to be improved/rewritten.
 I have learned more about better software development since I started this project, and would do it differently if I had to start over.
 That being said, it works! If you find stuff you think you can improve, by all means go for it and make a pull request!
