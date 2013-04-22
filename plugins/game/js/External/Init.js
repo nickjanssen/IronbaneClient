@@ -1,7 +1,7 @@
 
 
 
-var local = startdata.runningLocal;
+
 var stealth = (window.location+" ").indexOf("localhost") != -1;
 stealth = false;
 

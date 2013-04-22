@@ -1491,9 +1491,7 @@ var HUDHandler = Class.extend({
     //$('#charSelect').html(charSelect);
     };
 
-    if ( debugging && local ) {
-      //setTimeout(enterChar, 500);
-    }
+
 
     $('#btnEnterChar').click(enterChar);
 

@@ -11,7 +11,10 @@ Play the game at <http://www.ironbane.com/>.
 * MySQL 5.0 or later
 * A MySQL client (I recommend [SQLyog Community Edition](https://code.google.com/p/sqlyog/downloads/list) but you can also use phpMyAdmin which should come pre-installed with your webserver)
 * PHP 5.3.8 or later
-* [An installed Ironbane Server](https://github.com/ironbane/IronbaneServer/)
+
+Once you have done the above:
+
+* [Install the Ironbane server on the same machine](https://github.com/ironbane/IronbaneServer/)
 
 ## Getting started
 
@@ -20,7 +23,7 @@ Play the game at <http://www.ironbane.com/>.
 * Open ```config.php``` and edit the variables to match your MySQL server
 * Open up your MySQL client and make a new database ```ironbane```
 * Import ```sql/install.sql``` to database ```ironbane```
-* Run the Ironbane Server
+* Run the Ironbane server
 * Open up ´http://localhost/IronbaneClient/game.php´
 
 ## Note

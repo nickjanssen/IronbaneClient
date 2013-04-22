@@ -42,30 +42,15 @@ var SocketHandler = Class.extend({
     InitConnection: function() {
 
         if ( this.serverOnline ) {
-            if ( !local ) {
-                this.socket = io.connect('http://www.ironbane.com:8080/');
-            }
-            else {
-                this.socket = io.connect('http://localhost:8080/');
-            }
 
+            this.socket = io.connect('http://'+ironbane_hostname+':'+ironbane_port+'/');
 
-            //alert('getStartData');
             this.socket.emit('getStartData', {}, function (reply) {
                 numberOfPlayersOnline = reply.numberOfPlayersOnline;
-
-
-            //if ( startdata.loggedIn ) {
-            //hudHandler.MakeCharSelectionScreen();
-            //}
-
 
                 socketHandler.Setup();
 
             });
-
-
-
 
             // Socket behaviour
             this.socket.on('chatMessage', function (data) {

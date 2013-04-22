@@ -206,7 +206,7 @@ var Unit = PhysicsObject.extend({
       var ctx = c.getContext('2d');
       var fillText = this.name;
 
-      c.width= local ? 600 : 300;
+      c.width= 300;
       c.height=50;
       ctx.fillStyle='#FFFFFF';
       ctx.strokeStyle='#000000';

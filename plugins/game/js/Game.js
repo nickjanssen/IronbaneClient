@@ -45,30 +45,8 @@ var Game = Class.extend({
     if ( ! Detector.webgl ) {
       hudHandler.ResizeFrame();
 
-
-
-      //$('#gameFrame').html('<h1>WebGL Error</h1>');
       return;
     }
-
-
-
-    // in your main js file
-    // this.worker = new Worker('plugins/game/js/External/GeoMerge.js');
-
-    // this.worker.addEventListener('message', function(e) {
-
-    //   console.log(e.data);
-
-    // }, false);
-
-    // this.worker.postMessage({
-    //   some_data: 'foo',
-    //   some_more_data: 'bar'
-    // });
-
-
-
 
     var bgcolor = ColorEnum.LIGHTBLUE;
 

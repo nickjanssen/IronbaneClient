@@ -17,7 +17,7 @@
 */
 
 
-$running_local = $_SERVER["HTTP_HOST"] == "localhost" ? 1 : 0;
+
 
 //if ( $_SERVER["HTTP_HOST"] == "localhost" ) {
 //    setcookie("XDEBUG_SESSION", "netbeans-xdebug", time()+3600);

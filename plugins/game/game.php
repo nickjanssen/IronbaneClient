@@ -68,7 +68,7 @@ Sweet freak of Mozambique!");
 
 $externals = array(
 
-    // "External/Three_r52".($running_local?"":".min"),
+
     "External/Three_r52",
     "External/ThreeOctree",
     //"External/Three_r52.min",
@@ -350,13 +350,10 @@ if ($s_admin && $deploy) {
 }
 
 
-if (!$running_local) {
-    $c_head .= '<script src="http://www.ironbane.com:8080/socket.io/socket.io.js"></script>
-	';
-} else {
-    $c_head .= '<script src="http://localhost:8080/socket.io/socket.io.js"></script>
-	';
-}
+
+$c_head .= '<script src="http:/'.$ironbane_server_hostname.':'.$ironbane_server_port.'/socket.io/socket.io.js"></script>
+';
+
 
 
 
@@ -522,8 +519,11 @@ $c_footer .= '
         using_ie: ' . $using_ie . ',
         using_safari: ' . $using_safari . ',
 
-		runningLocal: ' . ($running_local ? 'true' : 'false') . '
 	};
+
+    var ironbane_hostname = "'.$ironbane_hostname.'";
+    var ironbane_port = '.$ironbane_port.';
+    var ironbane_root_directory = '.$ironbane_root_directory.';
 
 	var hquote = "' . $hermesquote . '";
 

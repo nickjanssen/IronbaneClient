@@ -657,17 +657,17 @@ if (!empty($action)) {
                 if ( strtolower($fileArray[1]) == "obj" ) {
 
 
-//echo system('C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.obj -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.js 2>&1', $output);
-                    if ( $running_local ) {
-                        $command = 'C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.$filename.' -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.($fileArray[0]).'.js 2>&1';
-                    }
-                    else {
-                        $command = '/usr/bin/python /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/convert_obj_three.py -i /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.$filename.' -o /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.($fileArray[0]).'.js 2>&1';
-                    }
+                    //echo system('C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.obj -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.js 2>&1', $output);
+                    // if ( $running_local ) {
+                    //     $command = 'C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.$filename.' -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.($fileArray[0]).'.js 2>&1';
+                    // }
+                    // else {
+                    //     $command = '/usr/bin/python /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/convert_obj_three.py -i /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.$filename.' -o /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.($fileArray[0]).'.js 2>&1';
+                    // }
 
-                    if ( !system($command, $return) ) {
-                        die("error running command: ".$command);
-                    }
+                    // if ( !system($command, $return) ) {
+                    //     die("error running command: ".$command);
+                    // }
 
                     //bcs_die($return);
 
@@ -793,16 +793,16 @@ if (!empty($action)) {
 
 
 //echo system('C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.obj -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\1.js 2>&1', $output);
-                    if ( $running_local ) {
-                        $command = 'C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.$filename.' -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.($fileArray[0]).'.js 2>&1';
-                    }
-                    else {
-                        $command = '/usr/bin/python /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/convert_obj_three.py -i /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.$filename.' -o /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.($fileArray[0]).'.js 2>&1';
-                    }
+                    // if ( $running_local ) {
+                    //     $command = 'C:\\Python27\\python.exe "C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\convert_obj_three.py" -i C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.$filename.' -o C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\meshes\\'.($fileArray[0]).'.js 2>&1';
+                    // }
+                    // else {
+                    //     $command = '/usr/bin/python /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/convert_obj_three.py -i /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.$filename.' -o /var/www/vhosts/nickjanssen.com/ironbane/plugins/game/images/meshes/'.($fileArray[0]).'.js 2>&1';
+                    // }
 
-                    if ( !system($command, $return) ) {
-                        die("error running command: ".$command);
-                    }
+                    // if ( !system($command, $return) ) {
+                    //     die("error running command: ".$command);
+                    // }
 
                     //bcs_die($return);
 

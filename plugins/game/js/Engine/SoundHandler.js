@@ -25,7 +25,7 @@ var SoundHandler = Class.extend({
 
     // Start SoundManager2
     soundManager.setup({
-      url: local ? 'http://localhost/ironbane/plugins/game/flash/' : 'http://www.ironbane.com/plugins/game/flash/',
+      url: 'http://'+ironbane_hostname+ironbane_root_directory+'plugins/game/flash/',
       flashVersion: 9,
       useFlashBlock: false,
       preferFlash : false,
@@ -125,8 +125,7 @@ var SoundHandler = Class.extend({
       (function(s){
       soundHandler.sounds[s] = soundManager.createSound({
         id: s,
-        url: (local ? 'http://localhost/ironbane/plugins/game/sound/' :
-          'http://www.ironbane.com/plugins/game/sound/') +
+        url: 'http://'+ironbane_hostname+ironbane_root_directory+'plugins/game/sound/' +
           soundHandler.soundList[s].file,
         autoLoad:true,
         onload: function(success) {

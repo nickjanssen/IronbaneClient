@@ -337,7 +337,7 @@ else if ( $action == "delchar" ) {
 
 	$id = parseToDB($id);
 
-	if ( $userdata[pass] != $_POST['pass'] && !$running_local ) errmsg("The password you entered was incorrect!");
+	if ( $userdata[pass] != $_POST['pass'] ) errmsg("The password you entered was incorrect!");
 
         if ( getRowCount("ib_characters WHERE id = '$id' AND user = '$userdata[id]'") == 0 ) errmsg("No character found!");
 
@@ -590,13 +590,13 @@ else if ( $action == "register" ) {
 
     // Send a mail
 
-    if ( !$running_local ) {
+
         mailto($safe_email, "Welcome to Ironbane!", '
 
 <div id="mailbox">Hi ' . $safe_name . ', thanks for registering!<br><br>To really enjoy our game and use all features, please verify your e-mail by clicking on the following link:<br><br><a href="http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'">http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'</a><br><br>This way, we know you are a real player and we can treat you like one!<br><br>Here are your account details, it\'s probably handy should you ever forget.<br><br><b>Username: ' . $safe_name . '<br>Password: ' . $safe_pass . '</b><br><br>Have fun!<br><br>The Ironbane Team<br><br>') ? "true" : "false" . "</div>
 ";
         //mailto($safe_email, "Welcome to Ironbane!", 'Hi ' . $safe_name . ', thanks for registering!<br><br>Here are your account details, I thought it would come in handy should you ever forget.<br><br><b>Username: ' . $safe_name . '<br>Password: ' . $safe_pass . '</b><br><br>I hope you\'ll have a great time!<br>And kick some butt while you\'re at it!<br><br>Sincerely,<br>GameBot<br><br>') ? "true" : "false" . "<br>";
-    }
+
 
 
     // Log the player in
