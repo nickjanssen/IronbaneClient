@@ -1,6 +1,6 @@
 <?php
 
-$mysql_hostname = "";
+$mysql_hostname = "localhost";
 $mysql_user = "";
 $mysql_password = "";
 $mysql_db = "";
