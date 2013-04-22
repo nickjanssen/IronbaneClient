@@ -1,7 +1,7 @@
 Ironbane Client
 ==============
 
-The client for Ironbane, the open source MMO. 
+The client for Ironbane, the open source MMO.
 Play the game at <http://www.ironbane.com/>.
 
 ## Requirements
@@ -12,10 +12,6 @@ Play the game at <http://www.ironbane.com/>.
 * A MySQL client (I recommend [SQLyog Community Edition](https://code.google.com/p/sqlyog/downloads/list) but you can also use phpMyAdmin which should come pre-installed with your webserver)
 * PHP 5.3.8 or later
 
-Once you have done the above:
-
-* [Install the Ironbane server on the same machine](https://github.com/ironbane/IronbaneServer/)
-
 ## Getting started
 
 * Clone this repository inside your webserver.
@@ -23,8 +19,9 @@ Once you have done the above:
 * Open ```config.php``` and edit the variables to match your MySQL server
 * Open up your MySQL client and make a new database ```ironbane```
 * Import ```sql/install.sql``` to database ```ironbane```
+* [Install the Ironbane server on the same machine](https://github.com/ironbane/IronbaneServer/)
 * Run the Ironbane server
-* Open up ´http://localhost/IronbaneClient/game.php´
+* Open up ```http://localhost/IronbaneClient/game.php```
 
 ## Note
 
