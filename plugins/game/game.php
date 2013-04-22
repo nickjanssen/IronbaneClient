@@ -299,7 +299,7 @@ $c_footer .= '
 
     var ironbane_hostname = "'.$ironbane_hostname.'";
     var ironbane_port = '.$ironbane_port.';
-    var ironbane_root_directory = '.$ironbane_root_directory.';
+    var ironbane_root_directory = "'.$ironbane_root_directory.'";
 
 	var hquote = "' . $hermesquote . '";
 
