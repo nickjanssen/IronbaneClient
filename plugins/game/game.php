@@ -352,7 +352,7 @@ foreach ($externals as $value) {
 
 foreach ($internals as $value) {
     $c_footer .= '
-	<script src="plugins/game/js/' . $value . '.js'.($s_admin?'':'?'.$time.'').'" type="text/javascript"></script>';
+	<script src="plugins/game/js/' . $value . '.js" type="text/javascript"></script>';
 }
 
 
