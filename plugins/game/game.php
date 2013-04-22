@@ -146,7 +146,7 @@ $internals = array(
 );
 
 
-$c_head .= '<script src="http:/'.$ironbane_hostname.':'.$ironbane_port.'/socket.io/socket.io.js"></script>
+$c_head .= '<script src="http://'.$ironbane_hostname.':'.$ironbane_port.'/socket.io/socket.io.js"></script>
 ';
 
 // Load news posts for in-game
