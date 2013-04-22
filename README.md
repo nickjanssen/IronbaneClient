@@ -16,9 +16,7 @@ Play the game at <http://www.ironbane.com/>.
 ## Getting started
 
 * Clone this repository inside your webserver.
-
-    git clone git@github.com:ironbane/IronbaneClient.git
-
+´´´git clone git@github.com:ironbane/IronbaneClient.git´´´
 * Open 'config.php' and edit the variables to match your MySQL server
 * Open up your MySQL client and make a new database 'ironbane'
 * Import 'sql/install.sql' to database 'ironbane'
