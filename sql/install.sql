@@ -72,7 +72,7 @@ CREATE TABLE `bcs_users` (
 ) ENGINE=MyISAM AUTO_INCREMENT=413 DEFAULT CHARSET=latin1;
 
 /*Data for the table `bcs_users` */
-
+insert  into `bcs_users`(`id`,`name`,`admin`,`editor`,`moderator`,`pass`,`email`,`show_email`,`gmt`,`reg_date`,`forum_avatar`,`forum_sig`,`forum_posts`,`info_realname`,`info_country`,`info_location`,`info_birthday`,`info_gender`,`info_occupation`,`info_interests`,`info_browser`,`info_width`,`info_website`,`last_session`,`previous_session`,`last_page`,`receive_email`,`online`,`activationkey`,`pending_editor`,`characterUsed`,`banned`) values (0,'Guest',1,1,1,'','',0,1.0,1298973600,'theme/images/noavatar.png','',441,'','','','',0,'','','',0,'',0,0,'',1,0,'',0,0,0);
 insert  into `bcs_users`(`id`,`name`,`admin`,`editor`,`moderator`,`pass`,`email`,`show_email`,`gmt`,`reg_date`,`forum_avatar`,`forum_sig`,`forum_posts`,`info_realname`,`info_country`,`info_location`,`info_birthday`,`info_gender`,`info_occupation`,`info_interests`,`info_browser`,`info_width`,`info_website`,`last_session`,`previous_session`,`last_page`,`receive_email`,`online`,`activationkey`,`pending_editor`,`characterUsed`,`banned`) values (1,'TestUser',1,1,1,'test','test@example.com',0,1.0,1298973600,'theme/images/noavatar.png','',441,'','','','',0,'','','',0,'',0,0,'',1,0,'',0,0,0);
 
 /*Table structure for table `forum_boards` */
@@ -408,3 +408,5 @@ insert  into `ib_zones`(`id`,`name`,`type`) values (1,'World',1),(2,'Developer\'
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
