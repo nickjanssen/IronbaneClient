@@ -98,7 +98,7 @@ if ($use_simple_rendering) {
         <div id="topleftpillar"></div>
 
         <div id="topmiddle">
-            <div><a href="forum.php"><img src=theme/images/logo_forum.png></a></div>
+            <div><a href="forum.php"><img src=theme/images/logo_isolated.png></a></div>
         </div>
 
         <div id="toprightpillar"></div>
