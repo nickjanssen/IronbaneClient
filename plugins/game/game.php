@@ -306,6 +306,7 @@ $c_footer .= '
     var isEditor = '.($userdata[editor] ? "true" : "false").';
 
 	var debugging = ' . (($userdata[admin] || $debug) ? "true" : "false") . ';
+    debugging=false;
 
     var items = {};
     ' . ($preItemsLoad) . '

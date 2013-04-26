@@ -236,19 +236,16 @@ function mailto($to, $subject, $content, $shownote=0) {
 function getRank($user) {
 
     if ($user == 0)
-        return "Guest";
+        return "";
 
 
-    $sql = "SELECT admin,editor,pending_editor FROM bcs_users WHERE id = '$user'";
+    $sql = "SELECT admin,rep,editor,pending_editor FROM bcs_users WHERE id = '$user'";
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
 
-    if ( $row[admin] > 0 || $row[editor] || $row[pending_editor] > 0 ) {
-        return "Ironbane Team";
-    }
-    else {
-        return "Member";
-    }
+
+    return $row[rep]." Rep";
+
 
 }
 
@@ -256,9 +253,9 @@ function memberLink($user, $special="") {
     global $language;
 
     if (is_numeric($user)) {
-        $sql = "SELECT name, admin, editor, pending_editor FROM bcs_users WHERE id = '$user'";
+        $sql = "SELECT name, rep FROM bcs_users WHERE id = '$user'";
     } else {
-        $sql = "SELECT name, admin, editor, pending_editor FROM bcs_users WHERE name = '$user'";
+        $sql = "SELECT name, rep FROM bcs_users WHERE name = '$user'";
     }
 
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -267,9 +264,16 @@ function memberLink($user, $special="") {
     if ($user == -1) {
         return "Guest";
     } else {
-        if ($row[admin] > 0|| $row[editor] > 0|| $row[pending_editor] > 0) {
-            $special .= ' style="color:#38c8d9"';
-        }
+
+        $factor = round(intval($row[rep]) / 4);
+
+        $factor = min($factor, 255);
+        $factor = max($factor, 0);
+
+        $color = fromRGB($factor,255-$factor,255);
+
+        $special .= ' style="color:'.$color.'"';
+
         return '<a href="user.php?n=' . $row[name] . '"' . $special . '>' . $row[name] . '</a>';
     }
 }
@@ -1011,6 +1015,25 @@ function create_blank($width, $height){
     //filling created image with transparent color
     imagefill($image, 0, 0, $transparent);
     return $image;
+}
+
+function fromRGB($R, $G, $B){
+    //http://forum.codecall.net/topic/51801-rgb-to-hex-colors-and-hex-colors-to-rgb-php/
+     $R=dechex($R);
+     If (strlen($R)<2)
+     $R='0'.$R;
+
+      $G=dechex($G);
+     If (strlen($G)<2)
+     $G='0'.$G;
+
+     $B=dechex($B);
+     If (strlen($B)<2)
+     $B='0'.$B;
+
+     return '#' . $R . $G . $B;
+
+
 }
 
 ?>

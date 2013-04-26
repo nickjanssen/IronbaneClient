@@ -77,9 +77,25 @@ $noTitlePostFix = 1;
 $c_title = "Ironbane MMO";
 
 
-       // <br>Our players fought a total of <b>'. getRowCount("rpg_battles WHERE type = 1").'</b> battles during <b>'. getRowCount("rpg_wilderness_adventures").'</b> adventures.
-
 $c_main = '
+<div class="ib-news-banner">
+    <div class="ib-news-banner-text">Ironbane is an open source 3D online role-playing game!</div>
+    <div class="ib-news-banner-play">
+        <button class="ibutton_attention" onclick="window.location=\'game.php\'">Play it now!</button>
+        <span>
+            Ironbane runs straight from any modern browser!
+        </span>
+    </div>
+
+
+    <div class="ib-news-banner-get-involved">
+        <span>
+            We\'re always looking for motivated people!
+        </span>
+        <button class="ibutton_attention2" onclick="window.location=\'get-involved.php\'">Get involved!</button>
+    </div>
+</div>
+<hr>
 <h1>News</h1>
 
                 '.$fetchpost_row_content.'

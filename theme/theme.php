@@ -119,7 +119,14 @@ if ($use_simple_rendering) {
                 <hr>
     ' : '') . '
       <div align="center">
-        <a href="forum.php">Forum Index</a> | <a href="game.php">Play Ironbane</a> | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a> | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a> | <a href="logout.php">Log Out ('.$userdata[name].')</a>').''.($s_editor?' | <a href="editor.php">Editor</a> | <a href="teamwiki.php?action=viewuploads">Uploads</a> | <a href="https://trello.com/ironbane" target="_new">Todo List</a>':'').'
+        <a href="forum.php">Forum Index</a>
+        | <a href="game.php">Play Ironbane</a>
+        | <a href="https://github.com/ironbane" target="_new">GitHub</a>
+        | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a>
+        | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a>
+            | <a href="logout.php">Log Out ('.$userdata[name].')</a>').''.($s_editor?' | <a href="editor.php">Editor</a>
+            | <a href="teamwiki.php?action=viewuploads">Uploads</a>
+            | <a href="https://trello.com/ironbane" target="_new">Todo List</a>':'').'
       </div>
 ' . ($s_auth ? '
 <hr>
@@ -148,7 +155,7 @@ if ($use_simple_rendering) {
         <div id="bottomleftpillar"></div>
 
         <div id="bottommiddle">
-            <div id="footer">&copy; Ironbane 2012<br><a href="terms.php" target="_blank">Terms and Conditions</a> | <a href="pp.php" target="_blank">Privacy Policy</a></div>
+            <div id="footer">&copy; Ironbane 2013<br><a href="terms.php" target="_blank">Terms and Conditions</a> | <a href="pp.php" target="_blank">Privacy Policy</a></div>
         </div>
 
         <div id="bottomrightpillar"></div>
@@ -159,42 +166,6 @@ if ($use_simple_rendering) {
 
 ';
     $c_jquery_manual .= '
-
-
-$(function(){
-
-    $("ul.dropdown li").hover(function(){
-
-        $(this).addClass("hover");
-        $(\'ul:first\',this).css(\'visibility\', \'visible\');
-
-        $("ul.dropdown_form li").removeClass("hover");
-        $(\'ul:first\',$("ul.dropdown_form li")).css(\'visibility\', \'hidden\');
-
-    }, function(){
-
-        $(this).removeClass("hover");
-        $(\'ul:first\',this).css(\'visibility\', \'hidden\');
-
-        $("ul.dropdown_form li").removeClass("hover");
-        $(\'ul:first\',$("ul.dropdown_form li")).css(\'visibility\', \'hidden\');
-
-    });
-
-
-    $("ul.dropdown_form li").hover(function(){
-
-        $("ul.dropdown_form li").removeClass("hover");
-        $(\'ul:first\',$("ul.dropdown_form li")).css(\'visibility\', \'hidden\');
-
-        $(this).addClass("hover");
-        $(\'ul:first\',this).css(\'visibility\', \'visible\');
-
-
-    });
-
-});
-
 
             function FixBorder() {
             var height = $("#content").height();
@@ -208,206 +179,10 @@ $(function(){
         };
 ';
 
-        $c_jquery .= '
-
-var username = "Your username";
-var password = "Your password";
-
-$(document).ready(function(){
-
-     var current_date = new Date( );
-     var gmt_offset = current_date.getTimezoneOffset( ) / 60;
-     $("#gmt").val(-gmt_offset);
 
 
+ $c_jquery .= '
 
-    $("#user").attr("value", username);
-
-    $("#user").focus(function(){
-        if ( $("#user").attr("value") == username ) {
-            $("#user").attr("value", "");
-        }
-    });
-    $("#user").blur(function(){
-        if ( $("#user").attr("value") == "" ) {
-            $("#user").attr("value", username);
-        }
-    });
-
-    $("#fakepass").attr("value", password);
-
-    $("#fakepass").focus(function(){
-        $("#fakepass").hide();
-        $("#pass").show();
-        $("#pass").focus();
-    });
-
-    $("#pass").blur(function(){
-        if ( $("#pass").attr("value") == "" ) {
-            $("#fakepass").show();
-            $("#pass").hide();
-        }
-    });
-
-});
-';
-
-$c_jquery .= '
-
-var email = "Your E-mail";
-
-function CheckFilled() {
-    if ( $("#Ux466hj8").val() == username ) {
-        ErrorMsg("Please enter a username.");
-        return false;
-    }
-    if ( $("#Ed2h18Ks").val() == "" ) {
-        ErrorMsg("Please enter a password.");
-        return false;
-    }
-    if ( $("#s8HO5oYe").val() == email ) {
-        ErrorMsg("Please enter an e-mail address.");
-        return false;
-    }
-    return true;
-}
-
-
-function ErrorMsg(msg) {
-    $("#errormsg").show();
-    $("#errormsg").text(msg);
-}
-
-function ErrorClear() {
-    $("#errormsg").hide();
-}
-
-
-var focusu = true;
-var focusp = true;
-var focuse = true;
-
-function CheckInput() {
-    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-
-    if ( $("#Ux466hj8").val().length < 4 && !focusu ) {
-        ErrorMsg("Please make sure your username is atleast 4 characters long");
-        return false;
-    }
-    else if ( $("#Ux466hj8").val().length > 20 && !focusu ) {
-        ErrorMsg("Please make sure your username is less than 20 characters long");
-        return false;
-    }
-    else if ( $("#Ed2h18Ks").val().length < 4 && !focusp ) {
-        ErrorMsg("Please make sure your password is atleast 4 characters long");
-        return false;
-    }
-    else if ( $("#Ed2h18Ks").val().length > 20 && !focusp ) {
-        ErrorMsg("Please make sure your password is less than 20 characters long");
-        return false;
-    }
-    else if ( $("#s8HO5oYe").val().length < 8 && !focuse ) {
-        ErrorMsg("Please make sure your e-mail is atleast 8 characters long");
-        return false;
-    }
-    else if ( $("#s8HO5oYe").val().length > 50 && !focuse ) {
-        ErrorMsg("Please make sure your e-mail is less than 50 characters long");
-        return false;
-    }
-    else if(!emailReg.test($("#s8HO5oYe").val()) && !focuse ) {
-        ErrorMsg("Please make sure your e-mail is valid.");
-        return false;
-    }
-    else {
-        ErrorClear();
-    }
-    return true;
-}
-
-
-
-$(document).ready(function(){
-
-     var current_date = new Date( );
-     var gmt_offset = current_date.getTimezoneOffset( ) / 60;
-     $("#gmt").val(-gmt_offset);
-
-
-
-
-    $("#Ux466hj8").attr("value", username);
-
-    $("#Ux466hj8").focus(function(){
-        focuse = true;
-        focusp = true;
-        if ( $("#Ux466hj8").attr("value") == username ) {
-            $("#Ux466hj8").attr("value", "");
-        }
-    });
-    $("#Ux466hj8").blur(function(){
-        focusn = false;
-        if ( $("#Ux466hj8").attr("value") == "" ) {
-            $("#Ux466hj8").attr("value", username);
-        }
-        else {
-            CheckInput();
-        }
-    });
-
-    $("#passhelper").attr("value", password);
-
-    $("#passhelper").focus(function(){
-        focusu = true;
-        focuse = true;
-        $("#passhelper").hide();
-        $("#Ed2h18Ks").show();
-        $("#Ed2h18Ks").focus();
-    });
-
-    $("#Ed2h18Ks").blur(function(){
-        focusp = false;
-        if ( $("#Ed2h18Ks").attr("value") == "" ) {
-            $("#passhelper").show();
-            $("#Ed2h18Ks").hide();
-        }
-        else {
-            CheckInput();
-        }
-    });
-
-
-    $("#s8HO5oYe").attr("value", email);
-
-    $("#s8HO5oYe").focus(function(){
-        focusu = true;
-        focusp = true;
-        if ( $("#s8HO5oYe").attr("value") == email ) {
-            $("#s8HO5oYe").attr("value", "");
-        }
-    });
-    $("#s8HO5oYe").blur(function(){
-        focuse = false;
-        if ( $("#s8HO5oYe").attr("value") == "" ) {
-            $("#s8HO5oYe").attr("value", email);
-        }
-        else {
-            CheckInput();
-        }
-    });
-
-});
-
-
-
-';
-
-    $c_jquery .= '
-        $("#playbutton").mouseover(function(){
-            $("#playbutton").prop("src", "theme/images/buttons/play_over.png");
-        });
-        $("#playbutton").mouseout(function(){
-            $("#playbutton").prop("src", "theme/images/buttons/play.png");
-        });
         FixBorder();
         for(var i=1;i<5;i++){
             setTimeout(function(){FixBorder();}, i*1000);

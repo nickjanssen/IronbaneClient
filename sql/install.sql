@@ -410,3 +410,9 @@ insert  into `ib_zones`(`id`,`name`,`type`) values (1,'World',1),(2,'Developer\'
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 
+/* UPDATES START */
+
+
+
+ALTER TABLE `ironbane`.`bcs_users`   
+  ADD COLUMN `rep` INT(10) DEFAULT 1  NULL AFTER `banned`;
