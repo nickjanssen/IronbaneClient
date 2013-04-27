@@ -49,22 +49,22 @@ function bcs_error($string) {
 
     $string = "".date('l jS \of F Y h:i:s A').":\n$string\n\n";
 
-    $filename = 'dbErrors.txt';
+    // $filename = 'dbErrors.txt';
 
-    if (!$handle = fopen($filename, 'a+')) {
-        print "Cannot open file ($filename)";
-        exit;
-    }
+    // if (!$handle = fopen($filename, 'a+')) {
+    //     print "Cannot open file ($filename)";
+    //     exit;
+    // }
 
-    // Write $somecontent to our opened file.
-    if (fwrite($handle, $string) === FALSE) {
-        print "Cannot write to file ($filename)";
-        exit;
-    }
+    // // Write $somecontent to our opened file.
+    // if (fwrite($handle, $string) === FALSE) {
+    //     print "Cannot write to file ($filename)";
+    //     exit;
+    // }
 
 
 
-    fclose($handle);
+    // fclose($handle);
     die($string);
 }
 
