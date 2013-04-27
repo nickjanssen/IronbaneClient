@@ -18,12 +18,6 @@
 
 
 
-
-$plugin_name = "Forum";
-$plugin_version = "1.1.3";
-$plugin_author = "Beather (admin@ironbane.com)";
-
-
 if (!defined('BCS')) {
     die("ERROR");
 }
@@ -428,8 +422,11 @@ if ($action == "deletetopic") {
             $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         }
 
+        $reward = 1;
 
-        $query = "UPDATE bcs_users SET forum_posts = forum_posts + 1 WHERE id = '$userdata[id]'";
+        if ( $newtopic == 1 && $board == 5 ) $reward = 5;
+
+        $query = "UPDATE bcs_users SET forum_posts = forum_posts + 1, rep = rep + $reward WHERE id = '$userdata[id]'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
         if ($board == "pt") {
@@ -457,7 +454,7 @@ if ($action == "deletetopic") {
             }
         }
 
-        bcs_die("Your post was " . ($action == "editpost" ? "edited" : "made") . " succesfully.", "forum.php?action=topic&topic=" . $topic);
+        bcs_die("Your post was " . ($action == "editpost" ? "edited" : "made") . " succesfully.<br><br>You've earned $reward reputation!", "forum.php?action=topic&topic=" . $topic);
     } else {
         if (isset($quote_p)) {
             if (!is_numeric($quote_p)) {
@@ -1599,7 +1596,7 @@ function refresh_username(selected_username)
         $postrow_content .= '
 
 				<tr>
-					<td width="150" align="left" valign="top" class="' . $rowclass . '"><span class="name"><a name="' . $row[id] . '"></a><b>' . getPosterLink($row, $row[user]) . '</b>'.($row7[info_realname]!=""&&$row8[modonly]==1?' ('.$row7[info_realname].')':'').'</span><br /><span class="postdetails">' . getRank($row[user]) . '<br />' . $u_avatar . '<br /><br />' . $moreinfo . '</span><br /></td>
+					<td width="150" align="left" valign="top" class="' . $rowclass . '"><span class="name"><a name="' . $row[id] . '"></a><b>' . getPosterLink($row, $row[user]) . '</b>'.($row7[info_realname]!=""&&$row8[modonly]==1?' ('.$row7[info_realname].')':'').'</span><br /><span class="postdetails">' . getRank($row[user]) . ' Rep<br />' . $u_avatar . '<br /><br />' . $moreinfo . '</span><br /></td>
 					<td class="' . $rowclass . '" height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 						<tr>
 							<td width="100%">&nbsp;<img src="theme/images/icon_minipost.gif" border="0" />&nbsp;<span class="postdetails">Posted: ' . createDate($row[time], $userdata[gmt]) . ' ('.(timeAgo($row[time])).' ago)</span></td>

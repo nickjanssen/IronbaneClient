@@ -17,12 +17,6 @@
 */
 
 
-
-
-$plugin_name = "Profile";
-$plugin_version = "0.1.0";
-$plugin_author = "Beather (admin@ironbane.com)";
-
 if (!defined('BCS')) {
     die("ERROR");
 }
@@ -140,6 +134,10 @@ $memberdata = mysql_fetch_array($result);
                                           <td valign="middle" align="right" nowrap="nowrap"></td>
 					  <td width="100%"><span class="genmed"><a href="http://www.ironbane.com/forum.php?action=reply&board=pt&startp=' . $memberdata[name] . '">Start a private topic with ' . $memberdata[name] . '</a></span></td>
 					</tr>
+                    <tr>
+                      <td valign="middle" align="right" nowrap="nowrap"><span class="genmed"><strong>Reputation</strong>&nbsp;</span></td>
+                      <td width="100%"><span class="genmed">' . getRank($memberdata[id]) . '</span></td>
+                    </tr>
 					<tr>
 					  <td valign="middle" align="right" nowrap="nowrap"><span class="genmed"><strong>Joined</strong>&nbsp;</span></td>
 					  <td width="100%"><span class="genmed">' . createDateSelf($memberdata[reg_date]) . '</span></td>
@@ -166,10 +164,6 @@ $memberdata = mysql_fetch_array($result);
 					  <td valign="top" align="right" nowrap="nowrap"><span class="genmed"><strong>Total posts</strong>&nbsp;</span></td>
 
 					  <td valign="top"><span class="genmed">' . getTotalUserPosts($memberdata[id]) . '</span><br /><span class="gensmall">[' . round((((getTotalUserPosts($memberdata[id])) / (getRowCount("forum_posts"))) * 100), 2) . '% of total / ' . round(getTotalUserPosts($memberdata[id]) / (($time - $memberdata[reg_date]) / 86400), 2) . ' posts per day]</span> <br /><span class="gensmall"><a href="forum.php?action=board&board=up&user=' . $memberdata[id] . '" class="gensmall">Find all posts by ' . $memberdata[name] . '</a></span></td>
-					</tr>
-					<tr>
-					  <td valign="middle" align="right" nowrap="nowrap"><span class="genmed"><strong>Status</strong>&nbsp;</span></td>
-					  <td width="100%"><span class="genmed">' . getRank($memberdata[id]) . '</span></td>
 					</tr>
 					<tr>
 					  <td valign="middle" align="right" nowrap="nowrap"><span class="genmed"><strong>Country</strong>&nbsp;</span></td>

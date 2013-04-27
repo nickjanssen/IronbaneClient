@@ -416,3 +416,5 @@ insert  into `ib_zones`(`id`,`name`,`type`) values (1,'World',1),(2,'Developer\'
 
 ALTER TABLE `ironbane`.`bcs_users`   
   ADD COLUMN `rep` INT(10) DEFAULT 1  NULL AFTER `banned`;
+
+ /*[12:08:57][112 ms]*/ ALTER TABLE `ironbane`.`ib_meshes` CHANGE `filename` `filename` VARCHAR(50) CHARSET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '.Obj file format'; 

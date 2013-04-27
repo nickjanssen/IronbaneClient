@@ -19,12 +19,28 @@
 
 
 
-$plugin_name = "Editor";
-$plugin_version = "1.0.0";
-$plugin_author = "Beather (admin@ironbane.com)";
+
+///// WARNING
+    ///// WARNING
+        ///// WARNING
+            ///// WARNING
+                ///// WARNING
+                    ///// WARNING
 
 
-//TODO add default value for ADD
+
+// The code that follows is ancient and a mess. It is full of hacks
+// and probably a great example of bad software design. But it works.
+
+// You probably shouldn't touch this file unless you want to complete rewrite it.
+
+// NOTE: The fields per category are now taken directly from MySQL
+// using the comments section for each field. In other words, the values_x are ignored.
+
+// You are a hero if you would like to rewrite this page.
+// People should make a statue. Yeah.
+
+
 
 if (!defined('BCS')) {
     die("ERROR");
@@ -43,8 +59,6 @@ $links_n = "Item Templates,Unit Templates,Painter/Placer Cats,3D meshes,Books";
 $links_u = "items,units,cats,meshes,books";
 
 
-
-include('plugins/explore/functions_rpg.php');
 
 //  &#44;
 

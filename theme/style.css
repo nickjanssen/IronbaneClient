@@ -798,3 +798,9 @@ margin: 3px;
 .ib-gi-section-image-code {
     background-image: url(../plugins/get-involved/images/code.png);
 }
+.ib-gi-section-image-models {
+    background-image: url(../plugins/get-involved/images/models.png);
+}
+.ib-gi-section-image-art {
+    background-image: url(../plugins/get-involved/images/art.png);
+}

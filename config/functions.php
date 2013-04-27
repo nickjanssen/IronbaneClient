@@ -236,15 +236,15 @@ function mailto($to, $subject, $content, $shownote=0) {
 function getRank($user) {
 
     if ($user == 0)
-        return "";
+        return 0;
 
 
-    $sql = "SELECT admin,rep,editor,pending_editor FROM bcs_users WHERE id = '$user'";
+    $sql = "SELECT rep FROM bcs_users WHERE id = '$user'";
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
 
 
-    return $row[rep]." Rep";
+    return $row[rep];
 
 
 }
@@ -283,6 +283,11 @@ function memberName($user) {
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
     return $row[name];
+}
+
+function getRow($query) {
+    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
+    return mysql_fetch_array($result);
 }
 
 

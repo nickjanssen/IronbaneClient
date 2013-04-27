@@ -17,12 +17,6 @@
 */
 
 
-
-
-$plugin_name = "Logout";
-$plugin_version = "1.0.0";
-$plugin_author = "Beather (admin@ironbane.com)";
-
 if ( !defined('BCS') ) {
 	die("ERROR");
 }
@@ -37,9 +31,9 @@ if ( !defined('BCS') ) {
 	unset($_SESSION['user_id']);
 	setcookie("bcs_username", "", time() - 3600);
 	setcookie("bcs_password", "", time() - 3600);
-        
+
         //writeChatMessage("<i>".  memberLink($userdata[id])." logged out.</i>");
-        
+
 	header("Location: index.php");
 	//bcs_die("You are now logged out!");
 //}

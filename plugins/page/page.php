@@ -18,11 +18,6 @@
 
 
 
-
-$plugin_name = "Page Viewer";
-$plugin_version = "0.2.0";
-$plugin_author = "Beather (admin@ironbane.com)";
-
 if ( !defined('BCS') ) {
 	die("ERROR");
 }
@@ -71,7 +66,7 @@ $c_main = '
 <textarea name="content" style="width:100%;height:500px">'.($row[content]).'</textarea><br /><br />
     <div align=center><input type="submit" name="submit" value="Submit" class=mainoption></div>
 
-</form> 
+</form>
                 </td>
 	   </tr>
 	  </table>
@@ -86,15 +81,15 @@ if ( $s_admin == TRUE ) {
 }
 
 
-	
+
 	$c_main = '
-            
+
 <h1>'.$row[title].''.$s_admin_link.'</h1>
 
-'.$row[content].'                
+'.$row[content].'
 
 
-';	
+';
 
 }
 
