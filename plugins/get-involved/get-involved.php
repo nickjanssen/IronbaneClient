@@ -177,6 +177,8 @@ switch ($interest) {
             <div class="ib-gi-section-image ib-gi-section-image-art">
             </div>
         </div>
+
+        Looking for something else? Give a shout at the forums and let us know what you\'d like to help out with!
         ';
         break;
 }
