@@ -26,89 +26,8 @@ $c_title = "Preferences";
 if (!defined('BCS')) {
     die("ERROR");
 }
-include('plugins/explore/functions_rpg.php');
-
-//if ($action == "disabletutorial") {
-//
-//    $query = "UPDATE bcs_users SET rpg_tut_allow = 0 WHERE id = '$userdata[id]'";
-//    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-//    $userdata[rpg_tut_allow] = 0;
-//    bcs_die("You have disabled the tutorial!<br><br>To re-enable the Tutorial later, go to your Preferences and check the box next to \"Display tutorial messages\".<br><br>".  makeurlbutton("Continue", "character.php"), "none");
-//}
-if ($action == "enablepvp") {
 
 
-
-    $use_simple_rendering = 1;
-    if ( in_battle($userdata[id]) ) bcs_die("You are currently in battle! Please finish your battle first.");
-
-    $query = "UPDATE bcs_users SET pvp_allow = 1 WHERE id = '$userdata[id]'";
-    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-    $c_jquery .= '
-        window.parent.player.allowpvp = true;
-        window.parent.UpdateUnitInfoBox(window.parent.player);
-';
-    $userdata[pvp_allow] = 1;
-    // TODO indicator where safe zone?
-    bcs_die("You have enabled Player versus Player mode!<br><br>Other players can now fight you when you are not in a safe zone.", "character.php?action=pvp");
-}
-if ($action == "disablepvp") {
-    $use_simple_rendering = 1;
-    if ( in_battle($userdata[id]) ) bcs_die("You are currently in battle! Please finish your battle first.");
-
-    $query = "UPDATE bcs_users SET pvp_allow = 0 WHERE id = '$userdata[id]'";
-    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-    $userdata[pvp_allow] = 1;
-    $c_jquery .= '
-        window.parent.player.allowpvp = false;
-        window.parent.UpdateUnitInfoBox(window.parent.player);
-';
-
-    bcs_die("You have disabled Player versus Player mode!<br><br>Other players can now no longer fight with you.", "character.php?action=pvp");
-}
-//if ($action == "finishtutorial") {
-//
-//    $query = "UPDATE bcs_users SET rpg_tut = 'WELCOME', rpg_tut_allow = 0 WHERE id = '$userdata[id]'";
-//    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-//
-//    $userdata[rpg_tut_allow] = 0;
-//    $userdata[rpg_tut] = 'WELCOME';
-//
-//    bcs_die("Congratulations, you have finished the tutorial!<br><br>To restart the Tutorial later, go to your Preferences and check the box next to \"Display tutorial messages\".<br><br>".  makeurlbutton("Continue", "character.php"), "none");
-//}
-//if ($action == "continuetutorial") {
-//
-//    if ($userdata[rpg_tut_allow] == 0)
-//        return;
-//
-//    if ($tutorial_next == "NONE")return;
-//
-//    //die($tutorial_next."<br>");
-//
-//    $query = "UPDATE bcs_users SET rpg_tut = '$tutorial_next' WHERE id = '$userdata[id]'";
-//    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-//
-//    header("Location: ".$tutorial_sections[$tutorial_next]);
-//    exit;
-//    //bcs_die("Congratulations, you have finished the tutorial!<br><br>To restart the Tutorial later, go to your Preferences and check the box next to \"Display tutorial messages\".", "character.php");
-//}
-//if ($action == "previoustutorial") {
-//
-//    if ($userdata[rpg_tut_allow] == 0)
-//        return;
-//
-//    if ($tutorial_previous == "NONE")return;
-//    //echo($tutorial_previous."<br>");
-//
-//    $query = "UPDATE bcs_users SET rpg_tut = '$tutorial_previous' WHERE id = '$userdata[id]'";
-//    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-//
-//    header("Location: ".$tutorial_sections[$tutorial_previous]);
-//    exit;
-//    //bcs_die("Congratulations, you have finished the tutorial!<br><br>To restart the Tutorial later, go to your Preferences and check the box next to \"Display tutorial messages\".", "character.php");
-//}
 
 if ($submit) {
     $safe_name = strip_tags($_POST['username']);
@@ -193,7 +112,6 @@ if ($submit) {
         die();
     }
 
-    $new_rpg_allow_tut = $_POST['allow_tut'] ? 1 : 0;
     $new_show_email = $_POST['show_email'] ? 1 : 0;
     $new_receive_email = $_POST['receive_email'] ? 1 : 0;
 
@@ -249,13 +167,9 @@ if ($submit) {
         $safe_avatar = $userdata[forum_avatar];
     }
 
-    unset($tutextra);
-    if ( $new_rpg_allow_tut == 1 && $userdata[rpg_allow_tut] == 0 ) {
-        $tutextra = ", rpg_tut = 'WELCOME'";
-    }
 
     // Update a row
-    $query = "UPDATE bcs_users SET show_email = '$new_show_email', rpg_tut_allow = '$new_rpg_allow_tut'".$tutextra.", receive_email = '$new_receive_email', email = '$safe_email'," . $pass_sql . " gmt = '$safe_gmt', forum_avatar = '$safe_avatar', " . $safe_info . " forum_sig = '$safe_sig' WHERE id = '$userdata[id]'";
+    $query = "UPDATE bcs_users SET show_email = '$new_show_email', receive_email = '$new_receive_email', email = '$safe_email'," . $pass_sql . " gmt = '$safe_gmt', forum_avatar = '$safe_avatar', " . $safe_info . " forum_sig = '$safe_sig' WHERE id = '$userdata[id]'";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
     bcs_die('Your preferences have been saved.', 'preferences.php');
@@ -278,12 +192,7 @@ if ($submit) {
         $gmtselect .= "<option value=\"" . $x . "\"" . $extra . ">GMT - " . abs($x) . "</option>";
     }
 
-    if ($userdata[rpg_music] == 1) {
-        $check1 = " CHECKED";
-    }
-    if ($userdata[rpg_sound] == 1) {
-        $check2 = " CHECKED";
-    }
+
     if ($userdata[info_gender] == 1) {
         $checked_1 = "CHECKED";
     }
@@ -452,10 +361,6 @@ if ($submit) {
 	   <tr>
 		<td class="row1" align="center">
                     <table width="100%" border="0" cellspacing="1" cellpadding="3">
-                        <tr>
-                        <td align="right" width="50%"><span class="gen">Display tutorial messages</span></td>
-                        <td align="left" width="50%" valign="top"><input type="checkbox" name="allow_tut" ' . ($userdata[rpg_tut_allow] == 1 ? "CHECKED" : "") . '></td>
-                        </tr>
                         <tr>
                         <td align="right" width="50%"><span class="gen">Show my e-mail address</span></td>
                         <td align="left" width="50%" valign="top"><input type="checkbox" name="show_email" ' . ($userdata[show_email] == 1 ? "CHECKED" : "") . '></td>
