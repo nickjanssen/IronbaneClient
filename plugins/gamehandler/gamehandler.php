@@ -579,8 +579,8 @@ else if ( $action == "register" ) {
     $activationkey = mt_rand();
 
     // Insert a row
-    $query = "INSERT INTO bcs_users (id, name, email, show_email, pass, gmt, reg_date, last_session, previous_session, rpg_music, rpg_sound, activationkey)
-	VALUES('$newid', '$safe_name', '$safe_email', '$email_ok', '$safe_pass', '$safe_gmt', '$time', '$time', '$time', '$music_ok', '$sound_ok', '$activationkey')";
+    $query = "INSERT INTO bcs_users (id, name, email, show_email, pass, gmt, reg_date, last_session, previous_session, activationkey)
+	VALUES('$newid', '$safe_name', '$safe_email', '$email_ok', '$safe_pass', '$safe_gmt', '$time', '$time', '$time', '$activationkey')";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
     $query = "SELECT * FROM bcs_users WHERE name = '$safe_name'";
