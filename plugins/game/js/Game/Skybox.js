@@ -15,7 +15,7 @@
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+var skyboxPath = 'plugins/game/images/skybox/';
 
 var Skybox = PhysicsObject.extend({
   Init: function() {
@@ -78,6 +78,8 @@ var Skybox = PhysicsObject.extend({
 
     this.skyboxMesh = new THREE.Mesh(geometry, material);
 
+    this.skyboxOctree = new THREE.Octree();
+
     ironbane.scene.add(this.skyboxMesh);
 
     // Add a sun
@@ -133,7 +135,7 @@ var Skybox = PhysicsObject.extend({
     // Add terrain
 
     if ( zones[terrainHandler.zone]['type'] == ZoneTypeEnum.WORLD ) {
-      var model = meshPath + "terrain.js";
+      var model = skyboxPath + terrainHandler.zone+".js";
       //this.texture = textureHandler.GetTexture( texture, true);
 
       var jsonLoader = new THREE.JSONLoader();
@@ -155,7 +157,16 @@ var Skybox = PhysicsObject.extend({
     // Only push materials that are actually inside the materials
     // for (var i=0; i<geometry.jsonMaterials.length; i++) {
 
-      var textures = ["images/tiles/1","images/tiles/11"];
+      var textures = [];
+
+      // for (var i = 8; i < 20; i++) {
+      //   textures.push("images/tiles/"+i);
+      // }
+
+      _.each(geometry.jsonMaterials, function(mat) {
+        var tile = "tiles/"+(mat["mapDiffuse"].split("."))[0];
+        textures.push("images/"+tile);
+      });
 
       // Check if there's a map inside the material, and if it contains a sourceFile
       _.each(textures, function(texture) {
@@ -177,6 +188,8 @@ var Skybox = PhysicsObject.extend({
 
     this.terrainMesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
     ironbane.scene.add(this.terrainMesh);
+
+    this.skyboxOctree.add( this.terrainMesh, true );
 
   },
   Destroy: function() {

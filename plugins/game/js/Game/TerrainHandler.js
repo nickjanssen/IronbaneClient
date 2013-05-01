@@ -477,31 +477,10 @@ var TerrainHandler = Class.extend({
     }
 
 
-    // if ( !noTerrain ) {
-    //   if ( !le("globalEnable") ) {
-    //     for(var c in terrainHandler.chunks){
-    //       var chunk = terrainHandler.chunks[c];
-
-    //       if ( !ironbane.player.InRangeOfPosition(chunk.position, chunkSize) ) continue;
-
-    //       var octreeResults = chunk.octree.search( ray.origin, ray.far, true, ray.direction )
-    //       var subIntersects = ray.intersectOctreeObjects( octreeResults );
-
-    //       intersects = intersects.concat(subIntersects);
-    //     }
-    //   }
-    //   else {
-    //     for(var c in terrainHandler.chunks){
-    //       var chunk = terrainHandler.chunks[c];
-
-
-    //       //var octreeResults = chunk.octree.search( ray.origin, ray.far, true, ray.direction )
-    //       var subIntersects = ray.intersectObject( chunk.mesh );
-
-    //       intersects = intersects.concat(subIntersects);
-    //     }
-    //   }
-    // }
+    if ( !noTerrain ) {
+      var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.skyboxOctree.objects );
+      intersects = intersects.concat(subIntersects);
+    }
 
 
     if ( reverseRaySortOrder ) {
