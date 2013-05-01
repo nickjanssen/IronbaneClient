@@ -1592,20 +1592,10 @@ guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRende
       }
     }
 
-
-
-
-
-
     // Make all gameobjects re-init their height
     for(var u=0;u<ironbane.unitList.length;u++){
       ironbane.unitList[u].positionedShadowMesh = false;
     }
-
-
-  },
-  BuildTileSelector: function() {
-
 
 
   },

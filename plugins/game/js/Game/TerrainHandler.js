@@ -519,9 +519,6 @@ var TerrainHandler = Class.extend({
       this.waterMesh.material.uniforms.time.value = (new Date().getTime() - ironbane.startTime)/1000.0;
 
       if ( this.skybox ) this.waterMesh.material.uniforms.vSun.value.copy(this.skybox.sunVector);
-      //this.waterMesh.material.uniforms.camPos.value = terrainHandler.GetReferenceLocationNoClone();
-      //this.waterMesh.material.uniforms.meshPos.value = this.waterMesh.position();
-      //debug.SetWatch('this.waterMesh.material.uniforms.time.value', this.waterMesh.material.uniforms.time.value);
 
       var p = this.GetReferenceLocationNoClone();
       var cellPos = WorldToCellCoordinates(p.x, p.z, 10);
@@ -529,11 +526,8 @@ var TerrainHandler = Class.extend({
 
       var id = worldPos.x+'-'+worldPos.z;
 
-      //            if ( this.currentChunk != id ) {
-      //                this.currentChunk = id;
       terrainHandler.waterMesh.position.x = worldPos.x;
       terrainHandler.waterMesh.position.z = worldPos.z;
-    //            }
 
     }
 
@@ -639,8 +633,6 @@ var TerrainHandler = Class.extend({
 
     var bogusLoadRange = 10;
 
-    if ( GetZoneConfig("noTerrain") ) bogusLoadRange = 0;
-
     for(var x=pcp.x-bogusLoadRange;x<=pcp.x+bogusLoadRange;x+=1){
       for(var z=pcp.z-bogusLoadRange;z<=pcp.z+bogusLoadRange;z+=1){
 
@@ -655,37 +647,12 @@ var TerrainHandler = Class.extend({
         if ( distance > chunkLoadRange*chunkLoadRange ) continue;
 
 
-        if ( !ISDEF(this.chunks[pcp2.x+'-'+pcp2.z]) || (this.chunks[pcp2.x+'-'+pcp2.z].hasTilesLoaded && !this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld)) {
+        if ( !ISDEF(this.chunks[pcp2.x+'-'+pcp2.z]) || !this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld) {
           this.hasChunksLoaded = false;
         }
-        //                else if ( this.chunks[pcp2.x+'-'+pcp2.z].hasTilesLoaded && !this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld ) {
-        //
-        //                    //bm("loaded: "+pcp2.x+"-"+pcp2.z+": "+(this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld ? "true" : "false"));
-        //                    //bm(this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld ? "true" : "false");
-        //                }
-
-
-
-
-
-
-        // if ( !levelEditor.ready || (levelEditor.ready && levelEditor.editorGUI.globalEnable) ) {
-
-
 
 
           terrainHandler.GetChunkByWorldPosition(pcp2.x, pcp2.z);
-        // }
-        // else {
-        //   setTimeout((function(x, z) {
-        //     return function() {
-        //       terrainHandler.GetChunkByWorldPosition(x, z);
-        //     }
-        //   })(pcp2.x, pcp2.z), 10*loadcount);
-
-        //   loadcount++;
-        // }
-
 
 
 

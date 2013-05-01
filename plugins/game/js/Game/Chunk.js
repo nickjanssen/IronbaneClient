@@ -55,8 +55,7 @@ var Chunk = Class.extend({
             else if ( !this.removeNextTick ) {
 
                 if ( terrainHandler.isLoaded
-                    && this.modelsToBuild <= 0
-                    && ready ) {
+                    && this.modelsToBuild <= 0 ) {
                     this.AddMesh();
                 }
 
@@ -324,37 +323,6 @@ var Chunk = Class.extend({
         this.models = new THREE.Mesh(this.modelGeometry,  new THREE.MeshFaceMaterial());
         this.models.castShadow = true;
         ironbane.scene.add(this.models);
-
-        //bm("getmesh called");
-
-
-
-
-        // planeGeo.deallocate();
-
-        var terrainMat = new THREE.MeshFaceMaterial();
-
-        // this.terrainGeo.mergeVertices();
-        THREE.GeometryUtils.triangulateQuads(this.terrainGeo);
-
-        var terrainMesh = new THREE.Mesh(this.terrainGeo, terrainMat);
-
-        terrainMesh.receiveShadow = true;
-
-        // terrainMesh.geometry.computeCentroids();
-        // terrainMesh.geometry.computeFaceNormals();
-
-        terrainMesh.geometry.dynamic = true;
-
-        terrainMesh.material.side = THREE.DoubleSide;
-        //        terrainMesh.material.transparent = true;
-        //        terrainMesh.material.opacity = 0.5;
-        //        terrainMesh.boundingBox = null;
-        //        terrainMesh.boundingSphere = null;
-
-
-        this.mesh = terrainMesh;
-
 
     },
     LoadObjects: function(waypointsOnly) {
