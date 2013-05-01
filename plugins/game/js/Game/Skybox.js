@@ -155,7 +155,7 @@ var Skybox = PhysicsObject.extend({
     // Only push materials that are actually inside the materials
     // for (var i=0; i<geometry.jsonMaterials.length; i++) {
 
-      var textures = ["data/1/map_1000","images/tiles/35"];
+      var textures = ["images/tiles/1","images/tiles/11"];
 
       // Check if there's a map inside the material, and if it contains a sourceFile
       _.each(textures, function(texture) {
