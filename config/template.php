@@ -24,7 +24,7 @@ if ( !defined('BCS') ) {
 }
 
 if ( !isset($c_title) ) {
-	$c_title = $plugin_name;
+	$c_title = ucfirst($plugin);
 }
 
 if ( !$noTitlePostFix ) {
