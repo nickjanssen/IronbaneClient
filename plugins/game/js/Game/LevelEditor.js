@@ -1595,67 +1595,6 @@ guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRende
 
 
 
-    //        for(var x=chunkPos.x-1;x<=chunkPos.x+1;x++){
-    //            for(var z=chunkPos.z-1;z<=chunkPos.z+1;z++){
-    //
-    //
-    //
-    //
-    //                var chunkPosWorld = CellToWorldCoordinates(x, z, chunkSize);
-    //
-    //                var cellPos = WorldToCellCoordinates(chunkPosWorld.x, chunkPosWorld.z, cellSize);
-    //
-    //                if ( ISDEF(terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z]) ) {
-    //                    var chunk = terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z];
-    //
-    //                    if ( chunk.mesh ) {
-    //                        var meshverts = chunk.mesh.geometry.vertices;
-    //
-    //                        var found = false;
-    //
-    //                        var vheight = 0;
-    //
-    //                        for(var v in meshverts) {
-    //                            if ( roundNumber(meshverts[v].position.x) == (tx) && roundNumber(meshverts[v].position.z) == (tz) ) {
-    //
-    //
-    //
-    //                                if ( relative ) {
-    //                                    meshverts[v].position.y += height;
-    //                                }
-    //                                else {
-    //                                    meshverts[v].position.y = height;
-    //                                }
-    //
-    //                                if ( !found ) {
-    //                                    found = true;
-    //                                    vheight = meshverts[v].position.y;
-    //                                }
-    //
-    //                                chunk.mesh.geometry.__dirtyVertices = true;
-    //                                chunk.ScheduleCompute();
-    //                            }
-    //                        }
-    //
-    //                        if ( found ) {
-    //                            // Alter the terrainHandler as well
-    //                            terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y = vheight;
-    //                        }
-    //
-    //                        if ( doEmit && found ) {
-    ////                                socketHandler.socket.emit('setTileHeight', {
-    ////                                        cx:cellPos.x,
-    ////                                        cz:cellPos.z,
-    ////                                        tx:tx,
-    ////                                        tz:tz,
-    ////                                        height:vheight
-    ////                                });
-    //                        }
-    //                    }
-    //                }
-    //
-    //            }
-    //        }
 
 
     // Make all gameobjects re-init their height

@@ -26,11 +26,11 @@
 
 // How big the server will send us a chunk
 // Must be dividable by 2
-var chunkSize = le("globalEnable") ? 16 : 96 + 16;
+var chunkSize =  le("globalEnable") ? 16 : 96+16;
 //var chunkSize = 16;
 var chunkHalf = chunkSize / 2;
 
-var chunkLoadRange = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkSize + 16;
+var chunkLoadRange = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkSize+16;
 
 // chunkLoadRange = 224;
 
@@ -78,14 +78,14 @@ var TerrainHandler = Class.extend({
     this.currentMusic = "";
   },
   Destroy: function() {
-    for (var c in this.chunks) this.chunks[c].RemoveMesh();
+    for(var c in this.chunks) this.chunks[c].RemoveMesh();
     this.chunks = {};
     this.world = {};
     this.isLoaded = false;
     this.hasChunksLoaded = false;
     this.zone = this.previewZone;
 
-    if (this.skybox) this.skybox.Destroy();
+    if ( this.skybox ) this.skybox.Destroy();
     this.skybox = null;
 
     this.readyToReceiveUnits = false;
@@ -108,31 +108,33 @@ var TerrainHandler = Class.extend({
 
     // particleHandler.RemoveAll();
 
-    if (GetZoneConfig("enableClouds")) {
+    if ( GetZoneConfig("enableClouds") ) {
       particleHandler.Add(ParticleTypeEnum.CLOUD, {});
     }
 
     var zoneMusicPiece = ChooseRandom(GetZoneConfig("music"));
 
-    if (socketHandler.loggedIn) {
-      if (this.currentMusic != zoneMusicPiece) {
-        if (this.currentMusic) {
+    if ( socketHandler.loggedIn ) {
+      if ( this.currentMusic != zoneMusicPiece ) {
+        if ( this.currentMusic ) {
           soundHandler.FadeOut(this.currentMusic, 5.00);
 
           setTimeout(function() {
-            soundHandler.FadeIn(zoneMusicPiece, 5.00);
+            soundHandler.FadeIn(zoneMusicPiece, 5.00) ;
           }, 5000);
-        } else {
-          soundHandler.FadeIn(zoneMusicPiece, 5.00);
+        }
+        else {
+          soundHandler.FadeIn(zoneMusicPiece, 5.00) ;
         }
 
         this.currentMusic = zoneMusicPiece;
       }
-    } else {
-      if (this.currentMusic) {
-        soundHandler.FadeOut(this.currentMusic, 5.00);
-        this.currentMusic = "";
-      }
+    }
+    else {
+        if ( this.currentMusic ) {
+          soundHandler.FadeOut(this.currentMusic, 5.00);
+          this.currentMusic = "";
+        }
     }
 
 
@@ -141,82 +143,32 @@ var TerrainHandler = Class.extend({
 
     // ba('dont make too many ajax calls! if one is already busy, wait a frame before we send the next request. or try something else')
 
-    terrainHandler.world[cellX][cellZ].isLoading = true;
+    terrainHandler.world[cellX][cellZ]['isLoading'] = true;
 
-    terrainHandler.world[cellX][cellZ].hasTerrainLoaded = false;
-    terrainHandler.world[cellX][cellZ].hasObjectsLoaded = false;
+    terrainHandler.world[cellX][cellZ]['hasObjectsLoaded'] = false;
 
-    var objectsFile = 'plugins/game/data/' + this.zone + '/' + cellX + '/' + cellZ + '/objects.json';
-    $.ajax(objectsFile, {
-      method: 'GET',
-      dataType: 'json',
-      cache: false
-    }).success(function(data) {
+    var objectsFile = 'plugins/game/data/'+this.zone+'/'+cellX+'/'+cellZ+'/objects.json?'+(new Date()).getTime();
+    $.getJSON(objectsFile, function(data) {
       terrainHandler.world[cellX][cellZ]['objects'] = data;
-      console.log('Loaded: ' + objectsFile);
+      console.log('Loaded: '+objectsFile);
       terrainHandler.world[cellX][cellZ]['hasObjectsLoaded'] = true;
     }).error(function() {
       terrainHandler.world[cellX][cellZ]['hasObjectsLoaded'] = true;
-      console.warn('Not found: ' + objectsFile);
+      console.warn('Not found: '+objectsFile);
     });
 
-    if (showEditor) {
-      var graphFile = 'plugins/game/data/' + this.zone + '/' + cellX + '/' + cellZ + '/graph.json';
-      $.ajax(graphFile, {
-        method: 'GET',
-        dataType: 'json',
-        cache: false
-      }).success(function(data) {
+
+
+    if ( showEditor ) {
+
+      var graphFile = 'plugins/game/data/'+this.zone+'/'+cellX+'/'+cellZ+'/graph.json?'+(new Date()).getTime();
+      $.getJSON(graphFile, function(data) {
         terrainHandler.world[cellX][cellZ]['graph'] = data;
-        console.log('Loaded graph: ' + graphFile);
+        console.log('Loaded graph: '+graphFile);
       }).error(function() {
-        console.warn('No graph found: ' + graphFile);
+        console.warn('No graph found: '+graphFile);
       });
 
-    }
-
-    if (GetZoneConfig("noTerrain")) {
-      terrainHandler.world[cellX][cellZ]['hasTerrainLoaded'] = true;
-    } else {
-      var terrainFile = 'plugins/game/data/' + this.zone + '/' + cellX + '/' + cellZ + '/terrain.dat';
-      $.ajax(terrainFile, {
-        method: 'GET',
-        cache: false
-      }).success(function(data) {
-
-        //alert(data);
-        //return;
-
-        var terrain = data;
-
-        // this.world[zone][cellX][cellZ]['terrain'] = JSON.parse(fs.readFileSync(path+'/terrain.json'));
-
-        var coordsToWorld = CellToWorldCoordinates(cellX, cellZ, cellSize);
-        var offset_x = coordsToWorld['x'];
-        var offset_z = coordsToWorld['z'];
-        var ar = terrain.split(';');
-
-        var count = 0;
-
-        terrainHandler.world[cellX][cellZ]['terrain'] = {};
-        for (var x = offset_x - cellSizeHalf; x < offset_x + cellSizeHalf; x += worldScale) {
-          if (!ISDEF(terrainHandler.world[cellX][cellZ]['terrain'][x])) terrainHandler.world[cellX][cellZ]['terrain'][x] = {};
-          for (var z = offset_z - cellSizeHalf; z < offset_z + cellSizeHalf; z += worldScale) {
-            var info = ar[count].split(',');
-            terrainHandler.world[cellX][cellZ]['terrain'][x][z] = {
-              t: parseInt(info[0]),
-              y: parseFloat(info[1])
-            };
-            count++;
-          }
-        }
-
-        console.log('Loaded: ' + terrainFile);
-        terrainHandler.world[cellX][cellZ]['hasTerrainLoaded'] = true;
-      }).error(function() {
-        terrainHandler.world[cellX][cellZ]['hasTerrainLoaded'] = true;
-        console.warn('Not found: ' + terrainFile);
-      });
     }
 
 
@@ -227,19 +179,19 @@ var TerrainHandler = Class.extend({
 
 
     // Build the water mesh
-    if (this.waterMesh) {
+    if ( this.waterMesh ) {
       ironbane.scene.remove(this.waterMesh);
     }
 
-    if (!GetZoneConfig('enableWater')) return;
+    if ( !GetZoneConfig('enableWater') ) return;
 
-    var texture = textureHandler.GetTexture('plugins/game/images/tiles/' + GetZoneConfig('waterTexture') + '.png', true);
+    var texture = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('waterTexture')+'.png', true);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.x = 1000;
     texture.repeat.y = 1000;
 
-    var texture2 = textureHandler.GetTexture('plugins/game/images/tiles/' + GetZoneConfig('waterTextureGlow') + '.png', true);
+    var texture2 = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('waterTextureGlow')+'.png', true);
     texture2.wrapS = THREE.RepeatWrapping;
     texture2.wrapT = THREE.RepeatWrapping;
     texture2.repeat.x = 1000;
@@ -247,50 +199,50 @@ var TerrainHandler = Class.extend({
 
     var planeGeo = new THREE.PlaneGeometry(100, 100, 30, 30);
     var uniforms = {
-      uvScale: {
+      uvScale : {
         type: 'v2',
-        value: new THREE.Vector2(0.02, 0.02)
+        value: new THREE.Vector2(0.02,0.02)
       },
-      size: {
+      size : {
         type: 'v2',
-        value: new THREE.Vector2(1, 1)
+        value: new THREE.Vector2(1,1)
       },
-      hue: {
+      hue : {
         type: 'v3',
-        value: new THREE.Vector3(1, 1, 1)
+        value: new THREE.Vector3(1,1,1)
       },
-      vSun: {
+      vSun : {
         type: 'v3',
-        value: new THREE.Vector3(0, 0, 0)
+        value: new THREE.Vector3(0,0,0)
       },
-      texture1: {
+      texture1 : {
         type: 't',
         value: texture
       },
-      texture2: {
+      texture2 : {
         type: 't',
         value: texture2
       },
-      scrollSpeed: {
+      scrollSpeed : {
         type: 'v2',
-        value: new THREE.Vector2(1, 1)
+        value: new THREE.Vector2(1,1)
       },
-      time: {
+      time : {
         type: 'f',
         value: 0.0
       }
-      //            camPos : {
-      //                type: 'v3',
-      //                value: ironbane.camera.position
-      //            }
+    //            camPos : {
+    //                type: 'v3',
+    //                value: ironbane.camera.position
+    //            }
     };
 
     var shaderMaterial = new THREE.ShaderMaterial({
-      uniforms: uniforms,
-      vertexShader: $('#vertex_water').text(),
-      fragmentShader: $('#fragment_water').text(),
+      uniforms : uniforms,
+      vertexShader : $('#vertex_water').text(),
+      fragmentShader : $('#fragment_water').text(),
       transparent: true
-      //alphaTest: 0.5
+    //alphaTest: 0.5
     });
 
     //    this.waterMesh = new THREE.Mesh(planeGeo,
@@ -307,7 +259,7 @@ var TerrainHandler = Class.extend({
 
     this.waterMesh = new THREE.Mesh(planeGeo, shaderMaterial);
 
-    this.waterMesh.rotation.x = -Math.PI / 2;
+    this.waterMesh.rotation.x = -Math.PI/2;
 
     this.waterMesh.position.y = GetZoneConfig('waterLevel');
     //this.mesh.p
@@ -342,24 +294,24 @@ var TerrainHandler = Class.extend({
 
     var loadRange = cellLoadRange;
 
-    if (!socketHandler.inGame) loadRange = 1;
+    if ( !socketHandler.inGame ) loadRange = 1;
 
 
     // Do a pre-check, and if some are already loading we just return silently
-    if (ironbane.showingGame) {
-      for (var x = cp.x - loadRange; x <= cp.x + loadRange; x += 1) {
-        if (typeof this.world[x] == 'undefined') this.world[x] = {};
+    if ( ironbane.showingGame ) {
+      for(var x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
+        if ( typeof this.world[x] == 'undefined' ) this.world[x] = {};
 
-        for (var z = cp.z - loadRange; z <= cp.z + loadRange; z += 1) {
-          if (typeof this.world[x][z] == 'undefined') this.world[x][z] = {
+        for(var z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
+          if ( typeof this.world[x][z] == 'undefined' ) this.world[x][z] = {
             isLoading: false
           };
 
-          if (typeof this.world[x][z].terrain == 'undefined') {
+          if ( typeof this.world[x][z].terrain == 'undefined' ) {
 
-            if (this.world[x][z]['isLoading']) {
+            if ( this.world[x][z]['isLoading'] ) {
 
-              if (!this.world[x][z]['hasTerrainLoaded'] || !this.world[x][z]['hasObjectsLoaded']) {
+              if ( !this.world[x][z]['hasObjectsLoaded'] ) {
                 return;
               }
 
@@ -372,22 +324,23 @@ var TerrainHandler = Class.extend({
 
 
 
-    for (var x = cp.x - loadRange; x <= cp.x + loadRange; x += 1) {
-      if (typeof this.world[x] == 'undefined') this.world[x] = {};
 
-      for (var z = cp.z - loadRange; z <= cp.z + loadRange; z += 1) {
+    for(var x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
+      if ( typeof this.world[x] == 'undefined' ) this.world[x] = {};
 
-        if (typeof this.world[x][z] == 'undefined') this.world[x][z] = {
+      for(var z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
+
+        if ( typeof this.world[x][z] == 'undefined' ) this.world[x][z] = {
           isLoading: false
         };
 
-        if (typeof this.world[x][z].terrain == 'undefined') {
+        if ( typeof this.world[x][z].terrain == 'undefined' ) {
 
-          if (!this.world[x][z]['isLoading']) {
+          if ( !this.world[x][z]['isLoading'] ) {
             this.LoadCell(x, z);
           }
 
-          if (!this.world[x][z]['hasTerrainLoaded'] || !this.world[x][z]['hasObjectsLoaded']) {
+          if ( !this.world[x][z]['hasObjectsLoaded'] ) {
             isLoaded = false;
           }
 
@@ -397,34 +350,34 @@ var TerrainHandler = Class.extend({
       }
     }
 
-    if (!this.isLoaded && isLoaded) {
+    if ( !this.isLoaded && isLoaded ) {
       this.isLoaded = true;
 
       this.Awake();
     }
 
-    //        debug.SetWatch('this.isLoaded', this.isLoaded);
-    //        debug.SetWatch('this.hasChunksLoaded', this.hasChunksLoaded);
+  //        debug.SetWatch('this.isLoaded', this.isLoaded);
+  //        debug.SetWatch('this.hasChunksLoaded', this.hasChunksLoaded);
 
-    //        for(var x=0;x<=0;x+=cellSize){
-    //            if ( typeof this.world[x] == 'undefined' ) this.world[x] = {};
-    //
-    //            for(var z=0;z<=0;z+=cellSize){
-    //
-    //                if ( typeof this.world[x][z] == 'undefined' ) this.world[x][z] = { isLoading: false };
-    //
-    //                if ( typeof this.world[x][z]['terrain'] == 'undefined' ) {
-    //
-    //                    if ( !this.world[x][z]['isLoading'] ) {
-    //
-    //                        this.LoadCell(x, z);
-    //
-    //                    }
-    //                }
-    //
-    //
-    //            }
-    //        }
+  //        for(var x=0;x<=0;x+=cellSize){
+  //            if ( typeof this.world[x] == 'undefined' ) this.world[x] = {};
+  //
+  //            for(var z=0;z<=0;z+=cellSize){
+  //
+  //                if ( typeof this.world[x][z] == 'undefined' ) this.world[x][z] = { isLoading: false };
+  //
+  //                if ( typeof this.world[x][z]['terrain'] == 'undefined' ) {
+  //
+  //                    if ( !this.world[x][z]['isLoading'] ) {
+  //
+  //                        this.LoadCell(x, z);
+  //
+  //                    }
+  //                }
+  //
+  //
+  //            }
+  //        }
 
   },
   GetChunkByAccurateWorldPosition: function(x, z) {
@@ -438,9 +391,9 @@ var TerrainHandler = Class.extend({
     var cp = WorldToCellCoordinates(x, z, chunkSize);
     cp = CellToWorldCoordinates(cp.x, cp.z, chunkSize);
 
-    var id = cp.x + '-' + cp.z;
+    var id = cp.x+'-'+cp.z;
 
-    if (typeof this.chunks[id] == 'undefined') {
+    if ( typeof this.chunks[id] == 'undefined'  ) {
       this.chunks[id] = new Chunk(new THREE.Vector3(cp.x, 0, cp.z));
     }
 
@@ -451,16 +404,16 @@ var TerrainHandler = Class.extend({
     //        x = Math.floor(x / chunkSize);
     //        z = Math.floor(z / chunkSize);
 
-    var id = x + '-' + z;
+    var id = x+'-'+z;
 
-    if (typeof this.chunks[id] == 'undefined') {
+    if ( typeof this.chunks[id] == 'undefined' ) {
       this.chunks[id] = new Chunk(new THREE.Vector3(x, 0, z));
     }
 
     return this.GetChunk(id);
   },
   GetChunk: function(id) {
-    if (typeof this.chunks[id] == 'undefined') {
+    if ( typeof this.chunks[id] == 'undefined' ) {
       this.chunks[id] = new Chunk();
     }
     return this.chunks[id];
@@ -471,18 +424,20 @@ var TerrainHandler = Class.extend({
   GetReferenceLocationNoClone: function() {
     var p;
 
-    if (ironbane.player) {
+    if ( ironbane.player ) {
       p = ironbane.player.position;
-    } else if (socketHandler.spawnLocation) {
+    }
+    else if ( socketHandler.spawnLocation ) {
       p = socketHandler.spawnLocation;
-    } else {
+    }
+    else {
       p = previewLocation;
     }
 
     return p;
   },
   RayTest: function(ray, testMeshesNearPosition, noTerrain, noMeshes,
-  extraRange, reverseRaySortOrder) {
+    extraRange, reverseRaySortOrder) {
 
     noTerrain = noTerrain || false;
     noMeshes = noMeshes || false;
@@ -491,21 +446,21 @@ var TerrainHandler = Class.extend({
 
     reverseRaySortOrder = reverseRaySortOrder || false;
 
-    if (le("mpIgnoreOtherModels")) {
+    if ( le("mpIgnoreOtherModels") ) {
       noMeshes = true;
     }
 
     var meshList = []
 
-    if (!noMeshes) {
-      for (var u = 0; u < ironbane.unitList.length; u++) {
+    if ( !noMeshes ) {
+      for(var u=0;u<ironbane.unitList.length;u++) {
         var unit = ironbane.unitList[u];
 
-        if (!(unit instanceof Mesh)) continue;
+        if ( !(unit instanceof Mesh) ) continue;
 
-        if (!unit.boundingSphere) continue;
+        if ( !unit.boundingSphere ) continue;
 
-        if (unit.InRangeOfPosition(testMeshesNearPosition, unit.boundingSphere.radius + extraRange)) {
+        if ( unit.InRangeOfPosition(testMeshesNearPosition, unit.boundingSphere.radius+extraRange) ) {
           meshList.push(unit);
         }
       }
@@ -513,59 +468,57 @@ var TerrainHandler = Class.extend({
 
     var intersects = [];
 
-    if (!noMeshes) {
-      for (var m = 0; m < meshList.length; m++) {
-        var subIntersects = ray.intersectOctreeObjects(meshList[m].octree.objects)
+    if ( !noMeshes ) {
+      for(var m=0;m<meshList.length;m++) {
+        var subIntersects = ray.intersectOctreeObjects( meshList[m].octree.objects )
 
         intersects = intersects.concat(subIntersects);
       }
     }
 
 
-    if (!noTerrain) {
-      if (!le("globalEnable")) {
-        for (var c in terrainHandler.chunks) {
-          var chunk = terrainHandler.chunks[c];
+    // if ( !noTerrain ) {
+    //   if ( !le("globalEnable") ) {
+    //     for(var c in terrainHandler.chunks){
+    //       var chunk = terrainHandler.chunks[c];
 
-          if (!ironbane.player.InRangeOfPosition(chunk.position, chunkSize)) continue;
+    //       if ( !ironbane.player.InRangeOfPosition(chunk.position, chunkSize) ) continue;
 
-          var octreeResults = chunk.octree.search(ray.origin, ray.far, true, ray.direction)
-          var subIntersects = ray.intersectOctreeObjects(octreeResults);
+    //       var octreeResults = chunk.octree.search( ray.origin, ray.far, true, ray.direction )
+    //       var subIntersects = ray.intersectOctreeObjects( octreeResults );
 
-          intersects = intersects.concat(subIntersects);
-        }
-      } else {
-        for (var c in terrainHandler.chunks) {
-          var chunk = terrainHandler.chunks[c];
+    //       intersects = intersects.concat(subIntersects);
+    //     }
+    //   }
+    //   else {
+    //     for(var c in terrainHandler.chunks){
+    //       var chunk = terrainHandler.chunks[c];
 
 
-          //var octreeResults = chunk.octree.search( ray.origin, ray.far, true, ray.direction )
-          var subIntersects = ray.intersectObject(chunk.mesh);
+    //       //var octreeResults = chunk.octree.search( ray.origin, ray.far, true, ray.direction )
+    //       var subIntersects = ray.intersectObject( chunk.mesh );
 
-          intersects = intersects.concat(subIntersects);
-        }
-      }
+    //       intersects = intersects.concat(subIntersects);
+    //     }
+    //   }
+    // }
+
+
+    if ( reverseRaySortOrder ) {
+      intersects.sort(function(a,b) { return b.distance - a.distance } );
     }
-
-
-    if (reverseRaySortOrder) {
-      intersects.sort(function(a, b) {
-        return b.distance - a.distance
-      });
-    } else {
-      intersects.sort(function(a, b) {
-        return a.distance - b.distance
-      });
+    else {
+      intersects.sort(function(a,b) { return a.distance - b.distance } );
     }
 
 
     return intersects;
   },
   Tick: function(dTime) {
-    if (this.waterMesh) {
-      this.waterMesh.material.uniforms.time.value = (new Date().getTime() - ironbane.startTime) / 1000.0;
+    if ( this.waterMesh ) {
+      this.waterMesh.material.uniforms.time.value = (new Date().getTime() - ironbane.startTime)/1000.0;
 
-      if (this.skybox) this.waterMesh.material.uniforms.vSun.value.copy(this.skybox.sunVector);
+      if ( this.skybox ) this.waterMesh.material.uniforms.vSun.value.copy(this.skybox.sunVector);
       //this.waterMesh.material.uniforms.camPos.value = terrainHandler.GetReferenceLocationNoClone();
       //this.waterMesh.material.uniforms.meshPos.value = this.waterMesh.position();
       //debug.SetWatch('this.waterMesh.material.uniforms.time.value', this.waterMesh.material.uniforms.time.value);
@@ -574,25 +527,25 @@ var TerrainHandler = Class.extend({
       var cellPos = WorldToCellCoordinates(p.x, p.z, 10);
       var worldPos = CellToWorldCoordinates(cellPos.x, cellPos.z, 10);
 
-      var id = worldPos.x + '-' + worldPos.z;
+      var id = worldPos.x+'-'+worldPos.z;
 
       //            if ( this.currentChunk != id ) {
       //                this.currentChunk = id;
       terrainHandler.waterMesh.position.x = worldPos.x;
       terrainHandler.waterMesh.position.z = worldPos.z;
-      //            }
+    //            }
 
     }
 
-    if (!this.readyToReceiveUnits && this.isLoaded && this.hasChunksLoaded && socketHandler.loggedIn) {
+    if ( !this.readyToReceiveUnits && this.isLoaded && this.hasChunksLoaded && socketHandler.loggedIn ) {
 
       // soundHandler.Play("enterGame");
 
       this.readyToReceiveUnits = true;
 
       // Bring it on!
-      socketHandler.socket.emit('readyToReceiveUnits', true, function(reply) {
-        if (ISDEF(reply.errmsg)) {
+      socketHandler.socket.emit('readyToReceiveUnits', true, function (reply) {
+        if ( ISDEF(reply.errmsg) ) {
           hudHandler.MessageAlert(reply.errmsg);
           return;
         }
@@ -608,27 +561,27 @@ var TerrainHandler = Class.extend({
 
     this.chunkCheckTimer += dTime;
 
-    if (this.skybox) this.skybox.Tick(dTime);
+    if ( this.skybox ) this.skybox.Tick(dTime);
 
 
     // If one of us is still loading, don't tick further!
     var goFurther = true;
     _.each(this.chunks, function(chunk) {
-      if (chunk.tilesToAdd > 0 || chunk.modelsToBuild > 0) {
+      if ( chunk.tilesToAdd > 0 || chunk.modelsToBuild > 0 ) {
         goFurther = false;
       }
     });
 
-    if (!goFurther && ironbane.showingGame) return;
+    if ( !goFurther && ironbane.showingGame ) return;
 
 
-    if (!levelEditor.ready || (levelEditor.ready && !levelEditor.editorGUI.globalEnable)) {
-      if (this.chunkCheckTimer < 0.2) return;
+    if ( !levelEditor.ready || (levelEditor.ready && !levelEditor.editorGUI.globalEnable) ) {
+      if ( this.chunkCheckTimer < 0.2 ) return;
     }
 
     this.chunkCheckTimer = 0.0;
 
-    for (var c in this.chunks) {
+    for(var c in this.chunks) {
       this.chunks[c].Tick(dTime);
     }
 
@@ -641,10 +594,10 @@ var TerrainHandler = Class.extend({
 
 
     // Remove chunks
-    for (var c in this.chunks) {
-      if (this.chunks[c].removeNextTick) {
+    for(var c in this.chunks) {
+      if ( this.chunks[c].removeNextTick ) {
         delete this.chunks[c];
-        //newChunkListArray.push(this.chunks[x]);
+      //newChunkListArray.push(this.chunks[x]);
       }
     }
 
@@ -657,15 +610,15 @@ var TerrainHandler = Class.extend({
     // First see if we can unload chunks
 
 
-    var chunkUnloadRange = chunkLoadRange + 1;
-    for (var c in this.chunks) {
+    var chunkUnloadRange = chunkLoadRange+1;
+    for(var c in this.chunks) {
       var chunk = this.chunks[c];
-      if (!chunk.removeNextTick) {
+      if ( !chunk.removeNextTick ) {
         var pground = p.clone();
         pground.y = 0;
         var distance = pground.subSelf(chunk.position).lengthSq();
 
-        if (distance > chunkUnloadRange * chunkUnloadRange) {
+        if ( distance > chunkUnloadRange*chunkUnloadRange ) {
           chunk.RemoveMesh();
 
           chunk.removeNextTick = true;
@@ -686,23 +639,23 @@ var TerrainHandler = Class.extend({
 
     var bogusLoadRange = 10;
 
-    if (GetZoneConfig("noTerrain")) bogusLoadRange = 0;
+    if ( GetZoneConfig("noTerrain") ) bogusLoadRange = 0;
 
-    for (var x = pcp.x - bogusLoadRange; x <= pcp.x + bogusLoadRange; x += 1) {
-      for (var z = pcp.z - bogusLoadRange; z <= pcp.z + bogusLoadRange; z += 1) {
+    for(var x=pcp.x-bogusLoadRange;x<=pcp.x+bogusLoadRange;x+=1){
+      for(var z=pcp.z-bogusLoadRange;z<=pcp.z+bogusLoadRange;z+=1){
 
 
         var pcp2 = CellToWorldCoordinates(x, z, chunkSize);
 
 
-        var chunk = this.chunks[pcp2.x + '-' + pcp2.z];
+        var chunk = this.chunks[pcp2.x+'-'+pcp2.z];
 
         var distance = p.clone().subSelf(new THREE.Vector3(pcp2.x, 0, pcp2.z)).lengthSq();
 
-        if (distance > chunkLoadRange * chunkLoadRange) continue;
+        if ( distance > chunkLoadRange*chunkLoadRange ) continue;
 
 
-        if (!ISDEF(this.chunks[pcp2.x + '-' + pcp2.z]) || (this.chunks[pcp2.x + '-' + pcp2.z].hasTilesLoaded && !this.chunks[pcp2.x + '-' + pcp2.z].isAddedToWorld)) {
+        if ( !ISDEF(this.chunks[pcp2.x+'-'+pcp2.z]) || (this.chunks[pcp2.x+'-'+pcp2.z].hasTilesLoaded && !this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld)) {
           this.hasChunksLoaded = false;
         }
         //                else if ( this.chunks[pcp2.x+'-'+pcp2.z].hasTilesLoaded && !this.chunks[pcp2.x+'-'+pcp2.z].isAddedToWorld ) {
@@ -713,11 +666,15 @@ var TerrainHandler = Class.extend({
 
 
 
+
+
+
         // if ( !levelEditor.ready || (levelEditor.ready && levelEditor.editorGUI.globalEnable) ) {
 
 
 
-        terrainHandler.GetChunkByWorldPosition(pcp2.x, pcp2.z);
+
+          terrainHandler.GetChunkByWorldPosition(pcp2.x, pcp2.z);
         // }
         // else {
         //   setTimeout((function(x, z) {
@@ -728,6 +685,7 @@ var TerrainHandler = Class.extend({
 
         //   loadcount++;
         // }
+
 
 
 

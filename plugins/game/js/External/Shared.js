@@ -72,7 +72,6 @@ zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   'cloudDensity':0.80,
   'cloudLevel': 15,
   'skyboxShader': "world",
-  "noTerrain": false,
   "music": ["ib2"]
 };
 
@@ -85,23 +84,8 @@ zoneTypeConfig[ZoneTypeEnum.DUNGEON] = {
   'cloudDensity':0.0,
   'cloudLevel': 0,
   'skyboxShader': "dungeon",
-  "noTerrain": false,
   "music": ["ib2"]
 };
-
-zoneTypeConfig[ZoneTypeEnum.MAINMENU] = {
-  'enableWater': false,
-  'waterLevel': -1,
-  'waterTexture': 1650,
-  'waterTextureGlow': 1651,
-  'enableClouds': false,
-  'cloudDensity':0.0,
-  'cloudLevel': 0,
-  'skyboxShader': "dungeon",
-  "noTerrain": true,
-  "music": []
-};
-
 
 var LootBagTypeEnum = {
   COMMON: 0,
