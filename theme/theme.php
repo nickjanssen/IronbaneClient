@@ -98,7 +98,7 @@ if ($use_simple_rendering) {
         <div id="topleftpillar"></div>
 
         <div id="topmiddle">
-            <div><a href="index.php"><img src=theme/images/logo_isolated.png></a></div>
+            <div><a href="index.php"><img src=theme/images/logo_'.($plugin=="forum"?"forum":"isolated").'.png></a></div>
         </div>
 
         <div id="toprightpillar"></div>
