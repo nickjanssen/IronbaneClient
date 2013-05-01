@@ -70,6 +70,7 @@ function bcs_error($string) {
 
 
 include("config/functions.php");
+include("config/init.php");
 
 $time = time();
 
@@ -163,7 +164,7 @@ if ( $userdata['banned'] ) {
 //    die("<h1>Fixing some stuff please check back later!</h1>");
 //}
 
-include("config/init.php");
+
 
 if ( isset($plugin) ) {
 	$temp_plugin = parseToDB($plugin);
