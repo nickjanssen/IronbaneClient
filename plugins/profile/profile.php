@@ -74,6 +74,7 @@ $result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __F
 $memberdata = mysql_fetch_array($result);
 
 
+$c_title = $memberdata["name"];
 
 
     $totalbattles = $memberdata[pvp_wins] + $memberdata[pvp_losses] + $memberdata[pvp_escapes];
