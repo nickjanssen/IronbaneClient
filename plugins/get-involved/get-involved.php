@@ -71,6 +71,30 @@ switch ($interest) {
         <p>.OBJ, and then it is converted by a script to a .JS file.</p>
 
         <p>First, to get an .OBJ file, you have to use your modeling package\'s export function and then select the OBJ file format. if you\'re working with Blender, <a href="https://github.com/ironbane/IronbaneClient/blob/master/plugins/game/images/meshes/convert_obj_three.py#L86" target="_new">here are some good settings</a> to ensure your file gets exported correctly:</p>
+		
+		<h2>Which models can I make?</h2>
+		
+		<p>We need a lot of things in-game that decorate the world more. Outside of these models, you can also design entire levels if you like using your favorite modeling package. These can be dungeons, castles, entire landscapes, and more.</p>
+		
+		<p>At the moment we need things like statues, scenery objects (rocks, trees, bushes), transports (trains, zeppelins, boats), models for chests/signs and a tutorial level.</p>
+		
+		<p>Of course, if have other suggestions just give it a go and post it in the forum!</p>
+		
+		<h2>What about the textures?</h2>
+		
+		<p>You are free to completely UV map them, but usually that is not nessecary as we just use a tiled worldtile on them. To make your model use several textures, you should split up model in sub-meshes (e.g. Detach some parts, such as a door, ceiling, floor) and then assign those parts a different texture. In </p>
+		
+		<img src="plugins/get-involved/images/examplemodel.png">
+		
+		<p>In this example, we have just put a simple box unwrap modifier and adjust the size of the UV box to 2,2,2 so it looks consistent among all models in-game.</p>
+		
+		<p>The textures used for this model are just simple 16x16 world tiles:</p>
+		
+		
+		<img src="plugins/game/images/tiles/1.png">
+		<img src="plugins/game/images/tiles/35.png">
+		<img src="plugins/game/images/tiles/9.png">		
+		
 
         <h2>How do I test out my own models locally?</h2>
 
@@ -88,7 +112,9 @@ switch ($interest) {
 
         <h2>My model doesn\'t show up!</h2>
 
-        <p>Something went wrong, apparently. Fortunately, you have a lot of example material right next to you. Check the meshes folder for other .OBJ files and open them in your modeling package to see what their scale is like, and try to adjust yours.
+        <p>Something went wrong, apparently. Fortunately, you have a lot of example material right next to you. Check the meshes folder for other .OBJ files and open them in your modeling package to see what their scale is like, and try to adjust yours.</p>
+		
+		<p>The good news is that you only need to run the converter again, and you can just refresh the page. How cool is that!</p>
 
         <h2>General advice</h2>
 
