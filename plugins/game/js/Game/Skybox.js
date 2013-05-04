@@ -78,7 +78,7 @@ var Skybox = PhysicsObject.extend({
 
     this.skyboxMesh = new THREE.Mesh(geometry, material);
 
-    this.skyboxOctree = new THREE.Octree();
+    this.terrainOctree = new THREE.Octree();
 
     ironbane.scene.add(this.skyboxMesh);
 
@@ -144,6 +144,16 @@ var Skybox = PhysicsObject.extend({
           skybox.BuildMesh( geometry )
         }, null);
       })(this);
+
+      model = skyboxPath + terrainHandler.zone+"_collision.js";
+      //this.texture = textureHandler.GetTexture( texture, true);
+
+      var jsonLoader = new THREE.JSONLoader();
+      (function(skybox){
+        jsonLoader.load( model, function( geometry ) {
+          skybox.BuildCollisionMesh( geometry )
+        }, null);
+      })(this);
     }
     // meshHandler.GetMesh(this.param, this);
 
@@ -180,16 +190,36 @@ var Skybox = PhysicsObject.extend({
         // var tile = "tiles/"+(geometry.jsonMaterials[i]["mapDiffuse"].split("."))[0];
 
 
+    // this.terrainGeo.mergeVertices();
+    THREE.GeometryUtils.triangulateQuads(geometry);
 
-
-    // }
-
-
+    geometry.computeCentroids();
+    geometry.computeFaceNormals();
 
     this.terrainMesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
+    this.terrainMesh.receiveShadow = true;
+
     ironbane.scene.add(this.terrainMesh);
 
-    this.skyboxOctree.add( this.terrainMesh, true );
+    //this.terrainOctree.add( this.terrainMesh, true );
+
+  },
+  BuildCollisionMesh: function(geometry) {
+
+    _.each(geometry.jsonMaterials, function(mat) {
+      geometry.materials.push(new THREE.MeshBasicMaterial());
+    });
+
+    THREE.GeometryUtils.triangulateQuads(geometry);
+
+    geometry.computeCentroids();
+    geometry.computeFaceNormals();
+
+    this.terrainCollisionMesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
+
+    // ironbane.scene.add(this.terrainCollisionMesh);
+
+    this.terrainOctree.add( this.terrainCollisionMesh, true );
 
   },
   Destroy: function() {

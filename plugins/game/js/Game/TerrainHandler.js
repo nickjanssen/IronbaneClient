@@ -478,7 +478,7 @@ var TerrainHandler = Class.extend({
 
 
     if ( !noTerrain ) {
-      var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.skyboxOctree.objects );
+      var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
       intersects = intersects.concat(subIntersects);
     }
 
