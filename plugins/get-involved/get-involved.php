@@ -71,30 +71,37 @@ switch ($interest) {
         <p>.OBJ, and then it is converted by a script to a .JS file.</p>
 
         <p>First, to get an .OBJ file, you have to use your modeling package\'s export function and then select the OBJ file format. if you\'re working with Blender, <a href="https://github.com/ironbane/IronbaneClient/blob/master/plugins/game/images/meshes/convert_obj_three.py#L86" target="_new">here are some good settings</a> to ensure your file gets exported correctly:</p>
-		
+
 		<h2>Which models can I make?</h2>
-		
+
 		<p>We need a lot of things in-game that decorate the world more. Outside of these models, you can also design entire levels if you like using your favorite modeling package. These can be dungeons, castles, entire landscapes, and more.</p>
-		
+
 		<p>At the moment we need things like statues, scenery objects (rocks, trees, bushes), transports (trains, zeppelins, boats), models for chests/signs and a tutorial level.</p>
-		
+
 		<p>Of course, if have other suggestions just give it a go and post it in the forum!</p>
-		
+
 		<h2>What about the textures?</h2>
-		
-		<p>You are free to completely UV map them, but usually that is not nessecary as we just use a tiled worldtile on them. To make your model use several textures, you should split up model in sub-meshes (e.g. Detach some parts, such as a door, ceiling, floor) and then assign those parts a different texture. In </p>
-		
+
+		<p>You are free to completely UV map them, but usually that is not nessecary as we just use a tiled worldtile on them. To make your model use several textures, you should split up model in sub-meshes (e.g. Detach some parts, such as a door, ceiling, floor) and then assign those parts a different texture.</p>
+
 		<img src="plugins/get-involved/images/examplemodel.png">
-		
+
 		<p>In this example, we have just put a simple box unwrap modifier and adjust the size of the UV box to 2,2,2 so it looks consistent among all models in-game.</p>
-		
+
 		<p>The textures used for this model are just simple 16x16 world tiles:</p>
-		
-		
+
+
 		<img src="plugins/game/images/tiles/1.png">
 		<img src="plugins/game/images/tiles/35.png">
-		<img src="plugins/game/images/tiles/9.png">		
-		
+		<img src="plugins/game/images/tiles/9.png">
+
+        <h2>How does the game know which textures my model uses?</h2>
+
+        <p>This is a bit complicated. <b>Ideally</b> (only tested in 3ds max) you can drag and drop textures on your model and the game will detect them, if you used world tiles. If you didn\'t use world tiles and you manually unwrapped and made a texture for it, this texture must be found in <b>plugins/game/images/textures</b> with the same filename used as the one you dragged on the model.</p>
+
+        <p><b>Should the game not detect your textures and it shows up gray/invisible</b> there\'s still something you can do.</p>
+
+        <p>In the Editor, you can overwrite the textures used for each sub mesh manually. Texture 1 will be used for the first sub-mesh found in your mesh, texture 2 for the second, and so on. I don\'t know how to find which sub-meshes are counted first, so you need to just test out the models yourself for now. Simple save the new settings and reload the game to see your changes.</p>
 
         <h2>How do I test out my own models locally?</h2>
 
@@ -113,7 +120,7 @@ switch ($interest) {
         <h2>My model doesn\'t show up!</h2>
 
         <p>Something went wrong, apparently. Fortunately, you have a lot of example material right next to you. Check the meshes folder for other .OBJ files and open them in your modeling package to see what their scale is like, and try to adjust yours.</p>
-		
+
 		<p>The good news is that you only need to run the converter again, and you can just refresh the page. How cool is that!</p>
 
         <h2>General advice</h2>
