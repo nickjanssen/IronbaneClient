@@ -145,9 +145,80 @@ switch ($interest) {
 
         <h2>What can I draw?</h2>
 
-        <p>Anything you like! New villains, textures, a better logo, stuff for the website. Do whichever you like best.</p>
+        <p>Anything you like! New NPC\'s, textures, items, a better logo, stuff for the website. Do whichever you like best.</p>
 
-        <h2>How do I contribute?</h2>
+        <h2>What is the image format and resolution which you use?</h2>
+
+        <p>Please use the .PNG format for everything you submit. The game is expecting .PNG and will throw errors if you save it as a JPG or something else.</p>
+
+        <p>We\'d like to maintain a 16-bit style on the game and website at all times. To do so, the resolution of items, textures, and character sprites are limited.</p>
+
+        <p>As a rule of thumb, the usual resolution is 16x16 pixels. These include items, character sprites and world tiles. In some rare occasions you can go over this limit, such as in the case of Bosses who are larger than players (e.g. Ironbane himself). If they were to be 2x the size in-game, their resolution can also be upscaled 2x to 32x32, allowing you to focus on extra detail.</p>
+
+        <p>You should make sure that your contribution doesn\'t look out of place.<p>
+
+        <h2>How do I make new NPC\'s?</h2>
+
+        <p>NPC\'s and players are composed out of <b>different</b> layers.</p>
+
+        <table style="width:300px">
+            <tr>
+                <th>Layer</th>
+                <th>Image</th>
+            </tr>
+            <tr>
+                <td class="row1">Skin</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/skin/1001.png"></td>
+            </tr>
+            <tr>
+                <td class="row1">Eyes</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/eyes/1001.png"></td>
+            </tr>
+            <tr>
+                <td class="row1">Hair</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/hair/1001.png"></td>
+            </tr>
+            <tr>
+                <td class="row1">Body</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/body/1.png"></td>
+            </tr>
+            <tr>
+                <td class="row1">Feet</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/feet/1.png"></td>
+            </tr>
+            <tr>
+                <td class="row1">Head</td>
+                <td class="row1"><img src="plugins/game/images/characters/base/head/1.png"></td>
+            </tr>
+        </table>
+
+        <p>Together, they form a whole character.</p>
+
+        <img src="plugins/get-involved/images/fullchar.png">
+
+        <p>This approach allows everyone to build unique creatures easily, using different parts without making new sprites.</p>
+
+        <p>To start making new creatures, try to split the creature up in the layers discussed as before, it will make your life easier later!</p>
+
+        <p>When you are done, post it in the forums and we\'ll take a look at it!</p>
+
+        <h2>How do I make new items?</h2>
+
+        <p>Items are pretty straight-forward. Just create a new transparent 16x16 image in your graphics program and start building!</p>
+
+        <p>Some examples:</p>
+
+        <img src="plugins/game/images/items/4.png">
+        <img src="plugins/game/images/items/5.png">
+        <img src="plugins/game/images/items/6.png">
+        <img src="plugins/game/images/items/7.png">
+        <img src="plugins/game/images/items/8.png">
+        <img src="plugins/game/images/items/9.png">
+        <img src="plugins/game/images/items/10.png">
+        <img src="plugins/game/images/items/11.png">
+        <img src="plugins/game/images/items/12.png">
+
+        <h2>I\'m done! WHere do I put it?</h2>
 
         <p>You can either post them in the forums for others to look at, or if you are technically skilled you can also make a pull request with the art in place. See the <a href="get-involved.php?i=code" target="_new">Code section</a>.</p>
 
