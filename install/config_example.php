@@ -2,16 +2,16 @@
 
 $mysql_hostname = "localhost";
 $mysql_user = "root";
-$mysql_password = "next";
+$mysql_password = "";
 $mysql_db = "ironbane";
 
 $ironbane_hostname = "localhost";
 $ironbane_port = 8080;
 
-// If you installed the client inside c:/xampp/htdocs/ibclient
-// you would fill in /ibclient/ here
-// Basically everything that comes behind the IP address
-// of your server (usually localhost)
-$ironbane_root_directory = "/ironbane/";
+// The directory where the client resides, right after your server IP.
+// For instance, if you have put your files inside http://localhost/some/dir/ironbane/
+// this value will be /some/dir/ironbane/
+// If you access the client directly, such as http://localhost/ this var will just be /
+$ironbane_root_directory = "/";
 
 ?>
