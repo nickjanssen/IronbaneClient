@@ -15,22 +15,22 @@ Play the game at <http://www.ironbane.com/>.
 ## Getting started
 
 * Clone this repository inside your webserver.
+ 
 ```
-git clone https://github.com/ironbane/IronbaneClient.git
+    git clone https://github.com/ironbane/IronbaneClient.git
 ```
 
-* Open ```config.php``` and edit the variables to match your MySQL server
+* Copy ```config_example.php``` from the ```/install/``` directory to the root directory
 
-* Run this git command from your repository to make sure your changed ```config.php``` won't be accidentally commited:
-```
-  git update-index --assume-unchanged config.php
-```
+* Rename your copied ```config_example.php``` to ```config.php```
+
+* Open ```config.php``` and edit the variables to match your system.
 
 * Make an empty ```cache```directory inside ```plugins/game/images/characters/```
 
 * Open up your MySQL client and make a new database ```ironbane```
 
-* Import ```sql/install.sql``` to database ```ironbane```
+* Import ```install/install.sql``` to database ```ironbane```
 
 * [Install the Ironbane server on the same machine](https://github.com/ironbane/IronbaneServer/)
 
