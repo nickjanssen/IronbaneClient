@@ -1,6 +1,6 @@
-plugins/game/images/characters/cache/*.*
-workshop/
-uploads/
+/plugins/game/images/characters/cache/*.*
+/workshop/
+/uploads/
 config.php
 *.psd
 dbErrors.txt

@@ -17,7 +17,7 @@
 */
 
 
-$plugin = "teamwiki";
+$plugin = "uploads";
 
 
 
