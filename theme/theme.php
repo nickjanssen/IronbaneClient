@@ -119,13 +119,15 @@ if ($use_simple_rendering) {
                 <hr>
     ' : '') . '
       <div align="center">
-        <a href="forum.php">Forum Index</a>
+        <a href="index.php">About</a>
+        | <a href="forum.php">Forum</a>
         | <a href="game.php">Play Ironbane</a>
+        | <a href="game.php">Get Involved</a>
         | <a href="https://github.com/ironbane" target="_new">GitHub</a>
         | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a>
         | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a>
-            | <a href="logout.php">Log Out ('.$userdata[name].')</a>').''.($s_editor?' | <a href="editor.php">Editor</a>
-            | <a href="teamwiki.php?action=viewuploads">Uploads</a>
+            | <a href="logout.php">Log Out</a>').''.($s_editor?' | <a href="editor.php">Editor</a>
+            | <a href="uploads.php?action=viewuploads">Uploads</a>
             | <a href="https://trello.com/ironbane" target="_new">Todo List</a>':'').'
       </div>
 ' . ($s_auth ? '
