@@ -131,7 +131,7 @@ switch ($interest) {
         ';
         break;
     case 'art':
-        $special_message = 'This page needs additional information from an artist.<br>Please make a pull request with more information/help for beginners.';
+        //$special_message = 'This page needs additional information from an artist.<br>Please make a pull request with more information/help for beginners.';
 
         $c_main .= '
 
@@ -153,13 +153,13 @@ switch ($interest) {
 
         <p>We\'d like to maintain a 16-bit style on the game and website at all times. To do so, the resolution of items, textures, and character sprites are limited.</p>
 
-        <p>As a rule of thumb, the usual resolution is 16x16 pixels. These include items, character sprites and world tiles. In some rare occasions you can go over this limit, such as in the case of Bosses who are larger than players (e.g. Ironbane himself). If they were to be 2x the size in-game, their resolution can also be upscaled 2x to 32x32, allowing you to focus on extra detail.</p>
+        <p>As a rule of thumb, the usual resolution is 16x16 pixels. These include items, character sprites and world tiles. In some rare occasions you can go over this limit, such as Boss NPC\'s who are larger than players (e.g. Ironbane himself). If they were to be 2x the size in-game, their resolution can also be upscaled 2x to 32x32, allowing you to focus on extra detail.</p>
 
-        <p>You should make sure that your contribution doesn\'t look out of place.<p>
+        <p>You should make sure that your contribution doesn\'t look out of place when compared to other images that already exist.<p>
 
         <h2>How do I make new NPC\'s?</h2>
 
-        <p>NPC\'s and players are composed out of <b>different</b> layers.</p>
+        <p>NPC\'s and players are composed out of different <b>layers</b>.</p>
 
         <table style="width:300px">
             <tr>
