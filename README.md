@@ -26,8 +26,6 @@ Play the game at <http://www.ironbane.com/>.
 
 * Open ```config.php``` and edit the variables to match your system.
 
-* Make an empty ```cache```directory inside ```plugins/game/images/characters/```
-
 * Open up your MySQL client and make a new database ```ironbane```
 
 * Import ```install/install.sql``` to database ```ironbane```
