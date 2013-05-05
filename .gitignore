@@ -1,4 +1,5 @@
 plugins/game/images/characters/cache/*.*
 workshop/
+config.php
 *.psd
 dbErrors.txt
