@@ -285,6 +285,10 @@ $using_safari = $browser[name] == "Safari" ? "true" : "false";
 $c_head .= '<link rel="stylesheet" href="plugins/game/style.css" type="text/css">
 ';
 
+$ironbane_root_directory = explode("/", $_SERVER['REQUEST_URI']);
+array_pop($ironbane_root_directory);
+$ironbane_root_directory = implode("/", $ironbane_root_directory)."/";
+
 $c_footer .= '
 	<script>
 	var startdata = {
