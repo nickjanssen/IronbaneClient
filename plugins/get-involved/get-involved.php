@@ -277,12 +277,12 @@ switch ($interest) {
             </div>
         </div>
         <div class="ib-gi-section">
-            <div class="ib-gi-section-link"><a href="get-involved.php?i=art">I want to draw!</a></div>
+            <div class="ib-gi-section-link"><a href="get-involved.php?i=art">I want to make art!</a></div>
             <div class="ib-gi-section-image ib-gi-section-image-art">
             </div>
         </div>
 
-        Looking for something else? Give a shout at the forums and let us know what you\'d like to help out with!
+        <p>Looking for something else? Give a shout at the forums and let us know what you\'d like to help out with!</p>
         ';
         break;
 }
