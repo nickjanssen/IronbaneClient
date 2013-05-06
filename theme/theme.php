@@ -122,7 +122,7 @@ if ($use_simple_rendering) {
         <a href="index.php">About</a>
         | <a href="forum.php">Forum</a>
         | <a href="game.php">Play Ironbane</a>
-        | <a href="game.php">Get Involved</a>
+        | <a href="get-involved.php">Get Involved</a>
         | <a href="https://github.com/ironbane" target="_new">GitHub</a>
         | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a>
         | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a>
