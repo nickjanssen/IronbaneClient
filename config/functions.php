@@ -553,7 +553,6 @@ function getListOfLastDayVisitors() {
         $list .= memberLink($row[id]);
 
         if ($y < mysql_num_rows($result) - 1)
-
             $list .= ", ";
 
     }
@@ -561,31 +560,53 @@ function getListOfLastDayVisitors() {
     return empty($list) ? "None" : $list;
 }
 
-
-function getListOfOnlineMembers($criteria="") {
-
+function getArrayOfOnlineMembers($criteria="") {
     global $time, $onlinePeriod;
-
+    $list = array();
     $query = "SELECT id, last_page from bcs_users WHERE last_session > " . ($time - $onlinePeriod) . "";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     for ($y = 0; $y < mysql_num_rows($result); $y++) {
         $row = mysql_fetch_array($result);
 
         if ($criteria != "") {
-
             if (!strpos($row[last_page], $criteria))
                 continue;
         }
+        array_push($list, $row[id]);
+    }
+    return $list;
+}
 
-        $list .= memberLink($row[id]);
-        if ($y < mysql_num_rows($result) - 1)
-            $list .= ", ";
+function getRawListOfOnlineMembers($criteria="") {
+
+    $list = getArrayOfOnlineMembers($criteria);
+
+    $newlist = array();
+
+    foreach ($list as $key) {
+        array_push($newlist,
+            array('id' => $key,
+            'name' => membername($key))
+        );
     }
 
-    return empty($list) ? "None" : $list;
+    return $newlist;
 
 }
 
+function getListOfOnlineMembers($glue, $criteria="") {
+
+    $list = getArrayOfOnlineMembers($criteria);
+
+    $newlist = array();
+
+    foreach ($list as $key) {
+        array_push($newlist, memberlink($key));
+    }
+
+    return empty($list) ? "None" : implode($glue, $newlist);
+
+}
 
 
 function getTotalUserPosts($user) {
@@ -1040,5 +1061,13 @@ function fromRGB($R, $G, $B){
 
 
 }
+
+function writeChatMessage($author, $text, $type) {
+    global $time;
+    $text = parseToDB($text);
+    $query = "INSERT INTO bcs_chat (author, line, type, time) VALUES($author, '$text', $type, $time)";
+    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
+}
+
 
 ?>

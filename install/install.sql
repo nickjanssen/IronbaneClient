@@ -421,3 +421,17 @@ ALTER TABLE `ironbane`.`bcs_users`
  
  
  CREATE TABLE `ironbane`.`ib_config`( `name` VARCHAR(50), `value` VARCHAR(50) ); 
+ 
+ DROP TABLE IF EXISTS `bcs_chat`;
+
+CREATE TABLE `bcs_chat` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `author` int(10) NOT NULL DEFAULT '0',
+  `line` text NOT NULL,
+  `type` tinyint(1) NOT NULL DEFAULT '0',
+  `time` int(10) NOT NULL DEFAULT '0',
+  `private_to` varchar(50) NOT NULL,
+  `data` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

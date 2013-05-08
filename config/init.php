@@ -22,7 +22,7 @@ $no_site_css = false;
 $using_chromeframe = stristr($_SERVER['HTTP_USER_AGENT'], 'chromeframe');
 
 $use_jquery = true;
-$use_jscrollpane = false;
+$use_jscrollpane = true;
 $use_nicedit = false;
 
 $bcs_died = false;
@@ -56,6 +56,15 @@ $eyesIdMaleEnd = 1009;
 
 $eyesIdFemaleStart = 1010;
 $eyesIdFemaleEnd = 1019;
+
+
+class ChatTypes
+{
+    const Chat = 0;
+    const Announcement = 1;
+    // etc.
+}
+
 
 
 ?>

@@ -1223,7 +1223,7 @@ function refresh_username(selected_username)
 
   <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-	  <td align="left" valign="bottom" colspan="2"><span class="maintitle">' . $boardtitle . '</span><br /><span class="gensmall"><b>Users browsing this forum: ' . getListOfOnlineMembers("action=board&board=7") . '</b></span></td>
+	  <td align="left" valign="bottom" colspan="2"><span class="maintitle">' . $boardtitle . '</span><br /><span class="gensmall"><b>Users browsing this forum: ' . getListOfOnlineMembers(",", "action=board&board=".$board) . '</b></span></td>
 	  <td align="right" valign="bottom" nowrap="nowrap"></td>
 	</tr>
 	<tr>
