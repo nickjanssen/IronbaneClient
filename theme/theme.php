@@ -41,9 +41,7 @@ if ( $s_editor ) {
 $c_head .= '<script type="text/javascript" src="plugins/game/shared.js"></script>
 ';
 
-// Chatbox
-$c_head .= '<script type="text/javascript" src="config/chatbox.js"></script>
-';
+
 
 $c_jquery .= '
 
@@ -70,6 +68,10 @@ if ($use_niftyplayer) {
 
 
 if (!$use_simple_rendering) {
+
+    // Chatbox
+    $c_head .= '<script type="text/javascript" src="config/chatbox.js"></script>
+    ';
 
    $nposts = getRowCount("forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC");
 
