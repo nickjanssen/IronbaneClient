@@ -820,6 +820,7 @@ margin: 3px;
     float:left;
     outline: 1px solid black;
     font-size: 10px;
+    overflow: hidden;
 }
 
 .ib-chatbox {
