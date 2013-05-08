@@ -38,7 +38,11 @@ if ( $s_editor ) {
 // Build page
 //
 
-$c_head .= '<script type="text/javascript" language="javascript" src="plugins/game/shared.js"></script>
+$c_head .= '<script type="text/javascript" src="plugins/game/shared.js"></script>
+';
+
+// Chatbox
+$c_head .= '<script type="text/javascript" src="config/chatbox.js"></script>
 ';
 
 $c_jquery .= '
@@ -65,28 +69,7 @@ if ($use_niftyplayer) {
 
 
 
-if ($use_simple_rendering) {
-    $c_header .= '
-
-    ';
-
-    $c_footer .= '
-
-    ';
-
-} else {
-
-
-//$gameserver_online = true;
-//$url = 'http://www.ironbane.com:8080/';
-//if ( !@get_headers($url, 1) ) $gameserver_online = false;
-//
-//
-//
-//            <div style="float:right;width:165px">
-//                <div class="genbig" style="position:absolute;top:50px;">Server <div style="display:inline;color:'.($gameserver_online?'#9FF781':'#FF0000').'">'.($gameserver_online?'Online':'Offline').'</div></div>
-//                <div id="playbuttoncontainer"><a href="game.php"><img id="playbutton" src="theme/images/buttons/play.png"></a></div>
-//            </div>
+if (!$use_simple_rendering) {
 
    $nposts = getRowCount("forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC");
 
@@ -131,19 +114,28 @@ if ($use_simple_rendering) {
             | <a href="https://trello.com/ironbane" target="_new">Todo List</a>':'').'
       </div>
 ' . ($s_auth ? '
-<hr>
-                Hey, <b>'.  memberLink($userdata[id]).'!</b> You last visited '.timeAgo($userdata[previous_session]).' ago.
-                    '.($nposts>0?'There '.($nposts==1?'is':'are').' <a href="forum.php?action=board&amp;board=rt"><b>'.$nposts.'</b> new/updated topic'.SorNot($nposts).'</a> since your last visit':'No new posts since your last visit').'. Currently online: '.getListOfOnlineMembers().'<br>Players that visited in the last 24 hours: '.  getListOfLastDayVisitors().'
+<div class="ib-chatbox-wrapper">
+    <div class="ib-welcome" id="chatBoxWelcome">
+  Hey, <b>'.  memberLink($userdata[id]).'!</b><br>
+  You last visited '.timeAgo($userdata[previous_session]).' ago.<br>
+    '.($nposts>0?'There '.($nposts==1?'is':'are').' <a href="forum.php?action=board&amp;board=rt"><b>'.$nposts.'</b> new/updated topic'.SorNot($nposts).'</a>':'There\'ve been no new posts').'.
+   <br>Also seen today: '.  getListOfLastDayVisitors().'
+    </div>
+    <div class="ib-chatbox">
+        <div class="ib-chatbox-content" id="chatBoxContent">
 
-' : '') . '       <hr>
+        </div>
+        <div class="ib-chat-input">
+            <input id="chatInput">
+        </div>
+    </div>
+    <div class="ib-chatters" id="chatBoxChatters">
+
+    </div>
+</div>
+
+' : '<hr>') . '
 ';
-//    <div id="bottomcontainer">
-//        <div id="bottomleftpillar"></div>
-//
-//        <div id="bottommiddle"></div>
-//
-//        <div id="bottomrightpillar"></div>
-//    </div>
     $c_footer .= '
              </div>
         </div>
@@ -181,21 +173,13 @@ if ($use_simple_rendering) {
         };
 ';
 
-
-
  $c_jquery .= '
-
         FixBorder();
         for(var i=1;i<5;i++){
             setTimeout(function(){FixBorder();}, i*1000);
         }
-
-
     ';
 }
-
-
-
 
 $c_header .= '
 

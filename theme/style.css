@@ -804,3 +804,52 @@ margin: 3px;
 .ib-gi-section-image-art {
     background-image: url(../plugins/get-involved/images/art.png);
 }
+
+.ib-chatbox-wrapper {
+    width:780px;
+    height:80px;
+    margin-top:5px;
+    margin-bottom:5px;
+    border: 1px solid black;
+    background-color: #083420;
+}
+
+.ib-welcome {
+    width: 200px;
+    height:100%;
+    float:left;
+    outline: 1px solid black;
+    font-size: 10px;
+}
+
+.ib-chatbox {
+    width: 480px;
+    height:100%;
+    float:left;
+}
+.ib-chatters {
+    width:94px;
+    height:80px;
+    float:left;
+    outline: 1px solid black;
+    background-color: rgb(32, 71, 51);
+    font-size: 10px;
+    padding:3px;
+}
+
+.ib-chatbox-content {
+    width:472px;
+    height:60px;
+    padding-left:5px;
+    font-size: 10px;
+}
+
+.ib-chat-input input {
+    width:475px;
+    background-color: rgb(56, 112, 84);
+    border-color: rgb(18, 173, 136);
+}
+
+*:focus {
+    outline: 1px dashed #56E4A5;
+}
