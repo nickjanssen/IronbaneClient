@@ -14,23 +14,18 @@
     You should have received a copy of the GNU General Public License
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 
 var SoundHandler = Class.extend({
   Init: function() {
 
     // Start SoundManager2
     soundManager.setup({
-      url: 'http://'+ironbane_hostname+ironbane_root_directory+'plugins/game/flash/',
+      url: ironbane_root_directory + 'plugins/game/flash/',
       flashVersion: 9,
       useFlashBlock: false,
-      preferFlash : false,
+      preferFlash: false,
       onready: function() {
-      // Ready to use; soundManager.createSound() etc. can now be called.
+        // Ready to use; soundManager.createSound() etc. can now be called.
         soundHandler.Preload();
       }
     });
@@ -103,35 +98,36 @@ var SoundHandler = Class.extend({
       // "stepWater1": "step/water1.wav",
       // "stepWater2": "step/water2.wav",
 
-      "jump" : "fighter/jump.wav",
+      "jump": "fighter/jump.wav",
 
-//      "race": "battle/02_-_rage_racer.mp3",
-//      "splash": "battle/splash.ogg",
+      //      "race": "battle/02_-_rage_racer.mp3",
+      //      "splash": "battle/splash.ogg",
 
 
       "placeholder": "placeholder"
     };
-    for(var s in this.soundList) {
+    for (var s in this.soundList) {
       if (typeof this.soundList[s] !== 'object') {
-        this.soundList[s] = {file:this.soundList[s]};
+        this.soundList[s] = {
+          file: this.soundList[s]
+        };
       }
 
-      if ( !ISDEF(this.soundList[s]['volume'])) {
+      if (!ISDEF(this.soundList[s]['volume'])) {
         this.soundList[s]['volume'] = 0.3;
       }
     }
 
-    for(var s in this.soundList) {
-      (function(s){
-      soundHandler.sounds[s] = soundManager.createSound({
-        id: s,
-        url: 'http://'+ironbane_hostname+ironbane_root_directory+'plugins/game/sound/' +
-          soundHandler.soundList[s].file,
-        autoLoad:true,
-        onload: function(success) {
-          if ( success ) soundHandler.OnLoad(s);
-        }
-      });
+    for (var s in this.soundList) {
+      (function(s) {
+        soundHandler.sounds[s] = soundManager.createSound({
+          id: s,
+          url: ironbane_root_directory + 'plugins/game/sound/' + soundHandler.soundList[s].file,
+          autoLoad: true,
+          onload: function(success) {
+            if (success) {soundHandler.OnLoad(s);}
+          }
+        });
       })(s);
     }
 
@@ -141,12 +137,16 @@ var SoundHandler = Class.extend({
 
     this.PlayOnce(sound);
 
-    var tween = new TWEEN.Tween( { volume: 100 } )
-      .to( { volume: 0 }, time )
-      // .easing( TWEEN.Easing.Elastic.InOut )
-      .onUpdate( function () {
-        soundHandler.SetVolume(sound, this.volume);
-      } )
+    var tween = new TWEEN.Tween({
+      volume: 100
+    })
+      .to({
+      volume: 0
+    }, time)
+    // .easing( TWEEN.Easing.Elastic.InOut )
+    .onUpdate(function() {
+      soundHandler.SetVolume(sound, this.volume);
+    })
       .start();
   },
   SetVolume: function(sound, volume) {
@@ -159,41 +159,45 @@ var SoundHandler = Class.extend({
 
     this.PlayOnce(sound);
 
-    var tween = new TWEEN.Tween( { volume: 0 } )
-      .to( { volume: 100 }, time )
-      // .easing( TWEEN.Easing.Elastic.InOut )
-      .onUpdate( function () {
-        soundHandler.SetVolume(sound, this.volume);
-      } )
+    var tween = new TWEEN.Tween({
+      volume: 0
+    })
+      .to({
+      volume: 100
+    }, time)
+    // .easing( TWEEN.Easing.Elastic.InOut )
+    .onUpdate(function() {
+      soundHandler.SetVolume(sound, this.volume);
+    })
       .start();
   },
   OnLoad: function(sound) {
-    if ( sound === "theme" ) {
+    if (sound === "theme") {
       this.loadedMainMenuMusic = true;
     }
   },
   PlayOnce: function(sound, position) {
 
-    if ( !hudHandler.allowSound ) return;
+    if (!hudHandler.allowSound) return;
 
-    if ( this.sounds[sound].playState !== 0 ) return;
+    if (this.sounds[sound].playState !== 0) return;
 
     this.Play(sound, position);
 
   },
   Play: function(sound, position) {
 
-    if ( !hudHandler.allowSound ) return;
+    if (!hudHandler.allowSound) return;
 
 
-    if ( !ISDEF(this.sounds[sound]) ) {
-      ba('Sound \''+sound+'\' does not exist!');
+    if (!ISDEF(this.sounds[sound])) {
+      ba('Sound \'' + sound + '\' does not exist!');
       return;
     }
 
     var distance = 0;
 
-    if ( position ) {
+    if (position) {
       distance = terrainHandler.GetReferenceLocation().subSelf(position).length();
       distance = Math.pow(distance, 1);
     }
@@ -201,9 +205,9 @@ var SoundHandler = Class.extend({
     //bm("distance: "+distance);
 
     var volume = distance / 20;
-    volume = 1-volume.clamp(0,1);
+    volume = 1 - volume.clamp(0, 1);
     volume = volume * 100;
-    volume = volume.clamp(0,100);
+    volume = volume.clamp(0, 100);
     //bm("volume : "+volume );
 
 
