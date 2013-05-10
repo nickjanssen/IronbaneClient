@@ -1,8 +1,9 @@
 /*
-SQLyog Community v9.51 
+SQLyog Community v9.51
 MySQL - 5.1.41 : Database - ironbane
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -66,7 +67,7 @@ CREATE TABLE `bcs_users` (
   `online` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `activationkey` varchar(12) NOT NULL,
   `pending_editor` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `characterUsed` int(10) unsigned NOT NULL,
+  `characterUsed` int(10) unsigned NOT NULL DEFAULT '0',
   `banned` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=413 DEFAULT CHARSET=latin1;
@@ -414,14 +415,14 @@ insert  into `ib_zones`(`id`,`name`,`type`) values (1,'World',1),(2,'Developer\'
 
 
 
-ALTER TABLE `ironbane`.`bcs_users`   
+ALTER TABLE `ironbane`.`bcs_users`
   ADD COLUMN `rep` INT(10) DEFAULT 1  NULL AFTER `banned`;
 
- /*[12:08:57][112 ms]*/ ALTER TABLE `ironbane`.`ib_meshes` CHANGE `filename` `filename` VARCHAR(50) CHARSET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '.Obj file format'; 
- 
- 
- CREATE TABLE `ironbane`.`ib_config`( `name` VARCHAR(50), `value` VARCHAR(50) ); 
- 
+ /*[12:08:57][112 ms]*/ ALTER TABLE `ironbane`.`ib_meshes` CHANGE `filename` `filename` VARCHAR(50) CHARSET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '.Obj file format';
+
+
+ CREATE TABLE `ironbane`.`ib_config`( `name` VARCHAR(50), `value` VARCHAR(50) );
+
  DROP TABLE IF EXISTS `bcs_chat`;
 
 CREATE TABLE `bcs_chat` (
