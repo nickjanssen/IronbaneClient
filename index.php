@@ -75,7 +75,7 @@ include("config/init.php");
 $time = time();
 
 // Check for cookies
-if ( $_COOKIE['bcs_username'] && $_COOKIE['bcs_password'] && $_SESSION['logged_in'] == FALSE ) {
+if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (!empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == FALSE) ) {
 	$c_user = htmlspecialchars(strip_tags($_COOKIE['bcs_username']));
 	$c_pass = htmlspecialchars(strip_tags($_COOKIE['bcs_password']));
 
@@ -98,7 +98,7 @@ if ( $_COOKIE['bcs_username'] && $_COOKIE['bcs_password'] && $_SESSION['logged_i
 	}
 }
 
-if ( $_SESSION['logged_in'] == TRUE ) {
+if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == TRUE ) {
 
 	$s_auth = TRUE;
 
@@ -143,8 +143,7 @@ if ( $_SESSION['logged_in'] == TRUE ) {
     $userdata["last_session"] = $time;
     $userdata["last_page"] = $_SERVER[REQUEST_URI];
 
-}
-else {
+} else {
 	// Get information about guest
 	$query = "SELECT * FROM bcs_users WHERE id = '0'";
 	$result = bcs_query($query) or bcs_error("Error retrieving guest: ".mysql_error());
@@ -156,7 +155,7 @@ else {
 	$s_auth = FALSE;
 }
 
-if ( $userdata['banned'] ) {
+if ( isset($userdata['banned']) && $userdata['banned'] ) {
   bcs_die("You have been banned from this website.", "none");
 }
 
