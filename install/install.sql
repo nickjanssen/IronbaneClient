@@ -201,7 +201,7 @@ CREATE TABLE `ib_characters` (
   `skin` smallint(4) unsigned NOT NULL DEFAULT '1',
   `eyes` smallint(4) unsigned NOT NULL DEFAULT '1',
   `hair` smallint(4) unsigned NOT NULL DEFAULT '1',
-  `heartpieces` text NOT NULL,
+  `heartpieces` text,
   `creationtime` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
