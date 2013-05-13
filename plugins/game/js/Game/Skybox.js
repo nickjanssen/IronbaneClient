@@ -174,6 +174,8 @@ var Skybox = PhysicsObject.extend({
       // }
 
       _.each(geometry.jsonMaterials, function(mat) {
+        if ( !mat["mapDiffuse"] ) return;
+
         var tile = "tiles/"+(mat["mapDiffuse"].split("."))[0];
         textures.push("images/"+tile);
       });
