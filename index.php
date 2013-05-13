@@ -74,8 +74,11 @@ include("config/init.php");
 
 $time = time();
 
+print_r($_SESSION);
+
 // Check for cookies
 if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (!empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == FALSE) ) {
+    die("hello");
 	$c_user = htmlspecialchars(strip_tags($_COOKIE['bcs_username']));
 	$c_pass = htmlspecialchars(strip_tags($_COOKIE['bcs_password']));
 
