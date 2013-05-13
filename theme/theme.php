@@ -25,13 +25,8 @@ if (!defined('BCS')) {
     die("ERROR");
 }
 
-if (!isset($_SESSION[showedpmwarning]) && $newmessages > 0) {
-    //$special_message = 'You have new private messages. Go to your <a href="index.php?plugin=forum&action=board&board=pt">Private Topics</a>';
-}
-
-if ( $s_editor ) {
-  //$special_message = 'Check out the experimental <a href="todos.php">todo list</a>!';
-    // $special_message = 'We are moving over to use Trello as our <a href="https://trello.com/ironbane">new todo list</a>!';
+if ( $time < 1368477668+(86400*7) ) {
+    $special_message = 'The login screen as well as automatic login is now working again! I\'m sorry for the inconvience.';
 }
 
 //
