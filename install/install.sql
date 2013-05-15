@@ -436,3 +436,7 @@ CREATE TABLE `bcs_chat` (
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `ironbane`.`ib_zones`   
+  ADD COLUMN `tiles` VARCHAR(255) DEFAULT '1,1,1,1,1' NOT NULL AFTER `type`;

@@ -318,23 +318,22 @@ var SocketHandler = Class.extend({
         });
 
 
-        this.socket.on('foundHeartPiece', function (data) {
-            //if ( !socketHandler.loggedIn ) return;
+        // this.socket.on('foundHeartPiece', function (data) {
+        //     //if ( !socketHandler.loggedIn ) return;
 
-            var unit = FindUnit(data['id']);
+        //     var unit = FindUnit(data['id']);
 
-            if ( unit == ironbane.player ) {
+        //     if ( unit == ironbane.player ) {
 
-              var foundPiece = data['piece'];
+        //       var foundPiece = data['piece'];
 
-              var heartPiecesTotal = ironbane.player.heartPieces.length;
+        //       var heartPiecesTotal = ironbane.player.heartPieces.length;
+        //       var level = Math.floor(heartPiecesTotal / 5);
 
-              var level = Math.floor(heartPiecesTotal / 5);
-
-            }
+        //     }
 
 
-        });
+        // });
 
         this.socket.on('toggle', function (data) {
             //if ( !socketHandler.loggedIn ) return;

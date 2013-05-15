@@ -114,7 +114,7 @@ var Player = Fighter.extend({
 
     this.localRotationY = rotation.y;
 
-    this.heartPieces = socketHandler.playerData.heartPieces.split(",");
+    //this.heartPieces = socketHandler.playerData.heartPieces.split(",");
 
   },
   CheckForItemsBeforeMakingImage: function() {

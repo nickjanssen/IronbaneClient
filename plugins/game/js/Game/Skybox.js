@@ -142,7 +142,7 @@ var Skybox = PhysicsObject.extend({
       (function(skybox){
         jsonLoader.load( model, function( geometry ) {
           skybox.BuildMesh( geometry )
-        }, null);
+        }, null, 100);
       })(this);
 
       model = skyboxPath + terrainHandler.zone+"_collision.js";
@@ -152,7 +152,7 @@ var Skybox = PhysicsObject.extend({
       (function(skybox){
         jsonLoader.load( model, function( geometry ) {
           skybox.BuildCollisionMesh( geometry )
-        }, null);
+        }, null, 100);
       })(this);
     }
     // meshHandler.GetMesh(this.param, this);
@@ -173,11 +173,10 @@ var Skybox = PhysicsObject.extend({
       //   textures.push("images/tiles/"+i);
       // }
 
-      _.each(geometry.jsonMaterials, function(mat) {
-        if ( !mat["mapDiffuse"] ) return;
+      var tilesUsed = zones[terrainHandler.zone].tiles.split(",");
 
-        var tile = "tiles/"+(mat["mapDiffuse"].split("."))[0];
-        textures.push("images/"+tile);
+      _.each(tilesUsed, function(tile) {
+        textures.push("images/tiles/"+tile);
       });
 
       // Check if there's a map inside the material, and if it contains a sourceFile
@@ -208,7 +207,10 @@ var Skybox = PhysicsObject.extend({
   },
   BuildCollisionMesh: function(geometry) {
 
-    _.each(geometry.jsonMaterials, function(mat) {
+    var tilesUsed = zones[terrainHandler.zone].tiles.split(",");
+
+    _.each(tilesUsed, function(mat) {
+      // Bogus materials
       geometry.materials.push(new THREE.MeshBasicMaterial());
     });
 
