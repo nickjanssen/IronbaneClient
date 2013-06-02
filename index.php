@@ -17,7 +17,11 @@ blabla<?php
 */
 
 
-
+foreach (array('_GET', '_POST') as $_SG) {
+    foreach ($$_SG as $_SGK => $_SGV) {
+        $$_SGK = $_SGV;
+    }
+}
 
 //if ( $_SERVER["HTTP_HOST"] == "localhost" ) {
 //    setcookie("XDEBUG_SESSION", "netbeans-xdebug", time()+3600);

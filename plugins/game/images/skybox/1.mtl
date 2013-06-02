@@ -1,35 +1,22 @@
-# Blender MTL File: 'None'
-# Material Count: 3
-newmtl material_0_12.png
-Ns 0.000000
+# Blender MTL File: 'world.blend'
+# Material Count: 2
+newmtl _11.png
+Ns 0
 Ka 0.000000 0.000000 0.000000
-Kd 0.511373 0.511373 0.511373
-Ks 1.000000 1.000000 1.000000
-Ni 1.000000
-d 1.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
 illum 2
-map_Kd C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\tiles\12.png
+map_Kd ..\tiles\11.png
 
 
-newmtl material_1_26.png
-Ns 0.000000
+newmtl _99.png
+Ns 0
 Ka 0.000000 0.000000 0.000000
-Kd 0.511373 0.511373 0.511373
-Ks 1.000000 1.000000 1.000000
-Ni 1.000000
-d 1.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
 illum 2
-map_Kd C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\tiles\26.png
-
-
-newmtl material_2_19.png
-Ns 0.000000
-Ka 0.000000 0.000000 0.000000
-Kd 0.511373 0.511373 0.511373
-Ks 1.000000 1.000000 1.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd C:\Users\Nick\Documents\xampp\htdocs\Ironbane\plugins\game\images\tiles\19.png
+map_Kd ..\tiles\99.png
 
 

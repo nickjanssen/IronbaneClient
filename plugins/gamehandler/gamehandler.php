@@ -440,6 +440,7 @@ else if ( $action == "makechar" ) {
 	}
 	else {
 		// Check if we already have a cookie assigned
+		
 		if ( !isset($_COOKIE['guestCharacterId']) ) {
 			do {
 				$name = getName(4, 8, "", "");
@@ -476,9 +477,9 @@ else if ( $action == "makechar" ) {
 
 			//CreateFullCharacterImage($id, rand(0, 2), rand(0, 2));
 		}
-                else {
-                    die('{ "id": '.$guestCharacterId.', "equipment": ""}');
-                }
+		else {
+			die('{ "id": '.$_COOKIE['guestCharacterId'].', "equipment": ""}');
+		}
 	}
 
 

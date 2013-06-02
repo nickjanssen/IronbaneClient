@@ -175,9 +175,19 @@ var Skybox = PhysicsObject.extend({
 
       var tilesUsed = zones[terrainHandler.zone].tiles.split(",");
 
-      _.each(tilesUsed, function(tile) {
-        textures.push("images/tiles/"+tile);
-      });
+      // _.each(tilesUsed, function(tile) {
+      //   textures.push("images/tiles/"+tile);
+      // });
+
+      // Only push materials that are actually inside the materials
+      for (var i=0; i<geometry.jsonMaterials.length; i++) {
+
+        // Check if there's a map inside the material, and if it contains a sourceFile
+        if ( !_.isUndefined(geometry.jsonMaterials[i]["mapDiffuse"])) {
+          // Extract the tile!
+          textures.push("images/tiles/"+(geometry.jsonMaterials[i]["mapDiffuse"].split("."))[0]);
+        }
+      }
 
       // Check if there's a map inside the material, and if it contains a sourceFile
       _.each(textures, function(texture) {
@@ -187,6 +197,9 @@ var Skybox = PhysicsObject.extend({
           useLighting:true
         }));
       });
+
+
+
         // Extract the tile!
         // var tile = "tiles/"+(geometry.jsonMaterials[i]["mapDiffuse"].split("."))[0];
 
