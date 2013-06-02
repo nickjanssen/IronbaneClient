@@ -141,19 +141,20 @@ var Skybox = PhysicsObject.extend({
       var jsonLoader = new THREE.JSONLoader();
       (function(skybox){
         jsonLoader.load( model, function( geometry ) {
-          skybox.BuildMesh( geometry )
-        }, null, 100);
+          skybox.BuildMesh( geometry );
+          skybox.BuildCollisionMesh( geometry );
+        }, null, 300);
       })(this);
 
-      model = skyboxPath + terrainHandler.zone+"_collision.js";
-      //this.texture = textureHandler.GetTexture( texture, true);
+      // model = skyboxPath + terrainHandler.zone+"_collision.js";
+      // //this.texture = textureHandler.GetTexture( texture, true);
 
-      var jsonLoader = new THREE.JSONLoader();
-      (function(skybox){
-        jsonLoader.load( model, function( geometry ) {
-          skybox.BuildCollisionMesh( geometry )
-        }, null, 100);
-      })(this);
+      // var jsonLoader = new THREE.JSONLoader();
+      // (function(skybox){
+      //   jsonLoader.load( model, function( geometry ) {
+      //     skybox.BuildCollisionMesh( geometry )
+      //   }, null, 500);
+      // })(this);
     }
     // meshHandler.GetMesh(this.param, this);
 
@@ -220,9 +221,7 @@ var Skybox = PhysicsObject.extend({
   },
   BuildCollisionMesh: function(geometry) {
 
-    var tilesUsed = zones[terrainHandler.zone].tiles.split(",");
-
-    _.each(tilesUsed, function(mat) {
+    _.each(geometry.jsonMaterials, function(mat) {
       // Bogus materials
       geometry.materials.push(new THREE.MeshBasicMaterial());
     });

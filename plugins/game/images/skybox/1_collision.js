@@ -3,7 +3,7 @@
     "metadata" :
     {
         "formatVersion" : 3.1,
-        "sourceFile"    : "1.obj",
+        "sourceFile"    : "1_collision.obj",
         "generatedBy"   : "OBJConverter",
         "vertices"      : 1674,
         "faces"         : 2532,
