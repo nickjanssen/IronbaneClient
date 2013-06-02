@@ -159,7 +159,7 @@ var TerrainHandler = Class.extend({
 
 
 
-    if ( showEditor ) {
+    if ( isEditor ) {
 
       var graphFile = 'plugins/game/data/'+this.zone+'/'+cellX+'/'+cellZ+'/graph.json?'+(new Date()).getTime();
       $.getJSON(graphFile, function(data) {
@@ -307,7 +307,7 @@ var TerrainHandler = Class.extend({
             isLoading: false
           };
 
-          if ( typeof this.world[x][z].terrain == 'undefined' ) {
+          if ( typeof this.world[x][z].objects == 'undefined' ) {
 
             if ( this.world[x][z]['isLoading'] ) {
 
@@ -334,7 +334,7 @@ var TerrainHandler = Class.extend({
           isLoading: false
         };
 
-        if ( typeof this.world[x][z].terrain == 'undefined' ) {
+        if ( typeof this.world[x][z].objects == 'undefined' ) {
 
           if ( !this.world[x][z]['isLoading'] ) {
             this.LoadCell(x, z);

@@ -1,4 +1,4 @@
-blabla<?php
+<?php
 /*
     This file is part of Ironbane MMO.
 

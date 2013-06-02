@@ -6,7 +6,7 @@
 
 var cellSize = 96+16;
 var cellSizeHalf = cellSize/2;
-var cellLoadRange = 2;
+var cellLoadRange = 1;
 
 
 var unitAcceleration = 20;

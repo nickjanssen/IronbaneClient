@@ -42,7 +42,7 @@ var Player = Fighter.extend({
 
 
 
-    this.originalThirdPersonReference = new THREE.Vector3(0, 3, -4);
+    this.originalThirdPersonReference = new THREE.Vector3(0, 2.5, -4);
 
     ironbane.camera.position.copy(position.clone().addSelf(new THREE.Vector3(0, 1, 0)));
 

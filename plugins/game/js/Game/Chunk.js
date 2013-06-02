@@ -450,7 +450,7 @@ var Chunk = Class.extend({
 
             var graph = terrainHandler.world[cellPos.x][cellPos.z]['graph'];
 
-            if ( graph['nodes'] !== undefined ) {
+            if ( graph && graph['nodes'] !== undefined ) {
                 for(var n=0;n<graph['nodes'].length;n++) {
                     var node = graph['nodes'][n];
 
