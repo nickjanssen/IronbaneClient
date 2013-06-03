@@ -308,7 +308,9 @@ var Player = Fighter.extend({
 
       var ray = new THREE.Ray(this.position.clone().addSelf(new THREE.Vector3(0, 0.5, 0)), preTarget.clone().subSelf(this.position.clone()).normalize());
 
-      var intersects = terrainHandler.RayTest(ray, ironbane.camera.position);
+      var intersects = terrainHandler.RayTest(ray, {
+        testMeshesNearPosition:ironbane.camera.position
+      });
 
       if ( intersects.length > 0 ) {
 
@@ -840,10 +842,12 @@ var Player = Fighter.extend({
         var ray = new THREE.Ray( ourpos, dir.clone().normalize(), 0, distance );
 
 
-        var intersects = terrainHandler.RayTest(ray,
-          unit.position, false, false, distance);
+        var intersects = terrainHandler.RayTest(ray, {
+          testMeshesNearPosition: unit.position,
+          extraRange: distance
+        });
 
-        if (intersects.length == 0) {
+        if (intersects.length === 0) {
           // In line of sight!
           npcLOS.push(unit.id);
         }
@@ -1265,7 +1269,10 @@ var Player = Fighter.extend({
 
     var ray = new THREE.Ray( ironbane.camera.position, vector.subSelf( ironbane.camera.position ).normalize() );
 
-    var intersects = terrainHandler.RayTest(ray, this.position, false, false, 20);
+    var intersects = terrainHandler.RayTest(ray, {
+      testMeshesNearPosition:this.position,
+      extraRange: 20
+    });
 
     lastMouseToWorldData = currentMouseToWorldData;
 

@@ -607,7 +607,10 @@ var Unit = PhysicsObject.extend({
           var ray = new THREE.Ray( this.position.clone().addSelf(new THREE.Vector3(0, 0.5, 0)), tVel);
 
 
-          var intersects = terrainHandler.RayTest(ray, this.position, le("chClimb"));
+          var intersects = terrainHandler.RayTest(ray, {
+            testMeshesNearPosition:this.position,
+            noTerrain: le("chClimb")
+          });
 
 
           if ( intersects.length > 0 && intersects[0].distance < 0.5) {
@@ -670,8 +673,10 @@ var Unit = PhysicsObject.extend({
             var struckUnit = null;
 
 
-            var intersects = terrainHandler.RayTest(ray, this.position,
-              null, null, null, true);
+            var intersects = terrainHandler.RayTest(ray, {
+              testMeshesNearPosition:this.position,
+              reverseRaySortOrder:true
+            });
 
 
 
@@ -778,7 +783,9 @@ var Unit = PhysicsObject.extend({
             ray = new THREE.Ray( this.position, new THREE.Vector3(0, 1, 0));
 
 
-            var intersects = terrainHandler.RayTest(ray, this.position);
+            var intersects = terrainHandler.RayTest(ray, {
+              testMeshesNearPosition:this.position
+            });
 
 
             if ( (intersects.length > 0 ) ) {
@@ -801,7 +808,9 @@ var Unit = PhysicsObject.extend({
         if ( (this instanceof Player) || (this instanceof Projectile) ) {
           ray = new THREE.Ray(this.position.clone().addSelf(new THREE.Vector3(0, 0.8, 0)), new THREE.Vector3(0, 1, 0));
 
-          var intersects = terrainHandler.RayTest(ray, this.position);
+          var intersects = terrainHandler.RayTest(ray, {
+            testMeshesNearPosition:this.position
+          });
 
           if ( intersects.length > 0 && intersects[0].distance < 0.5) {
 

@@ -436,15 +436,27 @@ var TerrainHandler = Class.extend({
 
     return p;
   },
-  RayTest: function(ray, testMeshesNearPosition, noTerrain, noMeshes,
-    extraRange, reverseRaySortOrder) {
+  // RayTest: function(ray, testMeshesNearPosition, noTerrain, noMeshes,
+  //   extraRange, reverseRaySortOrder) {
+  RayTest: function(ray, options) {
 
-    noTerrain = noTerrain || false;
-    noMeshes = noMeshes || false;
+    options = options || {};
 
-    extraRange = extraRange || 1.0;
+    var noTerrain = _.isUndefined(options.noTerrain) ?
+                      false : options.noTerrain;
+    var noMeshes = _.isUndefined(options.noMeshes) ?
+                      false : options.noMeshes;
+    var extraRange = _.isUndefined(options.extraRange) ?
+                      1.0 : options.extraRange;
+    var reverseRaySortOrder = _.isUndefined(options.reverseRaySortOrder) ?
+                      false : options.reverseRaySortOrder;
 
-    reverseRaySortOrder = reverseRaySortOrder || false;
+    var unitReference = _.isUndefined(options.unitReference) ?
+                      null : options.unitReference;
+
+    var unitRayName = options.unitRayName;
+
+    var testMeshesNearPosition = options.testMeshesNearPosition;
 
     if ( le("mpIgnoreOtherModels") ) {
       noMeshes = true;
