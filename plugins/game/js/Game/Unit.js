@@ -609,7 +609,9 @@ var Unit = PhysicsObject.extend({
 
           var intersects = terrainHandler.RayTest(ray, {
             testMeshesNearPosition:this.position,
-            noTerrain: le("chClimb")
+            noTerrain: le("chClimb"),
+            unitReference: this,
+            unitRayName: "colside"
           });
 
 
@@ -675,7 +677,9 @@ var Unit = PhysicsObject.extend({
 
             var intersects = terrainHandler.RayTest(ray, {
               testMeshesNearPosition:this.position,
-              reverseRaySortOrder:true
+              reverseRaySortOrder:true,
+              unitReference: this,
+              unitRayName: "colground"
             });
 
 
@@ -784,7 +788,9 @@ var Unit = PhysicsObject.extend({
 
 
             var intersects = terrainHandler.RayTest(ray, {
-              testMeshesNearPosition:this.position
+              testMeshesNearPosition:this.position,
+              unitReference: this,
+              unitRayName: "colunderneath"
             });
 
 
@@ -809,7 +815,9 @@ var Unit = PhysicsObject.extend({
           ray = new THREE.Ray(this.position.clone().addSelf(new THREE.Vector3(0, 0.8, 0)), new THREE.Vector3(0, 1, 0));
 
           var intersects = terrainHandler.RayTest(ray, {
-            testMeshesNearPosition:this.position
+            testMeshesNearPosition:this.position,
+            unitReference: this,
+            unitRayName: "colup"
           });
 
           if ( intersects.length > 0 && intersects[0].distance < 0.5) {
