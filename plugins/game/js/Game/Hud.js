@@ -1418,45 +1418,23 @@ var HUDHandler = Class.extend({
       hudHandler.DisableButtons(['btnLogOut','btnEnterChar',
         'btnNextChar','btnPrevChar','btnDelChar']);
 
+      function abortConnect() {
+        hudHandler.EnableButtons(['btnLogOut','btnEnterChar',
+          'btnNextChar','btnPrevChar','btnDelChar']);
+        $('#gameFrame').animate({
+          opacity: 1.00
+        }, 1000);
+      }
+
 
       $('#gameFrame').animate({
         opacity: 0.00
       }, 1000, function() {
 
-
-
-
-
         hudHandler.HideMenuScreen();
 
         var tryConnect = function() {
-
-  //        var tween = new TWEEN.Tween( {
-  //          pixelWidth: 1,
-  //          pixelHeight: 1
-  //        } )
-  //        .to( {
-  //          pixelWidth: 1000,
-  //          pixelHeight: 1000
-  //        }, 2000 )
-  //    //    .easing( TWEEN.Easing.Elastic.InOut )
-  //        .onStart(function() {
-  //          ironbane.postprocessing.enabled = true;
-  //        })
-  //        .onUpdate( function () {
-  //          ironbane.postprocessing.pixelationUniforms[ "pixelWidth" ].value = this.pixelWidth;
-  //          ironbane.postprocessing.pixelationUniforms[ "pixelHeight" ].value = this.pixelHeight;
-  //
-  //        } )
-  //        .onComplete(function() {
-  //          ironbane.postprocessing.enabled = false;
-  //          ironbane.canDraw = false;
-  //          socketHandler.Connect();
-  //        })
-  //        .start();
-
-          socketHandler.Connect();
-
+          socketHandler.Connect(abortConnect);
         };
 
         if ( startdata.loggedIn ) {

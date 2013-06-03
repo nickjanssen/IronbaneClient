@@ -114,7 +114,7 @@ var SocketHandler = Class.extend({
         }
 
     },
-    Connect: function() {
+    Connect: function(abortConnect) {
         if ( !this.serverOnline ) return;
 
         if ( !ISDEF(startdata.characterUsed) ) return;
@@ -152,6 +152,7 @@ var SocketHandler = Class.extend({
 
             if ( ISDEF(reply.errmsg) ) {
                 hudHandler.MessageAlert(reply.errmsg);
+                abortConnect();
                 hudHandler.ShowMenuScreen();
                 return;
             }
