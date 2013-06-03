@@ -462,6 +462,19 @@ var TerrainHandler = Class.extend({
       noMeshes = true;
     }
 
+
+    // To optimize, we keep track of the last mesh & face that had a succesful
+    // hit. In our use case, it is very likely that the next hit will be the
+    // same face/object
+
+    if ( unitReference ) {
+      if ( unitReference.lastRayData ) {
+        // Check for the stuff that's inside
+        // Do a simple raycast on one plane
+
+      }
+    }
+
     var meshList = []
 
     if ( !noMeshes ) {
@@ -501,6 +514,7 @@ var TerrainHandler = Class.extend({
     else {
       intersects.sort(function(a,b) { return a.distance - b.distance } );
     }
+
 
 
     return intersects;

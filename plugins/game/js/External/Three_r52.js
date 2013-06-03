@@ -2796,8 +2796,11 @@ THREE.Frustum.__v1 = new THREE.Vector3();
 		return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
 
 	};
-
-	var intersectObject = function ( object, ray, intersects ) {
+    // NICK EDIT START
+	//var intersectObject = function ( object, ray, intersects ) {
+	var intersectObject = function ( object, ray, intersects, singleFaceIdCheck ) {
+		singleFaceIdCheck = singleFaceIdCheck || 0;
+	// NICK EDIT END
 
           //return [];
 
@@ -2868,7 +2871,17 @@ THREE.Frustum.__v1 = new THREE.Vector3();
 			localDirectionCopy.copy( ray.direction );
 			inverseMatrix.rotateAxis( localDirectionCopy ).normalize();
 
-			for ( f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
+			// NICK EDIT START
+			var endCheck = singleFaceIdCheck ?
+						singleFaceIdCheck+1 : geometry.faces.length;
+
+
+			//for ( f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
+			for ( f = singleFaceIdCheck, fl = endCheck; f < fl; f ++ ) {
+			// NICK EDIT END
+
+
+
 
 				face = geometry.faces[ f ];
 
