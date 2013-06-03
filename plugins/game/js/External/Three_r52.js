@@ -2996,8 +2996,10 @@ THREE.Frustum.__v1 = new THREE.Vector3();
 
 	};
 
-	THREE.Ray.prototype.intersectObject = function ( object, recursive ) {
-
+    // NICK EDIT START
+	//THREE.Ray.prototype.intersectObject = function ( object, recursive ) {
+	THREE.Ray.prototype.intersectObject = function ( object, singleFaceIdCheck, recursive ) {
+	// NICK EDIT END
 		var intersects = [];
 
 		if ( recursive === true ) {
@@ -3006,7 +3008,7 @@ THREE.Frustum.__v1 = new THREE.Vector3();
 
 		}
 
-		intersectObject( object, this, intersects );
+		intersectObject( object, this, intersects, singleFaceIdCheck );
 
 		intersects.sort( descSort );
 

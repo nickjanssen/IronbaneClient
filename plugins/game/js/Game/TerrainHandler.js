@@ -466,12 +466,23 @@ var TerrainHandler = Class.extend({
     // To optimize, we keep track of the last mesh & face that had a succesful
     // hit. In our use case, it is very likely that the next hit will be the
     // same face/object
+    var intersects = [];
 
     if ( unitReference ) {
-      if ( unitReference.lastRayData ) {
+      if ( !unitReference.lastRayData ) {
+        unitReference.lastRayData = {};
+      }
+
+      if ( unitReference.lastRayData[unitRayName] ) {
+        var rayData = unitReference.lastRayData[unitRayName];
         // Check for the stuff that's inside
         // Do a simple raycast on one plane
+        var subIntersects = ray.intersectObject( rayData.mesh,
+          rayData.faceId );
 
+        intersects = intersects.concat(subIntersects);
+
+        if ( intersects.length > 0 ) return intersects;
       }
     }
 
@@ -491,7 +502,6 @@ var TerrainHandler = Class.extend({
       }
     }
 
-    var intersects = [];
 
     if ( !noMeshes ) {
       for(var m=0;m<meshList.length;m++) {
@@ -515,7 +525,12 @@ var TerrainHandler = Class.extend({
       intersects.sort(function(a,b) { return a.distance - b.distance } );
     }
 
-
+    if ( intersects.length > 0 && unitReference ) {
+      unitReference.lastRayData[unitRayName] = {
+        mesh: intersects[0].object,
+        faceId: intersects[0].faceIndex
+      };
+    }
 
     return intersects;
   },
