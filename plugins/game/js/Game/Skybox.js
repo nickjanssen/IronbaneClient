@@ -240,7 +240,8 @@ var Skybox = PhysicsObject.extend({
 
     // ironbane.scene.add(this.terrainCollisionMesh);
 
-    this.terrainOctree.add( this.terrainCollisionMesh, true );
+    //this.terrainOctree.add( this.terrainCollisionMesh, true, 20, new THREE.Vector3() );
+    this.terrainOctree.add( this.terrainCollisionMesh, true);
 
   },
   Destroy: function() {

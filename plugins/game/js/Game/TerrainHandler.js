@@ -76,6 +76,7 @@ var TerrainHandler = Class.extend({
 
     this.isLoaded = false;
 
+    this.lastOctreeBuildPosition = new THREE.Vector3(0, 1000000000, 0);
 
     this.currentMusic = "";
   },
@@ -515,7 +516,15 @@ var TerrainHandler = Class.extend({
 
 
     if ( !noTerrain ) {
-      var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
+
+      if ( DistanceSq(this.lastOctreeBuildPosition, ironbane.player.position) > 10*10 ) {
+          this.lastOctreeBuildPosition = ironbane.player.position.clone();
+          this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
+      }
+
+      var subIntersects = ray.intersectOctreeObjects( this.octreeResults );
+
+      //var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
       intersects = intersects.concat(subIntersects);
     }
 

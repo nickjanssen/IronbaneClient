@@ -192,6 +192,7 @@
                 > distanceCheck*distanceCheck ) continue;
             }
 
+            //console.log("loaded face for col");
             this.add_object_data( object, faces[ i ] );
 
           }
