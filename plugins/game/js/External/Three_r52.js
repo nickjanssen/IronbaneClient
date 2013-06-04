@@ -2998,7 +2998,7 @@ THREE.Frustum.__v1 = new THREE.Vector3();
 
     // NICK EDIT START
 	//THREE.Ray.prototype.intersectObject = function ( object, recursive ) {
-	THREE.Ray.prototype.intersectObject = function ( object, singleFaceIdCheck, recursive ) {
+	THREE.Ray.prototype.intersectObject = function ( object, recursive, singleFaceIdCheck ) {
 	// NICK EDIT END
 		var intersects = [];
 

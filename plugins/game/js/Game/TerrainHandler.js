@@ -478,7 +478,7 @@ var TerrainHandler = Class.extend({
         // Check for the stuff that's inside
         // Do a simple raycast on one plane
         var subIntersects = ray.intersectObject( rayData.mesh,
-          rayData.faceId );
+          false, rayData.faceId );
 
         intersects = intersects.concat(subIntersects);
 

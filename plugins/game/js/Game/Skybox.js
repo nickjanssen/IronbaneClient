@@ -78,6 +78,8 @@ var Skybox = PhysicsObject.extend({
 
     this.skyboxMesh = new THREE.Mesh(geometry, material);
 
+
+
     this.terrainOctree = new THREE.Octree();
 
     ironbane.scene.add(this.skyboxMesh);
@@ -200,6 +202,9 @@ var Skybox = PhysicsObject.extend({
       });
 
 
+_.each(geometry.materials, function(m) {
+  m.wireframe = true;
+})
 
         // Extract the tile!
         // var tile = "tiles/"+(geometry.jsonMaterials[i]["mapDiffuse"].split("."))[0];
@@ -213,6 +218,8 @@ var Skybox = PhysicsObject.extend({
 
     this.terrainMesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
     this.terrainMesh.receiveShadow = true;
+
+    this.terrainMesh.material.wireframe = true;
 
     ironbane.scene.add(this.terrainMesh);
 

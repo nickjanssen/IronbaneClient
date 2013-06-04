@@ -65,7 +65,7 @@ var zoneTypeConfig = {};
 
 zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   'enableWater': true,
-  'waterLevel': -1,
+  'waterLevel': -10,
   'waterTexture': 1650,
   'waterTextureGlow': 1651,
   'enableClouds': true,
