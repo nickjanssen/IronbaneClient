@@ -30,7 +30,9 @@ var chunkSize =  le("globalEnable") ? 16 : 96+16;
 //var chunkSize = 16;
 var chunkHalf = chunkSize / 2;
 
-var chunkLoadRange = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkSize+16;
+//var chunkLoadRange = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkSize+16;
+var chunkLoadRange = chunkSize+16;
+
 
 // chunkLoadRange = 224;
 

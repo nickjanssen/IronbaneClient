@@ -19,12 +19,6 @@
  * and open the template in the editor.
  */
 
-var WorldBuilderModeEnum = {
-  BUILD : 0,
-  DIG : 1,
-  FLATTEN : 2
-};
-
 var ObjectPlacerModeEnum = {
   PLACE : 0,
   DELETE : 1
@@ -47,8 +41,6 @@ var EditorGUI = function() {
 
   this.globalEnable = ISDEF(localStorage.globalEnable) ? (localStorage.globalEnable === 'true') : false;
   this.globalEnable = false;
-
-  this.enableWorldBuilder = false;
 
   this.tbEnableTransparency = false;
 
@@ -96,28 +88,10 @@ var EditorGUI = function() {
     //setTimeout(function(){location.reload();}, 7000);
   };
 
-  this.opRenderMapForCurrentZone = function() {
-
-      bm("Generating new map for zone "+terrainHandler.zone+"...Be patient!!!");
-
-      $.post('gamehandler.php?action=getmap&zone='+terrainHandler.zone
-        +'&rerender=1&waterlevel='
-        +GetZoneConfig("waterLevel"), function(string) {
-
-        if ( string === "OK" ) {
-          bm("Map generation finished!");
-        }
-
-
-      });
-    //setTimeout(function(){location.reload();}, 7000);
-  };
-
   setTimeout(function(){
     socketHandler.socket.emit('chGodMode', levelEditor.editorGUI.chGodMode);
     socketHandler.socket.emit('chInvisibleByMonsters', levelEditor.editorGUI.chInvisibleByMonsters);
     socketHandler.socket.emit('ch999Damage', levelEditor.editorGUI.ch999Damage);
-    chunkLoadRange = levelEditor.editorGUI.chunkDistance;
   }, 2000);
 
 
@@ -125,48 +99,9 @@ var EditorGUI = function() {
   this.camDistance = ISDEF(localStorage.camDistance) ? parseFloat(localStorage.camDistance) : 20.0;
   this.camHeight = ISDEF(localStorage.camHeight) ? parseFloat(localStorage.camHeight) : 20.0;
 
-  this.chunkDistance = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkLoadRange;
-
   this.enableWorldPainter = false;
 
   this.selectedTile = 1;
-
-  // World Builder mode
-  this.wbMode = WorldBuilderModeEnum.BUILD;
-
-  // Generator
-  this.wbgOctaves = 0;
-  this.wbgPersistence = 0;
-  this.wbgScale = 1.0;
-  this.wbgTile = 11;
-  this.wbgHeightOffset = 0;
-  this.wbgGenerate = function() {
-    socketHandler.socket.emit('generateCell', {
-      pos: ironbane.player.position,
-      octaves: levelEditor.editorGUI.wbgOctaves,
-      persistence: levelEditor.editorGUI.wbgPersistence,
-      scale: levelEditor.editorGUI.wbgScale,
-      tile: levelEditor.editorGUI.wbgTile,
-      heightOffset: levelEditor.editorGUI.wbgHeightOffset
-    }, function(reply) {
-      if ( reply == "OK" ) {
-
-        var zone = terrainHandler.zone;
-
-        terrainHandler.Destroy();
-
-        terrainHandler.world = {};
-
-        terrainHandler.zone = zone;
-
-        terrainHandler.BuildWaterMesh();
-
-
-      }
-    });
-  //        bm("Auto-reloading page in 2 seconds...");
-  //        setTimeout(function(){location.reload();}, 2000);
-  }
 
   // Object placer mode
   this.opMode = ObjectPlacerModeEnum.PLACE;
@@ -314,27 +249,6 @@ var EditorGUI = function() {
   // NPC editor mode
   this.neDeleteMode = false;
 
-
-  //    this.setDigMode = false;
-  //    this.setFlattenMode = false;
-  this.flattenHeight = 0.5;
-
-  this.setPlayerHeightAsFlattenHeight = function() {
-    levelEditor.editorGUI.flattenHeight = ironbane.player.position.y;
-
-    for (var i=0;i<levelEditor.editorGUI.gui.__folders['World Builder'].__controllers.length;i++) {
-      levelEditor.editorGUI.gui.__folders['World Builder'].__controllers[i].updateDisplay();
-    }
-  };
-
-  this.brushWidth = 2;
-  this.brushFeather = 2;
-  this.brushHeight = 1;
-
-  this.paintSize = 2;
-
-  this.wpDisplaySpecials = false;
-  this.wp4XTilePaintMode = false;
 
 
   this.gui = false;
@@ -613,99 +527,7 @@ var LevelEditor = Class.extend({
 
     this.previewBuildMesh = new THREE.Object3D();
 
-    if ( levelEditor.editorGUI.enableWorldBuilder ) {
-      var ix = roundNumber(currentMouseToWorldData.point.x, 0).Round2();
-      var iz = roundNumber(currentMouseToWorldData.point.z, 0).Round2();
-
-
-      if ( levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.FLATTEN ) {
-        levelEditor.editorGUI.brushWidth = levelEditor.editorGUI.brushWidth.Round().Round2();
-      }
-
-      // Take into account the brush width
-      var bw = (levelEditor.editorGUI.brushWidth/2).Round2();
-
-      var bh = levelEditor.editorGUI.brushHeight;
-      var bf = (levelEditor.editorGUI.brushFeather).Round2();
-
-      var t = bw+bf;
-      var tabs = Math.abs(t)*2;
-
-      var fh = false;
-
-      for(var x = ix-tabs;x<=ix+tabs;x+=worldScale){
-        for(var z = iz-tabs;z<=iz+tabs;z+=worldScale){
-          var d = DistanceBetweenPoints(ix, iz, x, z);
-
-
-
-          if ( d <= t) {
-            //                        if ( !fh ) {
-            //                            var chunkPos = WorldToCellCoordinates(x, z, chunkSize);
-            //                            var chunkPosWorld = CellToWorldCoordinates(chunkPos.x, chunkPos.z, chunkSize);
-            //                            var tiles = terrainHandler.GetChunkByWorldPosition(chunkPosWorld.x, chunkPosWorld.z).tiles;
-            //                            for(var t in tiles) {
-            //                                if ( tiles[t].position.x == x && tiles[t].position.z == z ) {
-            //                                    fh = tiles[t].position.y;
-            //                                    break;
-            //                                }
-            //                            }
-            //                        }
-            var h = 0;
-            //var f = 1-(d / t);
-            if ( levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.FLATTEN ) {
-              //if ( fh != false ) {
-              if ( d <= bw ) {
-                h = levelEditor.editorGUI.flattenHeight;
-
-                //levelEditor.SetTileHeight(x, z, h, false, true, true);
-                this.AddPreviewSquareToMesh(x, z, h, true, 0xFF0000);
-              }
-            //}
-
-            }
-            else {
-
-              if ( d > bw ) {
-                h = (1-((d-bw)/bf))*bh;
-              }
-              else {
-                h = bh;
-              }
-
-              h = Math.max(h, 0);
-              h = Math.min(h, bh);
-
-              //levelEditor.SetTileHeight(x, z, levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.DIG ? -h : h, true, true, true);
-              this.AddPreviewSquareToMesh(x, z, levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.DIG ? -h : h, false, 0xFF0000);
-            }
-
-
-
-          }
-        }
-      }
-
-
-    }
-    else if ( levelEditor.editorGUI.enableWorldPainter ) {
-      var ix = roundNumber(currentMouseToWorldData.face.centroid.x-(0.5*worldScale)).Round2();
-      var iz = roundNumber(currentMouseToWorldData.face.centroid.z-(0.5*worldScale)).Round2();
-
-
-      var bwr = (Math.round(levelEditor.editorGUI.paintSize)).Round();
-      for(var x = ix-bwr;x<=ix+bwr;x+=worldScale){
-        for(var z = iz-bwr;z<=iz+bwr;z+=worldScale){
-          //var d = DistanceBetweenPoints(ix, iz, x, z);
-          //if ( d <= bw ) {
-          var offset = bwr % 2 == 0 ? (0.5*worldScale) : 0;
-          this.AddPreviewSquareToMesh(x+offset, z+offset, 0, false, 0xFFFFFF);
-        //}
-
-        }
-      }
-    }
-    else if ( levelEditor.editorGUI.enablePathPlacer ) {
+   if ( levelEditor.editorGUI.enablePathPlacer ) {
 
       var ix = (currentMouseToWorldData.point.x);
       var iz = (currentMouseToWorldData.point.z);
@@ -968,11 +790,6 @@ var LevelEditor = Class.extend({
     guiControls['camDistance'] = this.editorGUI.gui.add(this.editorGUI, 'camDistance', 1, 40);
     guiControls['camHeight'] = this.editorGUI.gui.add(this.editorGUI, 'camHeight', 1, 40);
 
-    guiControls['chunkDistance'] = this.editorGUI.gui.add(this.editorGUI, 'chunkDistance', 10, 224);
-
-
-    var fWorldBuilder = this.editorGUI.gui.addFolder('World Builder');
-    var fWorldPainter = this.editorGUI.gui.addFolder('World Painter');
     //var fObjectPlacer = this.editorGUI.gui.addFolder('Object Placer');
     var fModelPlacer = this.editorGUI.gui.addFolder('Model Placer');
     var fModelPainter = this.editorGUI.gui.addFolder('Model Painter');
@@ -985,45 +802,6 @@ var LevelEditor = Class.extend({
 
     var fCheats = this.editorGUI.gui.addFolder('Cheats');
     var fOptions = this.editorGUI.gui.addFolder('Options');
-
-    guiControls['enableWorldBuilder'] = fWorldBuilder.add(this.editorGUI, 'enableWorldBuilder');
-    guiControls['tbEnableTransparency'] = fWorldBuilder.add(this.editorGUI, 'tbEnableTransparency');
-
-
-    guiControls['wbMode'] = fWorldBuilder.add(this.editorGUI, 'wbMode', {
-      Build: WorldBuilderModeEnum.BUILD,
-      Dig: WorldBuilderModeEnum.DIG,
-      Flatten: WorldBuilderModeEnum.FLATTEN
-    });
-
-
-    guiControls['brushWidth'] = fWorldBuilder.add(this.editorGUI, 'brushWidth', 0.1, 30);
-
-    guiControls['brushFeather'] = fWorldBuilder.add(this.editorGUI, 'brushFeather', 0.1, 30);
-    guiControls['brushHeight'] = fWorldBuilder.add(this.editorGUI, 'brushHeight', 0.1, 10);
-
-
-
-    guiControls['flattenHeight'] = fWorldBuilder.add(this.editorGUI, 'flattenHeight');
-    fWorldBuilder.add(this.editorGUI, 'setPlayerHeightAsFlattenHeight');
-
-
-    var fGenerator = fWorldBuilder.addFolder('Generator');
-    guiControls['wbgOctaves'] = fGenerator.add(this.editorGUI, 'wbgOctaves');
-    guiControls['wbgPersistence'] = fGenerator.add(this.editorGUI, 'wbgPersistence');
-    guiControls['wbgScale'] = fGenerator.add(this.editorGUI, 'wbgScale');
-    guiControls['wbgTile'] = fGenerator.add(this.editorGUI, 'wbgTile');
-    guiControls['wbgHeightOffset'] = fGenerator.add(this.editorGUI, 'wbgHeightOffset');
-
-    guiControls['wbgGenerate'] = fGenerator.add(this.editorGUI, 'wbgGenerate');
-
-    guiControls['enableWorldPainter'] = fWorldPainter.add(this.editorGUI, 'enableWorldPainter');
-    guiControls['paintSize'] = fWorldPainter.add(this.editorGUI, 'paintSize', 0.1, 10);
-    guiControls['wpDisplaySpecials'] = fWorldPainter.add(this.editorGUI, 'wpDisplaySpecials');
-    guiControls['wp4XTilePaintMode'] = fWorldPainter.add(this.editorGUI, 'wp4XTilePaintMode');
-
-    fWorldPainter.add(this.editorGUI, 'selectTile');
-
 
     //        guiControls['enableObjectPlacer'] = fObjectPlacer.add(this.editorGUI, 'enableObjectPlacer');
     //
@@ -1176,19 +954,8 @@ var LevelEditor = Class.extend({
     guiControls['opShowDebug'] = fOptions.add(this.editorGUI, 'opShowDebug');
 
     guiControls['opBackupServer'] = fOptions.add(this.editorGUI, 'opBackupServer');
-
     guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
 
-guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRenderMapForCurrentZone');
-
-
-
-
-
-
-    guiControls['wpDisplaySpecials'].onFinishChange(function(value) {
-      for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadTerrainOnly();
-    });
     guiControls['chFlyMode'].onFinishChange(function(value) {
 
       ironbane.player.enableGravity = !value;
@@ -1235,8 +1002,6 @@ guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRende
       ba("Please refresh the page in order for the IDs to show up/disappear.");
     });
 
-
-    //fWorldBuilder.open();
 
     guiControls['globalEnable'].onFinishChange(function(value) {
      // var fogchange = 50;
@@ -1305,18 +1070,6 @@ guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRende
       for (var i=0;i<levelEditor.editorGUI.gui.__folders['Model Placer'].__controllers.length;i++) {
         levelEditor.editorGUI.gui.__folders['Model Placer'].__controllers[i].updateDisplay();
       }
-    });
-
-    guiControls['tbEnableTransparency'].onFinishChange(function(value) {
-      if ( value ) {
-
-      }
-      else {
-
-      }
-
-      for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadTerrainOnly();
-    //terrainHandler.chunks = [];
     });
 
     $('#gameFrame').mousewheel(function(event, delta, deltaX, deltaY) {
@@ -1398,11 +1151,6 @@ guiControls['opRenderMapForCurrentZone'] = fOptions.add(this.editorGUI, 'opRende
       localStorage.camDistance = value;
     });
 
-
-    guiControls['chunkDistance'].onChange(function(value) {
-      chunkLoadRange = value;
-      localStorage.chunkDistance = value;
-    });
 
     guiControls['camHeight'].onChange(function(value) {
       if ( levelEditor.editorGUI.globalEnable ) {

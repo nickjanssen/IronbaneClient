@@ -571,8 +571,8 @@ var Unit = PhysicsObject.extend({
       }
 
       //debug.SetWatch("this.isTouchingGround", this.isTouchingGround);
-      //            debug.SetWatch("this.allowCheckGround", this.allowCheckGround);
-      //            debug.SetWatch("chunkStandingOn", chunkStandingOn);
+                 debug.SetWatch("this.allowCheckGround", this.allowCheckGround);
+                 debug.SetWatch("chunkStandingOn", chunkStandingOn);
       //
       if ( currentMouseToWorldData ) {
       //debug.SetWatch("currentMouseToWorldData.point", currentMouseToWorldData.point.ToString());
