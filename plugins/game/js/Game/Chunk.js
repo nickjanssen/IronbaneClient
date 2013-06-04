@@ -70,7 +70,8 @@ var Chunk = Class.extend({
           this.FinalizeMesh();
 
 
-          this.octree.add( this.models, true );
+          //this.octree.add( this.models, true );
+          terrainHandler.skybox.terrainOctree.add(this.models, true);
 
           ironbane.renderer.shadowMapEnabled = true;
           ironbane.renderer.shadowMapAutoUpdate = true;
@@ -103,7 +104,8 @@ var Chunk = Class.extend({
         }
       if ( this.models ) {
 
-        ironbane.octree.remove( this.models );
+        //ironbane.octree.remove( this.models );
+        terrainHandler.skybox.terrainOctree.remove(this.models);
 
         ironbane.scene.remove(this.models);
     }

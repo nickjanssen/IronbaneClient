@@ -528,6 +528,23 @@ var TerrainHandler = Class.extend({
       intersects = intersects.concat(subIntersects);
     }
 
+    // if ( !noTerrain ) {
+
+    //   _.each(terrainHandler.chunks, function(chunk) {
+
+    //   })
+
+    //   if ( DistanceSq(this.lastOctreeBuildPosition, ironbane.player.position) > 10*10 ) {
+    //       this.lastOctreeBuildPosition = ironbane.player.position.clone();
+    //       this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
+    //   }
+
+    //   var subIntersects = ray.intersectOctreeObjects( this.octreeResults );
+
+    //   //var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
+    //   intersects = intersects.concat(subIntersects);
+    // }
+
 
     if ( reverseRaySortOrder ) {
       intersects.sort(function(a,b) { return b.distance - a.distance } );
