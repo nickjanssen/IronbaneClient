@@ -139,24 +139,11 @@ var Game = Class.extend({
       ironbane.camera.lookAt(previewLocation);
     }
 
-
-
     terrainHandler.Tick(dTime);
-
-
-    //this.unitList[0].position.x = -(Math.cos(new Date().getTime()/1000)*2)-0;
-    //this.unitList[0].position.y = (Math.sin(new Date().getTime()/2000)*1)+1;
-    //this.unitList[0].position.z = -(Math.sin(new Date().getTime()/1000)*2)-0;
-
-
-
-
 
     meshHandler.Tick(dTime);
 
     if ( socketHandler.loggedIn ) {
-
-
 
       // Add the player once we have terrain we can walk on
       if(  this.player === null ) {
@@ -164,16 +151,10 @@ var Game = Class.extend({
         // We have a spawn location, check the cell
         var cell = WorldToCellCoordinates(socketHandler.spawnLocation.x, socketHandler.spawnLocation.z, cellSize);
 
-
-        if ( terrainHandler.isLoaded && terrainHandler.hasChunksLoaded ) {
+        if ( terrainHandler.isLoaded ) {
           ironbane.player = new Player(socketHandler.spawnLocation, new THREE.Vector3(0, socketHandler.spawnRotation, 0), socketHandler.playerData.id, socketHandler.playerData.name);
           ironbane.unitList.push(ironbane.player);
-
         }
-
-
-      }
-      else {
 
       }
 
@@ -181,54 +162,28 @@ var Game = Class.extend({
 
     particleHandler.Tick(dTime);
 
-
-
-
     for(var x=0;x<this.unitList.length;x++){
-      //if ( x==1)this.unitList[x].targetSpeed = 100;
       this.unitList[x].Tick(dTime);
     }
 
-    // for(var x=0;x<this.unitList.length;x++){
-    //   //debug.SetWatch("pos:", this.unitList[x].mesh.position.ToString());
-    //   }
-
-
     cinema.Tick(dTime);
-
-  //        debug.SetWatch('Server status', typeof io === 'undefined' ? 'Offline' : 'Online');
-  //
-  //        debug.SetWatch('Time', dTime);
-  //
-  //        debug.SetWatch('Camera Position', this.camera.position.ToString());
-  //
-  //        debug.SetWatch('Chunks loaded', terrainHandler.chunks.length);
-
-// showEditor = true;
 
     sw("THREE.Object3DLibrary.length", THREE.Object3DLibrary.length);
     sw("THREE.GeometryLibrary.length", THREE.GeometryLibrary.length);
     sw("THREE.MaterialLibrary.length", THREE.MaterialLibrary.length);
     sw("THREE.TextureLibrary.length", THREE.TextureLibrary.length);
 
-    sw("Camera position", this.camera.position);
-    sw("Camera lookAt", this.camera.lookAtPosition);
+    // sw("Camera position", this.camera.position);
+    // sw("Camera lookAt", this.camera.lookAtPosition);
 
-    sw("Units ticking", this.unitList.length);
+    // sw("Units ticking", this.unitList.length);
 
+    // var monstersTickingCount = 0;
+    // _.each(this.unitList, function(unit) {
+    //   if ( unit instanceof Fighter ) monstersTickingCount++;
+    // });
 
-    var monstersTickingCount = 0;
-    _.each(this.unitList, function(unit) {
-      if ( unit instanceof Fighter ) monstersTickingCount++;
-    });
-
-
-    sw("Monsters ticking", monstersTickingCount);
-
-
-
-
-
+    // sw("Monsters ticking", monstersTickingCount);
 
     if (
       terrainHandler.isLoaded
@@ -259,22 +214,9 @@ var Game = Class.extend({
   },
   Render: function () {
 
-    //        controls.update( clock.getDelta() );
-
-    //        mesh.geometry.vertices[0].position.z += 0.01;
-    //        mesh.geometry.__dirtyVertices = true;
-
-
-    // mesh.rotation.x += 0.01;
-    // mesh.rotation.y += 0.02;
-    //this.renderer.clear();
     this.renderer.render( this.scene, this.camera );
-
-
-
     debug.Clear();
   }
-//    GetNewObjectID: function() { return this.newObjectID++; }
 });
 
 var ironbane = new Game();
@@ -286,13 +228,6 @@ function animate() {
   TWEEN.update();
 }
 
-
 $(document).ready(function(){
-
-
   ironbane.Start();
-
-
-
-
 });

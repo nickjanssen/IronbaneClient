@@ -15,12 +15,11 @@
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var amountOfChunksRequested = 0;
+var Cell = Class.extend({
+    Init: function(cellX, cellZ) {
 
-var Chunk = Class.extend({
-    Init: function(position) {
-
-        this.position = position;
+        this.cellX = cellX;
+        this.cellZ = cellZ;
 
         this.isAddedToWorld = false;
 
@@ -40,31 +39,29 @@ var Chunk = Class.extend({
 
     },
     Tick: function(dTime) {
-        if ( !this.isAddedToWorld ) {
-            if ( !this.hasMeshesLoaded ) {
+        if ( this.isAddedToWorld ) return;
 
+        if ( !this.hasMeshesLoaded ) {
+            this.LoadObjects();
 
-                this.LoadObjects();
-
-                this.hasMeshesLoaded = true;
-
-
-            }
-            else if ( !this.removeNextTick ) {
-
-                if ( terrainHandler.isLoaded
-                    && this.modelsToBuild <= 0 ) {
-                    this.AddMesh();
-                }
-
-            }
+            this.hasMeshesLoaded = true;
         }
+        else if ( !this.removeNextTick ) {
+
+            if ( terrainHandler.isLoaded && this.modelsToBuild <= 0 ) {
+                this.AddMesh();
+                this.isAddedToWorld = true;
+            }
+
+        }
+
     },
     AddMesh: function() {
-        // Loaded, but not added to the world yet
-        // Let's do that and set isAddedToWorld
 
-        this.FinalizeMesh();
+        // Load all 3D models that belong to this group
+        this.models = new THREE.Mesh(this.modelGeometry, new THREE.MeshFaceMaterial());
+        this.models.castShadow = true;
+        ironbane.scene.add(this.models);
 
         // Collision data goes to one big octree that sits on the skybox
         terrainHandler.skybox.terrainOctree.add(this.models, true);
@@ -81,9 +78,6 @@ var Chunk = Class.extend({
         ironbane.shadowMapUpdateTimer = setTimeout(function() {
             ironbane.renderer.shadowMapAutoUpdate = false;
         }, 100);
-
-
-        this.isAddedToWorld = true;
     },
     RemoveMesh: function() {
 
@@ -153,21 +147,10 @@ var Chunk = Class.extend({
 
         this.LoadObjects();
     },
-    ReloadTerrainOnly: function() {
-        var mesh = this.GetMesh();
-        ironbane.scene.remove(this.mesh);
-        this.mesh = mesh;
-        ironbane.scene.add(this.mesh);
-    },
     Reload: function() {
         if ( this.isAddedToWorld ) {
             this.RemoveMesh();
         }
-    },
-    FinalizeMesh: function() {
-        this.models = new THREE.Mesh(this.modelGeometry,  new THREE.MeshFaceMaterial());
-        this.models.castShadow = true;
-        ironbane.scene.add(this.models);
     },
     LoadObjects: function(waypointsOnly) {
 
@@ -178,26 +161,17 @@ var Chunk = Class.extend({
 
         waypointsOnly = waypointsOnly || false;
 
-        var cellPos = WorldToCellCoordinates(this.position.x, this.position.z, cellSize);
 
-        var cx = this.position.x;
-        var cz = this.position.z;
+        if ( !ISDEF(terrainHandler.world[this.cellX][this.cellZ]['objects']) ) return;
 
-        if ( !ISDEF(terrainHandler.world[cellPos.x][cellPos.z]['objects']) ) return;
-
-        for(var o=0;o<terrainHandler.world[cellPos.x][cellPos.z]['objects'].length;o++) {
+        for(var o=0;o<terrainHandler.world[this.cellX][this.cellZ]['objects'].length;o++) {
 
             if ( waypointsOnly ) continue;
 
-            var gObject = terrainHandler.world[cellPos.x][cellPos.z]['objects'][o];
+            var gObject = terrainHandler.world[this.cellX][this.cellZ]['objects'][o];
 
 
             var pos = new THREE.Vector3(gObject.x, gObject.y, gObject.z);
-
-            if ( pos.x < cx-chunkHalf ||
-                pos.x > cx+chunkHalf ||
-                pos.z < cz-chunkHalf ||
-                pos.z > cz+chunkHalf ) continue;
 
             var unit = null;
 
@@ -267,18 +241,13 @@ var Chunk = Class.extend({
 
         if ( showEditor && levelEditor.editorGUI.enablePathPlacer ) {
 
-            var graph = terrainHandler.world[cellPos.x][cellPos.z]['graph'];
+            var graph = terrainHandler.world[this.cellX][this.cellZ]['graph'];
 
             if ( graph && graph['nodes'] !== undefined ) {
                 for(var n=0;n<graph['nodes'].length;n++) {
                     var node = graph['nodes'][n];
 
                     var pos = ConvertVector3(node.pos);
-
-                    if ( pos.x < cx-chunkHalf ||
-                        pos.x > cx+chunkHalf ||
-                        pos.z < cz-chunkHalf ||
-                        pos.z > cz+chunkHalf ) continue;
 
                     var texture = "misc/waypoint";
                     if ( levelEditor.selectedNode && levelEditor.selectedNode['id'] == parseInt(node['id']) ) {
@@ -297,14 +266,11 @@ var Chunk = Class.extend({
 
                             // Find the node in adjacent cells
 
-                            var p = this.position.clone();
-                            var cp = WorldToCellCoordinates(p.x, p.z, cellSize);
                             // Load cells around us
-
                             this.isLoaded = true;
 
-                            for(var x=cp.x-1;x<=cp.x+1;x+=1){
-                                for(var z=cp.z-1;z<=cp.z+1;z+=1){
+                            for(var x=this.cellX-1;x<=this.cellX+1;x+=1){
+                                for(var z=this.cellZ-1;z<=this.cellZ+1;z+=1){
 
                                     if ( terrainHandler.world[x] === undefined ) continue;
                                     if ( terrainHandler.world[x][z] === undefined ) continue;
