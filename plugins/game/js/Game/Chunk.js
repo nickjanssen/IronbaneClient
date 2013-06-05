@@ -31,8 +31,6 @@ var Chunk = Class.extend({
         this.objects = [];
         this.waypointMeshes = [];
 
-        this.octree = new THREE.Octree();
-
         // Used to construct the model geometry, so we can still cast shadows
         this.modelGeometry = null;
         this.modelMesh = null;
@@ -66,34 +64,28 @@ var Chunk = Class.extend({
         // Loaded, but not added to the world yet
         // Let's do that and set isAddedToWorld
 
+        this.FinalizeMesh();
 
-          this.FinalizeMesh();
+        // Collision data goes to one big octree that sits on the skybox
+        terrainHandler.skybox.terrainOctree.add(this.models, true);
 
-
-          //this.octree.add( this.models, true );
-          terrainHandler.skybox.terrainOctree.add(this.models, true);
-
-          ironbane.renderer.shadowMapEnabled = true;
-          ironbane.renderer.shadowMapAutoUpdate = true;
-          ironbane.renderer.shadowMapSoft = false;
+        ironbane.renderer.shadowMapEnabled = true;
+        ironbane.renderer.shadowMapAutoUpdate = true;
+        ironbane.renderer.shadowMapSoft = false;
 
 
-
-          // console.log('Add chunk: '+this.position.ToString());
-
-          if ( ISDEF(ironbane.shadowMapUpdateTimer) ) {
-            //log("clearTimer");
+        if ( ISDEF(ironbane.shadowMapUpdateTimer) ) {
             clearTimeout(ironbane.shadowMapUpdateTimer);
-          }
-          ironbane.shadowMapUpdateTimer = setTimeout(function() {
-                        ironbane.renderer.shadowMapAutoUpdate = false;
-          }, 100);
+        }
+
+        ironbane.shadowMapUpdateTimer = setTimeout(function() {
+            ironbane.renderer.shadowMapAutoUpdate = false;
+        }, 100);
 
 
         this.isAddedToWorld = true;
     },
     RemoveMesh: function() {
-
 
         if ( this.modelGeometry ) {
             _.each(this.modelGeometry.materials, function(material) {
@@ -102,26 +94,22 @@ var Chunk = Class.extend({
 
             this.modelGeometry.deallocate();
         }
-      if ( this.models ) {
 
-        //ironbane.octree.remove( this.models );
-        terrainHandler.skybox.terrainOctree.remove(this.models);
+        if ( this.models ) {
+            terrainHandler.skybox.terrainOctree.remove(this.models);
 
-        ironbane.scene.remove(this.models);
-    }
+            ironbane.scene.remove(this.models);
+        }
 
 
         for(var o=0;o<this.objects.length;o++) {
             this.objects[o].Destroy();
+
             // Remove from unitList
             ironbane.unitList = _.without(ironbane.unitList, this.objects[o]);
         }
 
-
-
         this.objects = [];
-
-        // console.log('Remove chunk: '+this.position.ToString());
 
         this.isAddedToWorld = false;
     },
@@ -149,8 +137,6 @@ var Chunk = Class.extend({
     },
     ReloadObjectsOnly: function() {
 
-
-
         for(var o=0;o<this.objects.length;o++) {
             this.objects[o].Destroy();
             // Remove from unitList
@@ -177,155 +163,11 @@ var Chunk = Class.extend({
         if ( this.isAddedToWorld ) {
             this.RemoveMesh();
         }
-    //this.AddMesh();
-    },
-    AddTile: function (p, tile) {
-        this.tiles.push(new Tile(p, tile));
-    },
-    //        FindTile: function(pos) {
-    //
-    //			// Search in this list of chunks
-    //			var chunkList = [];
-    //
-    //			// start with ourselves
-    //			chunkList.push(this);
-    //
-    //			var chunk = null;
-    //
-    //			chunk = terrainHandler.chunks[(this.position.x+chunkSize)+'-'+(this.position.z+chunkSize)];
-    //			if ( chunk ) chunkList.push(chunk);
-    //
-    //			chunk = terrainHandler.chunks[(this.position.x+chunkSize)+'-'+(this.position.z-chunkSize)];
-    //			if ( chunk ) chunkList.push(chunk);
-    //
-    //			chunk = terrainHandler.chunks[(this.position.x-chunkSize)+'-'+(this.position.z+chunkSize)];
-    //			if ( chunk ) chunkList.push(chunk);
-    //
-    //			chunk = terrainHandler.chunks[(this.position.x-chunkSize)+'-'+(this.position.z-chunkSize)];
-    //			if ( chunk ) chunkList.push(chunk);
-    //
-    //			for (c = 0; c < chunkList.length; c++) {
-    //				for (i = 0; i < chunkList[c].tiles.length; i++) {
-    //					//if ( this.tiles[i].position.equals(pos) ) return this.tiles[i];
-    //					if ( chunkList[c].tiles[i].position.x == pos.x && chunkList[c].tiles[i].position.z == pos.z ) return chunkList[c].tiles[i];
-    //				}
-    //			}
-    //
-    //			console.warn('tile not found: '+pos.ToString());
-    //			// We didn't find anything because the tile we're looking for is in another chunk, or it doesn't exist
-    //
-    //
-    //            return null;
-    //        },
-    BuildTile: function(tile) {
-
-        this.tilesToAdd--;
-
-        var cellPos = WorldToCellCoordinates(this.position.x, this.position.z, cellSize);
-
-        var cx = this.position.x;
-        var cz = this.position.z;
-
-        var planeMat;
-
-        if ( !(showEditor && levelEditor.editorGUI.wpDisplaySpecials) && tile.image == invisibleTile ) return;
-
-
-        if ( showEditor && levelEditor.editorGUI.tbEnableTransparency ) {
-            planeMat = textureHandler.GetFreshTexture(tilesPath+''+tile.image+'.png', false, {
-                seeThrough:true
-            //vertexShader:"vertex_world"
-            });
-        }
-        else {
-            planeMat = textureHandler.GetTexture(tilesPath+''+tile.image+'.png', false, {
-                seeThrough:false,
-                uvScaleX: 1,
-                uvScaleY: 1,
-                useLighting: true
-            //vertexShader:"vertex_world"
-            });
-        }
-
-        if ( stealth ) planeMat.wireframe = true;
-
-        planeGeoChunk.materials = [planeMat];
-        planeGeoChunk.faces[0].materialIndex = 0;
-
-
-        // 4 vertices: 0, 1, 2, 3
-        // 8 vertices: 0, 2, 6, 8
-
-        var tx = tile.position.x;
-        var tz = tile.position.z;
-
-        for(var cx=cellPos.x-1;cx<=cellPos.x+1;cx++){
-            for(var cz=cellPos.z-1;cz<=cellPos.z+1;cz++){
-
-
-                if ( typeof terrainHandler.world[cx] == 'undefined' ) continue;
-                if ( typeof terrainHandler.world[cx][cz] == 'undefined' ) continue;
-                if ( typeof terrainHandler.world[cx][cz]['terrain'] == 'undefined' ) continue;
-
-                var estimatedQuality = this.quality;
-
-
-                if ( typeof terrainHandler.world[cx][cz]['terrain'][tx] != 'undefined' ) {
-                    if ( typeof terrainHandler.world[cx][cz]['terrain'][tx][tz] != 'undefined' ) {
-                        var height = terrainHandler.world[cx][cz]['terrain'][tx][tz].y;
-                        planeGeoChunk.vertices[0].z = height;
-                    }
-                }
-                if ( typeof terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)] != 'undefined' ) {
-                    if ( typeof terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)][tz] != 'undefined' ) {
-                        var height = terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)][tz].y;
-                        planeGeoChunk.vertices[1].z = height;
-                    }
-                }
-                if ( typeof terrainHandler.world[cx][cz]['terrain'][tx] != 'undefined' ) {
-                    if ( typeof terrainHandler.world[cx][cz]['terrain'][tx][(tz+estimatedQuality)] != 'undefined' ) {
-                        var height = terrainHandler.world[cx][cz]['terrain'][tx][(tz+estimatedQuality)].y;
-                        planeGeoChunk.vertices[2].z = height;
-                    }
-                }
-                if ( typeof terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)] != 'undefined' ) {
-                    if ( typeof terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)][(tz+estimatedQuality)] != 'undefined' ) {
-                        var height = terrainHandler.world[cx][cz]['terrain'][(tx+estimatedQuality)][(tz+estimatedQuality)].y;
-                        planeGeoChunk.vertices[3].z = height;
-                    }
-                }
-            }
-        }
-
-
-        var plane = new THREE.Mesh(planeGeoChunk,planeMat);
-
-        //plane.geometry.dynamic = true;
-
-        plane.rotation.x = -Math.PI/2;
-
-        plane.position.x = tx+(0.5*this.quality);
-        plane.position.z = tz+(0.5*this.quality);
-        //plane.position = this.tiles[j].position;
-
-        plane.material.side = THREE.DoubleSide;
-
-        //plane.material.wireframe = true;
-
-        THREE.GeometryUtils.merge(this.terrainGeo, plane);
-
-        plane.deallocate();
-
-
-
     },
     FinalizeMesh: function() {
-
-
         this.models = new THREE.Mesh(this.modelGeometry,  new THREE.MeshFaceMaterial());
         this.models.castShadow = true;
         ironbane.scene.add(this.models);
-
     },
     LoadObjects: function(waypointsOnly) {
 
@@ -345,13 +187,9 @@ var Chunk = Class.extend({
 
         for(var o=0;o<terrainHandler.world[cellPos.x][cellPos.z]['objects'].length;o++) {
 
-
-            // continue;
-
             if ( waypointsOnly ) continue;
 
             var gObject = terrainHandler.world[cellPos.x][cellPos.z]['objects'][o];
-
 
 
             var pos = new THREE.Vector3(gObject.x, gObject.y, gObject.z);
@@ -361,12 +199,7 @@ var Chunk = Class.extend({
                 pos.z < cz-chunkHalf ||
                 pos.z > cz+chunkHalf ) continue;
 
-
-
-
-
             var unit = null;
-
 
             var param = gObject.p;
 
@@ -384,11 +217,7 @@ var Chunk = Class.extend({
                         unit = new Billboard(pos, gObject.r, 0, gObject.p);
                         break;
                     case UnitTypeEnum.MESH:
-                        //if ( !debugging ) {
                         unit = new Mesh(pos, rotation, 0, gObject.p, metadata);
-
-
-                        //}
                         break;
                 }
 
@@ -406,21 +235,15 @@ var Chunk = Class.extend({
                   meshData = preMeshes[0];
                 }
 
-
                 var filename = (meshData['filename'].split("."))[0]+".js";
 
                 var model = meshPath + filename;
 
-
-
                 (function(chunk, pos, rotation, metadata, meshData, param){
                 meshHandler.Load(model, function(geometry) {
 
-
                         var geometry = meshHandler.SpiceGeometry(geometry, rotation,
                             metadata, meshData, param, false);
-
-                        // geometry.position = pos;
 
                         _.each(geometry.vertices, function(v) {
                             v.addSelf(pos);
@@ -434,16 +257,10 @@ var Chunk = Class.extend({
                         // Ready! Decrease modelsToBuild
                         chunk.modelsToBuild--;
 
-
-
                 }, meshData['scale']);
                 })(this, pos, rotation, metadata, meshData, param);
 
-
-
             }
-
-
 
         // Keep track of the ID's in a list of the chunk
         }
@@ -514,10 +331,6 @@ var Chunk = Class.extend({
                                 }
                             }
                         }
-
-
-
-
 
                     }
 

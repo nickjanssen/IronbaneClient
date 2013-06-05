@@ -145,10 +145,7 @@
 
     },
 
-    add: function ( object, useFaces, distanceCheck, distanceCheckOrigin ) {
-
-      distanceCheck = distanceCheck || 0;
-      distanceCheckOrigin = distanceCheckOrigin || null;
+    add: function ( object, useFaces ) {
 
       var i, l,
       index,
@@ -187,12 +184,6 @@
 
           for ( i = 0, l = faces.length; i < l; i++ ) {
 
-            if ( distanceCheck ) {
-              if ( DistanceSq(faces[i].centroid, distanceCheckOrigin)
-                > distanceCheck*distanceCheck ) continue;
-            }
-
-            //console.log("loaded face for col");
             this.add_object_data( object, faces[ i ] );
 
           }
