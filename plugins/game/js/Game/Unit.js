@@ -353,19 +353,16 @@ var Unit = PhysicsObject.extend({
       }
       else {
         var me = this;
-        // var chunk = this.GetChunkStandingOn();
-        // if ( chunk )  {
-          this.mesh.traverse( function ( object ) {
-            me.octree.remove( object );
-          } );
-        // }
+
+        this.mesh.traverse( function ( object ) {
+          me.octree.remove( object );
+        } );
+
       }
 
       ironbane.scene.remove(this.mesh);
-
       this.mesh.deallocate();
-    //      //this.mesh.geometry.deallocate();
-    //ironbane.renderer.deallocateObject( this.mesh );
+
     }
 
     if ( this.debugMesh ) {
@@ -379,7 +376,6 @@ var Unit = PhysicsObject.extend({
     if ( this.nameMesh ) {
       ironbane.scene.remove(this.nameMesh);
       this.nameMesh.deallocate();
-      //      //this.nameMesh.geometry.deallocate();
       ironbane.renderer.deallocateObject( this.nameMesh );
     }
 
@@ -519,11 +515,9 @@ var Unit = PhysicsObject.extend({
 
 
 
-      var cp = WorldToCellCoordinates(this.position.x, this.position.z, chunkSize);
-      cp = CellToWorldCoordinates(cp.x, cp.z, chunkSize);
+      var cp = WorldToCellCoordinates(this.position.x, this.position.z, cellSize);
 
-      var chunkStandingOn = ISDEF(terrainHandler.chunks[cp.x+"-"+cp.z]) ? terrainHandler.chunks[cp.x+"-"+cp.z] : null;
-
+      var cellStandingOn = ISDEF(terrainHandler.cells[cp.x+"-"+cp.z]) ? terrainHandler.cells[cp.x+"-"+cp.z] : null;
 
       if ( this.enableGravity ) {
 
@@ -572,7 +566,7 @@ var Unit = PhysicsObject.extend({
 
       //debug.SetWatch("this.isTouchingGround", this.isTouchingGround);
                  debug.SetWatch("this.allowCheckGround", this.allowCheckGround);
-                 debug.SetWatch("chunkStandingOn", chunkStandingOn);
+                 debug.SetWatch("cellStandingOn", cellStandingOn);
       //
       if ( currentMouseToWorldData ) {
       //debug.SetWatch("currentMouseToWorldData.point", currentMouseToWorldData.point.ToString());
@@ -589,7 +583,7 @@ var Unit = PhysicsObject.extend({
         this.unitStandingOn = null;
       }
 
-      if ( this.allowCheckGround && chunkStandingOn ) {
+      if ( this.allowCheckGround && cellStandingOn ) {
         // Handle collisions
 
         var isSimpleProjectile = (this instanceof Projectile) && !this.type.parabolic;

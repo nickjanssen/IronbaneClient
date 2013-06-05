@@ -34,7 +34,7 @@ var Cell = Class.extend({
         this.modelGeometry = null;
         this.modelMesh = null;
 
-        // Numbers of models that must be 0 before we can add the chunk mesh
+        // Numbers of models that must be 0 before we can add the cell mesh
         this.modelsToBuild = 0;
 
     },
@@ -213,7 +213,7 @@ var Cell = Class.extend({
 
                 var model = meshPath + filename;
 
-                (function(chunk, pos, rotation, metadata, meshData, param){
+                (function(cell, pos, rotation, metadata, meshData, param){
                 meshHandler.Load(model, function(geometry) {
 
                         var geometry = meshHandler.SpiceGeometry(geometry, rotation,
@@ -223,20 +223,20 @@ var Cell = Class.extend({
                             v.addSelf(pos);
                         });
 
-                        // // Merge it with the chunk geometry we have so far
-                        THREE.GeometryUtils.merge( chunk.modelGeometry, geometry );
+                        // // Merge it with the cell geometry we have so far
+                        THREE.GeometryUtils.merge( cell.modelGeometry, geometry );
 
                         geometry.deallocate();
 
                         // Ready! Decrease modelsToBuild
-                        chunk.modelsToBuild--;
+                        cell.modelsToBuild--;
 
                 }, meshData['scale']);
                 })(this, pos, rotation, metadata, meshData, param);
 
             }
 
-        // Keep track of the ID's in a list of the chunk
+        // Keep track of the ID's in a list of the cell
         }
 
         if ( showEditor && levelEditor.editorGUI.enablePathPlacer ) {

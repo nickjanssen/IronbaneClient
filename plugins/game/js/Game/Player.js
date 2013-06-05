@@ -58,10 +58,7 @@ var Player = Fighter.extend({
     this.lootItems = [];
     this.lootUnit = null;
 
-
     this.cameraStatus = CameraStatusEnum.ThirdPerson;
-
-    this.currentChunk = null;
 
     this.coins = socketHandler.playerData['coins'];
 
@@ -859,9 +856,6 @@ var Player = Fighter.extend({
       }
     }
 
-
-    // for(var u in npcLOS) debug.SetWatch("npclos id:", npcLOS[u]);
-
     var data = {
       p: this.localPosition.clone().Round(2),
       r: this.targetRotation.y.Round(2),
@@ -882,17 +876,7 @@ var Player = Fighter.extend({
     var rotTest = this.heading.dot(ConvertVector3(position).subSelf(this.position).normalize());
     if ( rotTest < -0.5 ) return;
 
-    // Add a slight offset
-    //position.y += 0.5;
-
-
-
-
     var weapon = this.GetEquippedWeapon();
-
-
-
-
 
     if ( weapon ) {
       var template = items[weapon.template];
@@ -901,7 +885,6 @@ var Player = Fighter.extend({
 
       if ( template['type'] == 'weapon') {
 
-        //if ( DistanceSq(position, this.position) > Math.pow(WeaponRanges[template['subtype']], 2) ) return;
         // Don't return if out of range, instead adjust the position where we're
         // shooting at
         if ( DistanceSq(position, this.position) > Math.pow(WeaponRanges[template['subtype']], 2) ) {
@@ -911,132 +894,37 @@ var Player = Fighter.extend({
         }
 
 
-        // if ( template['subtype'] == 'bow' || template['subtype'] == 'staff' ) {
-          // Fire a projectile
-          var particle = template['particle'];
+        var particle = template['particle'];
 
 
+        var proj = new Projectile(this.position.clone().addSelf(this.side.clone().multiplyScalar(0.4)), position.clone(), this);
 
-          // if ( !particle || !ISDEF(ProjectileTypeEnum[particle]) ) ba('Bad particle type for '+template['name']);
+        proj.velocity.addSelf(this.velocity);
 
-          var proj = new Projectile(this.position.clone().addSelf(this.side.clone().multiplyScalar(0.4)), position.clone(), this);
+        ironbane.unitList.push(proj);
 
-          proj.velocity.addSelf(this.velocity);
-
-          ironbane.unitList.push(proj);
-
-          this.SwingWeapon(null, template);
+        this.SwingWeapon(null, template);
 
 
-          // socketHandler.socket.emit('swingWeapon', {
-          //   p:null,
-          //   w:weapon.id
-          // });
+        // Send the projectile
+        socketHandler.socket.emit('addProjectile', {
+          s:this.position.clone().Round(2),
+          t:position.clone().Round(2),
+          w:weapon.id,
+          o:this.id,
+          sw:true
+        }, function (reply) {
 
-          // Send the projectile
-          socketHandler.socket.emit('addProjectile', {
-            s:this.position.clone().Round(2),
-            t:position.clone().Round(2),
-            w:weapon.id,
-            o:this.id,
-            sw:true
-          }, function (reply) {
+          if ( ISDEF(reply.errmsg) ) {
+              hudHandler.MessageAlert(reply.errmsg);
+              // hudHandler.ShowMenuScreen();
+              return;
+          }
 
-            if ( ISDEF(reply.errmsg) ) {
-                hudHandler.MessageAlert(reply.errmsg);
-                // hudHandler.ShowMenuScreen();
-                return;
-            }
+        });
 
-          });
-
-
-        // }
-        // else {
-
-        //   // Make sure it's not too far away
-        //   var vecDiff = position.clone().subSelf(this.position);
-        //   vecDiff.Truncate(WeaponRanges[template.subtype]);
-        //   //        vecDiff.normalize().multiplyScalar(1);
-        //   position = this.position.clone().addSelf(vecDiff);
-
-        //   var list = [];
-        //   _.each(ironbane.unitList, function(u){
-        //     if ( u instanceof Fighter && u != ironbane.player && u.InRangeOfPosition(position, 1) && u.health > 0 ){
-        //       list.push(u.id);
-        //     }
-        //   });
-
-        //   if ( list.length > 0 ) {
-        //     socketHandler.socket.emit('hit', {
-        //       w:weapon.id,
-        //       l:list
-        //     }, function (reply) {
-
-        //       if ( ISDEF(reply.errmsg) ) {
-        //         hudHandler.MessageAlert(reply.errmsg);
-        //         return;
-        //       }
-
-        //     });
-        //   //                      soundHandler.Play(ChooseRandom(["hit1","hit2","hit3"]), this.position);
-        //   }
-        //   else {
-        //   //                      soundHandler.Play(ChooseRandom(["swing1","swing2","swing3"]), this.position);
-        //   }
-
-
-
-
-        //   this.SwingWeapon(position, template);
-
-
-        //   socketHandler.socket.emit('swingWeapon', {
-        //     pos:position.clone().Round(2),
-        //     w:weapon.id
-        //   }, function(string){
-        //     var data = JSON.parse(string);
-
-        //     if ( ISDEF(data.errmsg) ) {
-        //       hudHandler.MessageAlert(data.errmsg);
-        //       return;
-        //     }
-        //   });
-        // }
       }
-//      else if ( template['type'] == 'tool') {
-//        if ( template['subtype'] == 'pickaxe') {
-//
-//
-//
-//          this.SwingWeapon(null, template);
-//
-//
-//
-//
-//
-//          // Try mining the actual mesh using CSG
-//
-//          var chunk = terrainHandler.TryChunkByWorldPosition(position);
-//          if ( chunk )  {
-//
-//
-//               chunk.Dig(position);
-//
-//		//scene.add( result );
-//
-//
-//          }
-//
-//
-//
-//
-//
-//
-//
-//        }
-//
-//      }
+
 
       this.attackTimeout = template.delay;
     }

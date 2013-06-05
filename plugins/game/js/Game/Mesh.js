@@ -117,20 +117,20 @@ var Mesh = Unit.extend({
 
       // Update materials that are nearby:
 
-      // Update chunks & objects that are nearby
+      // Update cells & objects that are nearby
 
 
 
-      _.each(terrainHandler.chunks, function(chunk) {
+      _.each(terrainHandler.cells, function(cell) {
 
-        if ( chunk.mesh ) {
-          _.each(chunk.mesh.geometry.materials, function(material) {
+        if ( cell.mesh ) {
+          _.each(cell.mesh.geometry.materials, function(material) {
             material.needsUpdate = true;
           });
         }
 
 
-        _.each(chunk.objects, function(obj) {
+        _.each(cell.objects, function(obj) {
 
           if ( me.InRangeOfPosition(this.position, light.distance) ) {
             if ( obj.mesh ) {
@@ -147,7 +147,7 @@ var Mesh = Unit.extend({
           }
 
 
-        }, chunk);
+        }, cell);
 
 
       });

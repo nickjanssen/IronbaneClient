@@ -745,11 +745,8 @@ var SocketHandler = Class.extend({
                     });
 
 
-                _.each(terrainHandler.chunks, function(chunk) {
-
-
-
-                    chunk.ReloadObjectsOnly();
+                _.each(terrainHandler.cells, function(cell) {
+                    cell.ReloadObjectsOnly();
                 });
             }
             else {
@@ -770,15 +767,15 @@ var SocketHandler = Class.extend({
                     });
 
 
-                _.each(terrainHandler.chunks, function(chunk) {
-                    _.each(chunk.objects, function(obj) {
+                _.each(terrainHandler.cells, function(cell) {
+                    _.each(cell.objects, function(obj) {
                         if ( obj.position.clone().Round(2).equals(data.pos) ) {
 
                             var rotation = obj.rotation.clone();
                             var param = obj.param;
                             var metadata = obj.metadata;
 
-                            chunk.objects = _.without(chunk.objects, obj);
+                            cell.objects = _.without(cell.objects, obj);
 
                             obj.Destroy();
 
@@ -786,7 +783,7 @@ var SocketHandler = Class.extend({
                                 var unit = new Mesh(ConvertVector3(data.pos),
                                     rotation, 0, param, data.metadata);
                                 ironbane.unitList.push(unit);
-                                chunk.objects.push(unit);
+                                cell.objects.push(unit);
                             }, 1);
                         }
 
@@ -805,11 +802,11 @@ var SocketHandler = Class.extend({
 
             hudHandler.AddChatMessage("Removing model...");
         // Check
-        _.each(terrainHandler.chunks, function(chunk) {
-            _.each(chunk.objects, function(obj) {
+        _.each(terrainHandler.cells, function(cell) {
+            _.each(cell.objects, function(obj) {
                 if ( obj.position.clone().Round(2).equals(pos) ) {
 
-                    chunk.objects = _.without(chunk.objects, obj);
+                    cell.objects = _.without(cell.objects, obj);
 
                     var cellPos = WorldToCellCoordinates(obj.position.x, obj.position.z, cellSize);
 

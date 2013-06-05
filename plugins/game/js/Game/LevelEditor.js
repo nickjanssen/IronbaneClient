@@ -1020,7 +1020,7 @@ var LevelEditor = Class.extend({
        }
 
 
-       chunkSize = 16;
+       cellSize = 16;
 
      }
      else {
@@ -1031,18 +1031,18 @@ var LevelEditor = Class.extend({
        ironbane.player.thirdPersonReference.z = -4;
        levelEditor.SetPreviewMesh(null);
 
-       chunkSize = 96+16;
+       cellSize = 96+16;
      }
 
-     chunkHalf = chunkSize/2;
+     cellHalf = cellSize/2;
 
       localStorage.globalEnable = value;
 
-      _.each(terrainHandler.chunks, function(chunk) {
-        chunk.Reload();
+      _.each(terrainHandler.cells, function(cell) {
+        cell.Reload();
       });
 
-      terrainHandler.chunks = {};
+      terrainHandler.cells = {};
 
     // bm("Reloading game with Editor "+(value?"enabled":"disabled"));
         // localStorage.globalEnable = value;
@@ -1135,7 +1135,7 @@ var LevelEditor = Class.extend({
 
 
     guiControls['enablePathPlacer'].onFinishChange(function(value) {
-      for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadWaypointsOnly();
+      for(var c in terrainHandler.cells) terrainHandler.cells[c].ReloadWaypointsOnly();
     });
 
 
@@ -1177,7 +1177,7 @@ var LevelEditor = Class.extend({
     position = position.Round(2);
 
     // We emit, and must add the Object ourselves because it is static
-    // Set the chunk to reload
+    // Set the cell to reload
     socketHandler.socket.emit('addGameObject', {
       position: position,
       type: gObject.type,
@@ -1198,7 +1198,7 @@ var LevelEditor = Class.extend({
 
     if ( unit ) {
       ironbane.unitList.push(unit);
-      terrainHandler.GetChunkByAccurateWorldPosition(position.x, position.z).objects.push(unit);
+      terrainHandler.GetCellByWorldPosition(position).objects.push(unit);
     }
   },
   PlaceModel: function(position, rotX, rotY, rotZ, id) {
@@ -1208,7 +1208,7 @@ var LevelEditor = Class.extend({
     // position.y += levelEditor.editorGUI.mpHeightOffset;
 
     // We emit, and must add the Object ourselves because it is static
-    // Set the chunk to reload
+    // Set the cell to reload
 
 
     var cellPos = WorldToCellCoordinates(position.x, position.z, cellSize);
@@ -1229,7 +1229,7 @@ var LevelEditor = Class.extend({
 
     if ( unit ) {
       ironbane.unitList.push(unit);
-      terrainHandler.GetChunkByAccurateWorldPosition(position.x, position.z).objects.push(unit);
+      terrainHandler.GetCellByWorldPosition(position).objects.push(unit);
     }
     else {
       ba("Bad unit for PlaceModel!");
@@ -1241,17 +1241,17 @@ var LevelEditor = Class.extend({
     tz = roundNumber(tz);
 
     var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var chunkPos = WorldToCellCoordinates(tx, tz, chunkSize);
-    var chunkPosWorld = CellToWorldCoordinates(chunkPos.x, chunkPos.z, chunkSize);
+    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
+    var cellPosWorld = CellToWorldCoordinates(cellPos.x, cellPos.z, cellSize);
 
-    if ( ISDEF(terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z]) ) {
-      var chunk = terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z];
+    if ( ISDEF(terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z]) ) {
+      var cell = terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z];
 
 
 
-      for(var t=0;t<chunk.tiles.length;t++) {
-        if ( chunk.tiles[t].position.x == tx && chunk.tiles[t].position.z == tz ) {
-          chunk.tiles[t].image = image;
+      for(var t=0;t<cell.tiles.length;t++) {
+        if ( cell.tiles[t].position.x == tx && cell.tiles[t].position.z == tz ) {
+          cell.tiles[t].image = image;
 
 
           // Alter the terrainHandler as well
@@ -1272,7 +1272,7 @@ var LevelEditor = Class.extend({
       }
 
       if ( doReload ) {
-        chunk.ReloadTerrainOnly();
+        cell.ReloadTerrainOnly();
       }
     }
 
@@ -1285,19 +1285,19 @@ var LevelEditor = Class.extend({
     tx = roundNumber(tx);
     tz = roundNumber(tz);
 
-    // Get the chunk
+    // Get the cell
 
     var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var chunkPos = WorldToCellCoordinates(tx, tz, chunkSize);
-    var chunkPosWorld = CellToWorldCoordinates(chunkPos.x, chunkPos.z, chunkSize);
+    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
+    var cellPosWorld = CellToWorldCoordinates(cellPos.x, cellPos.z, cellSize);
 
-    if ( ISDEF(terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z]) ) {
-      var chunk = terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z];
+    if ( ISDEF(terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z]) ) {
+      var cell = terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z];
 
 
 
-      for(var t=0;t<chunk.tiles.length;t++) {
-        if ( chunk.tiles[t].position.x == tx && chunk.tiles[t].position.z == tz ) {
+      for(var t=0;t<cell.tiles.length;t++) {
+        if ( cell.tiles[t].position.x == tx && cell.tiles[t].position.z == tz ) {
 
           // Alter the terrainHandler as well
           if ( relative ) {
@@ -1336,7 +1336,7 @@ var LevelEditor = Class.extend({
       }
 
       if ( doReload ) {
-        chunk.ReloadTerrainOnly();
+        cell.ReloadTerrainOnly();
       }
     }
 
@@ -1447,7 +1447,7 @@ var LevelEditor = Class.extend({
     if ( levelEditor.selectedNode && ironbane.player ) {
       if ( DistanceSq(levelEditor.selectedNode['pos'], ironbane.player.position) > 15*15 ) {
         levelEditor.selectedNode = null;
-        for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadWaypointsOnly();
+        for(var c in terrainHandler.cells) terrainHandler.cells[c].ReloadWaypointsOnly();
       }
 
     }

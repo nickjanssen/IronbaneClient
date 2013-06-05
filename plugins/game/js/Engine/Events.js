@@ -317,141 +317,9 @@ var mouseIntervalFunction = function(event){
 
   if ( showEditor && levelEditor.editorGUI.globalEnable ) {
 
-    //        var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-    //        ironbane.projector.unprojectVector( vector, ironbane.camera );
-    //
-    //        var ray = new THREE.Ray( ironbane.camera.position, vector.subSelf( ironbane.camera.position ).normalize() );
-    //
-    //        var meshList = [];
-    //
-    //        if ( (levelEditor.editorGUI.enableObjectPlacer && levelEditor.editorGUI.opMode == ObjectPlacerModeEnum.DELETE) ||
-    //        levelEditor.editorGUI.enableModelPlacer && levelEditor.editorGUI.mpMode == ModelPlacerModeEnum.DELETE) {
-    //
-    //            for(var c in terrainHandler.chunks) {
-    //                for(var o in terrainHandler.chunks[c].objects) {
-    //                    if ( terrainHandler.chunks[c].objects[o].mesh ) {
-    //                        meshList.push(terrainHandler.chunks[c].objects[o].mesh);
-    //                    }
-    //                }
-    //            }
-    //
-    //            // Add meshes to the list
-    //            for(var u in ironbane.unitList) {
-    //                var unit = ironbane.unitList[u];
-    //
-    //                if ( !(unit instanceof Mesh) ) continue;
-    //
-    //                if ( unit.InRangeOfUnit(ironbane.player, 500) ) {
-    //                    meshList.push(unit.mesh);
-    //                }
-    //            }
-    //
-    //        }
-    //        if ( levelEditor.editorGUI.enableNPCEditor && (levelEditor.editorGUI.neMode == NPCEditorModeEnum.PICK || levelEditor.editorGUI.neMode == NPCEditorModeEnum.DELETE) ) {
-    //
-    //            for(var u in ironbane.unitList) {
-    //                var unit = ironbane.unitList[u];
-    //
-    //                if ( unit.id >= 0 ) continue;
-    //
-    //                if ( unit.mesh ) {
-    //                    meshList.push(unit.mesh);
-    //                }
-    //            }
-    //
-    //        }
-    //        else {
-    //
-    //            for(var c in terrainHandler.chunks) {
-    //                if ( terrainHandler.chunks[c].mesh ) {
-    //                    meshList.push(terrainHandler.chunks[c].mesh);
-    //                }
-    //            }
-    //
-    //
-    //        }
-
-
-
-
     if (currentMouseToWorldData) {
 
-
-      if ( levelEditor.editorGUI.enableWorldPainter ) {
-        var ix = roundNumber(
-          currentMouseToWorldData.face.centroid.x-(0.5*worldScale)).Round2();
-        var iz = roundNumber(
-          currentMouseToWorldData.face.centroid.z-(0.5*worldScale)).Round2();
-
-
-      var bw = (levelEditor.editorGUI.paintSize).Round();
-      var bwr = (Math.round(levelEditor.editorGUI.paintSize)).Round();
-
-      var tileToPaint = levelEditor.editorGUI.selectedTile;
-
-
-
-
-    var cat = levelEditor.cats[levelEditor.currentCat];
-    var amountoftilesperline = cat.amountoftilesperline;
-
-    var countX = 0;
-    var countZ = 0;
-
-      for(var x = ix-bwr;x<=ix+bwr;x+=worldScale){
-          countX ++;
-        for(var z = iz-bwr;z<=iz+bwr;z+=worldScale){
-            countZ ++;
-            var tileCount4PaintMode = 0;
-
-            var tempOffset = 0;
-            var offset = bwr % 2 != 0 ? (0.5*worldScale) : 0;
-            if ( le("wp4XTilePaintMode") ) {
-
-                //if ( x % 2 ) tileCount4PaintMode += 1;
-
-                //if ( countX % 2 )  tileCount4PaintMode += 1;
-                //if ( countZ % 2 )  tileCount4PaintMode += amountoftilesperline;
-
-                //tempOffset = ((amountoftilesperline+1)-tileCount4PaintMode);
-                if ( bwr % 2 ) {
-                    if ( (x+1) % 4 ) tempOffset += 1;
-                    if ( (z+1) % 4 ) tempOffset += amountoftilesperline;
-                }
-                else {
-                    offset = 0;
-
-                    if ( (x) % 4 ) tempOffset += 1;
-                    if ( (z) % 4 ) tempOffset += amountoftilesperline;
-
-
-                }
-            }
-
-            //var d = DistanceBetweenPoints(ix, iz, x, z);
-            //if ( d <= bw ) {
-
-
-            levelEditor.SetTileImage(x - offset, z - offset, tileToPaint + tempOffset, true, true);
-          //}
-
-
-
-
-
-          }
-        }
-
-
-      //                    var chunkPos = WorldToCellCoordinates(ix, iz, chunkSize);
-      //                    var chunkPosWorld = CellToWorldCoordinates(chunkPos.x, chunkPos.z, chunkSize);
-      //
-      //                    if ( ISDEF(tezzrrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z]) ) {
-      //                        var chunk = terrainHandler.chunks[chunkPosWorld.x+'-'+chunkPosWorld.z];
-      //                        chunk.Reload();
-      //                    }
-      }
-      else if ( levelEditor.editorGUI.enableNPCEditor ) {
+      if ( levelEditor.editorGUI.enableNPCEditor ) {
 
         var position = currentMouseToWorldData.point;
 
@@ -489,38 +357,6 @@ var mouseIntervalFunction = function(event){
           }
         }
       }
-      // else if ( levelEditor.editorGUI.enableObjectPlacer ) {
-
-      //   var position = currentMouseToWorldData.point;
-
-
-      //   if ( levelEditor.editorGUI.opMode == ObjectPlacerModeEnum.DELETE ) {
-      //     for(var c in terrainHandler.chunks) {
-      //       for(var o=0;o<terrainHandler.chunks[c].objects.length;o++) {
-      //         if ( currentMouseToWorldData.object == terrainHandler.chunks[c].objects[o].mesh ) {
-
-      //           var obj = terrainHandler.chunks[c].objects[o];
-
-      //           if ( !(obj instanceof Mesh) ) {
-
-      //             // Send a request to destroy this object
-      //             socketHandler.socket.emit('deleteGameObject', obj.position.Round(2));
-
-      //             obj.Destroy();
-
-      //             terrainHandler.chunks[c].objects.splice(o, 1);
-      //           }
-
-      //         }
-      //       }
-      //     }
-
-      //   }
-      //   else {
-      //     // Place an object here!
-      //     levelEditor.PlaceObject(position, levelEditor.editorGUI.selectedTile);
-      //   }
-      // }
       else if ( levelEditor.editorGUI.enablePathPlacer ) {
 
         var position = currentMouseToWorldData.point;
@@ -528,32 +364,27 @@ var mouseIntervalFunction = function(event){
         // Find an object near that position which could be a waypoint
         var waypoint = null;
 
-        for(var c in terrainHandler.chunks) {
-          for(var o=0;o<terrainHandler.chunks[c].objects.length;o++) {
-            if ( terrainHandler.chunks[c].objects[o] instanceof Waypoint && terrainHandler.chunks[c].objects[o].mesh ) {
-              var obj = terrainHandler.chunks[c].objects[o];
-
+        _.each(terrainHandler.cells, function(cell) {
+            _.each(cell.objects, function(obj) {
+            if ( obj instanceof Waypoint && obj.mesh ) {
               if ( obj.InRangeOfPosition(position, 1) ) {
                 waypoint = obj;
               }
             }
-          }
-        }
+          });
+        });
 
         // what if the node is in the air?
-        for(var c in terrainHandler.chunks) {
-          for(var o=0;o<terrainHandler.chunks[c].objects.length;o++) {
-            if ( currentMouseToWorldData.object == terrainHandler.chunks[c].objects[o].mesh ) {
-
-              var obj = terrainHandler.chunks[c].objects[o];
+        _.each(terrainHandler.cells, function(cell) {
+            _.each(cell.objects, function(obj) {
+              if ( currentMouseToWorldData.object == obj.mesh ) {
 
               if ( (obj instanceof Waypoint) ) {
                 waypoint = obj;
               }
-
             }
-          }
-        }
+          });
+        });
 
         if ( levelEditor.editorGUI.ppMode == PathPlacerModeEnum.NODES ) {
 
@@ -565,8 +396,8 @@ var mouseIntervalFunction = function(event){
               return;
             }
 
-            _.each(terrainHandler.chunks, function(chunk) {
-                _.each(chunk.objects, function(obj) {
+            _.each(terrainHandler.cells, function(cell) {
+                _.each(cell.objects, function(obj) {
 
                     if ( obj instanceof Waypoint ) {
                       if ( obj.InRangeOfPosition(position, levelEditor.editorGUI.ppAutoConnectWithin) ) {
@@ -622,14 +453,19 @@ var mouseIntervalFunction = function(event){
               levelEditor.selectedNode = null;
             }
 
-            for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadWaypointsOnly();
+            _.each(terrainHandler.cells, function(cell) {
+              cell.ReloadWaypointsOnly();
+            });
+
           }
           else {
             // Set selected node
             if ( waypoint ) {
               levelEditor.selectedNode = waypoint.nodeData;
 
-              for(var c in terrainHandler.chunks) terrainHandler.chunks[c].ReloadWaypointsOnly();
+              _.each(terrainHandler.cells, function(cell) {
+                cell.ReloadWaypointsOnly();
+              });
             }
           }
 
@@ -658,11 +494,9 @@ var mouseIntervalFunction = function(event){
 
 
         if ( levelEditor.editorGUI.mpMode == ModelPlacerModeEnum.DELETE ) {
-          for(var c in terrainHandler.chunks) {
-            for(var o=0;o<terrainHandler.chunks[c].objects.length;o++) {
-              if ( currentMouseToWorldData.object == terrainHandler.chunks[c].objects[o].mesh ) {
-
-                var obj = terrainHandler.chunks[c].objects[o];
+          _.each(terrainHandler.cells, function(cell) {
+              _.each(cell.objects, function(obj) {
+              if ( currentMouseToWorldData.object == obj.mesh ) {
 
                 if ( obj instanceof Mesh ) {
                   // Send a request to destroy this object
@@ -671,8 +505,8 @@ var mouseIntervalFunction = function(event){
 
                 }
               }
-            }
-          }
+            });
+          });
 
         }
         else {
@@ -686,29 +520,17 @@ var mouseIntervalFunction = function(event){
             param:levelEditor.editorGUI.selectModel
           });
 
-
-          // Send a request to place an object here!
-          // levelEditor.PlaceModel(levelEditor.previewMesh.position.clone(),
-          //   levelEditor.editorGUI.mpRotX,
-          //   levelEditor.editorGUI.mpRotY,
-          //   levelEditor.editorGUI.mpRotZ,
-          //   levelEditor.editorGUI.selectModel);
         }
       }
       else if ( levelEditor.editorGUI.enableModelPainter ) {
 
+          for(var c in terrainHandler.cells) {
+            for(var o=0;o<terrainHandler.cells[c].objects.length;o++) {
+              if ( currentMouseToWorldData.object == terrainHandler.cells[c].objects[o].mesh ) {
 
-
-          for(var c in terrainHandler.chunks) {
-            for(var o=0;o<terrainHandler.chunks[c].objects.length;o++) {
-              if ( currentMouseToWorldData.object == terrainHandler.chunks[c].objects[o].mesh ) {
-
-                var obj = terrainHandler.chunks[c].objects[o];
+                var obj = terrainHandler.cells[c].objects[o];
 
                 if ( obj instanceof Mesh ) {
-
-
-
                   // Send a request to destroy this object
 
                   var currentMetadata = {};
@@ -734,80 +556,6 @@ var mouseIntervalFunction = function(event){
 
 
       }
-      else if ( levelEditor.editorGUI.enableWorldBuilder ) {
-        var ix = roundNumber(currentMouseToWorldData.point.x, 0);
-        var iz = roundNumber(currentMouseToWorldData.point.z, 0);
-        ix = ix % 2 == 0 ? ix : ix+1;
-        iz = iz % 2 == 0 ? iz : iz+1;
-
-        if ( levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.FLATTEN ) {
-          levelEditor.editorGUI.brushWidth = levelEditor.editorGUI.brushWidth.Round().Round2();
-        }
-
-        // Take into account the brush width
-        var bw = (levelEditor.editorGUI.brushWidth/2).Round2();
-
-        var bh = levelEditor.editorGUI.brushHeight;
-        var bf = (levelEditor.editorGUI.brushFeather).Round2();
-
-        var t = bw+bf;
-        var tabs = Math.abs(t)*2;
-
-        var fh = false;
-
-        for(var x = ix-tabs;x<=ix+tabs;x+=worldScale){
-          for(var z = iz-tabs;z<=iz+tabs;z+=worldScale){
-            var d = DistanceBetweenPoints(ix, iz, x, z);
-
-
-
-            if ( d <= t) {
-              //                            if ( !fh ) {
-              //                                var chunkPos = WorldToCellCoordinates(x, z, chunkSize);
-              //                                var chunkPosWorld = CellToWorldCoordinates(chunkPos.x, chunkPos.z, chunkSize);
-              //                                var tiles = terrainHandler.GetChunkByWorldPosition(chunkPosWorld.x, chunkPosWorld.z).tiles;
-              //                                for(var t in tiles) {
-              //                                    if ( tiles[t].position.x == x && tiles[t].position.z == z ) {
-              //                                        fh = tiles[t].position.y;
-              //                                        break;
-              //                                    }
-              //                                }
-              //                            }
-              var h = 0;
-              //var f = 1-(d / t);
-              if ( levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.FLATTEN ) {
-                //if ( fh != false ) {
-                if ( d <= bw ) {
-                  h = levelEditor.editorGUI.flattenHeight;
-
-                  levelEditor.SetTileHeight(x, z, h, false, true, true);
-                }
-              //}
-
-              }
-              else {
-
-                if ( d > bw ) {
-                  h = (1-((d-bw)/bf))*bh;
-                }
-                else {
-                  h = bh;
-                }
-
-                h = Math.max(h, 0);
-                h = Math.min(h, bh);
-
-                levelEditor.SetTileHeight(x, z, levelEditor.editorGUI.wbMode == WorldBuilderModeEnum.DIG ? -h : h, true, true, true);
-              }
-
-
-
-            }
-          }
-        }
-
-
-      }
 
     }
   }
@@ -822,7 +570,7 @@ var mouseIntervalFunction = function(event){
       }
     }
     else {
-
+      // Todo: rotate around camera
     }
 
 

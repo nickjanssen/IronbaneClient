@@ -105,7 +105,6 @@ var Game = Class.extend({
       hudHandler.MakeCharSelectionScreen();
 
       terrainHandler.UpdateCells(0.1);
-      terrainHandler.UpdateChunks(0.1);
     });
 
 
@@ -187,7 +186,7 @@ var Game = Class.extend({
 
     if (
       terrainHandler.isLoaded
-      && terrainHandler.hasChunksLoaded
+      && terrainHandler.hasCellsLoaded
       && soundHandler.loadedMainMenuMusic
       && !ironbane.showingGame) {
 
