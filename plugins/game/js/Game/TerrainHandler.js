@@ -73,8 +73,7 @@ var TerrainHandler = Class.extend({
 
     this.BuildWaterMesh();
 
-    // Add a skybox
-    this.skybox = new Skybox();
+
 
     if ( GetZoneConfig("enableClouds") ) {
       particleHandler.Add(ParticleTypeEnum.CLOUD, {});
@@ -272,7 +271,12 @@ var TerrainHandler = Class.extend({
     }
 
     // Check if the Skybox is ready
+    if ( !this.skybox ) {
+      this.skybox = new Skybox();
+    }
     if ( !this.skybox.isLoaded ) isLoaded = false;
+
+
 
     if ( !this.isLoaded && isLoaded ) {
       this.isLoaded = true;
@@ -474,7 +478,7 @@ var TerrainHandler = Class.extend({
     // If one of us is still loading, don't tick further!
     var goFurther = true;
     _.each(this.chunks, function(chunk) {
-      if ( chunk.tilesToAdd > 0 || chunk.modelsToBuild > 0 ) {
+      if ( chunk.modelsToBuild > 0 ) {
         goFurther = false;
       }
     });

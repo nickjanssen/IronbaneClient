@@ -203,7 +203,6 @@ $(document).keydown(function(event){
 
             setTimeout(function(){ironbane.showingGame = false;}, 100);
 
-
             socketHandler.inGame = false;
 
             for(var u=0;u<ironbane.unitList.length;u++) ironbane.unitList[u].Destroy();

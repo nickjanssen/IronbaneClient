@@ -59,18 +59,15 @@ var HUDHandler = Class.extend({
 
     this.currentBookPage = 0;
 
-
     this.bigMessages = [];
-
-    if ( stealth ) {
-      $('#logo').css('background', 'none');
-    }
 
     this.alertBoxActive = false;
 
     this.chatBuffer = "";
 
     this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
+
+    $("#gameFrame").css('opacity', '');
 
     if ( Detector.webgl ) {
       if ( socketHandler.serverOnline ) {
@@ -82,21 +79,12 @@ var HUDHandler = Class.extend({
         }, 1000);
       }
 
-      if ( stealth ) {
-        $('#chatBox').hide();
-        $('#chatInput').hide();
-        $('#chatContent').hide();
-      }
-
-
-
-
     }
     else {
 
       ironbane.showingGame = true;
 
-      $("#gameFrame").css('opacity', '');
+
       // $("#loadingBar").hide();
 
 
