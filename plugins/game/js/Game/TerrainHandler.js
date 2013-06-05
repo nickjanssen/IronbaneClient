@@ -271,6 +271,9 @@ var TerrainHandler = Class.extend({
       }
     }
 
+    // Check if the Skybox is ready
+    if ( !this.skybox.isLoaded ) isLoaded = false;
+
     if ( !this.isLoaded && isLoaded ) {
       this.isLoaded = true;
 

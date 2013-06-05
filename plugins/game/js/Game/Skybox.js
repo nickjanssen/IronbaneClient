@@ -95,6 +95,8 @@ var Skybox = PhysicsObject.extend({
 
     }
 
+    this.isLoaded = false;
+
     this._super();
   },
   BuildMesh: function(geometry) {
@@ -139,6 +141,8 @@ var Skybox = PhysicsObject.extend({
 
     this.terrainOctree.add( this.terrainMesh, true );
 
+    this.isLoaded = true;
+
   },
   Destroy: function() {
     if ( this.skyboxMesh ) {
@@ -165,6 +169,8 @@ var Skybox = PhysicsObject.extend({
       ironbane.scene.remove(this.shadowLight);
       releaseMesh(this.shadowLight);
     }
+
+    this.isLoaded = false;
   },
   Tick: function(dTime) {
 
