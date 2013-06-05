@@ -18,11 +18,13 @@
 var skyboxPath = 'plugins/game/images/skybox/';
 
 var Skybox = PhysicsObject.extend({
-  Init: function() {
+  Init: function(onReady) {
 
     var p = terrainHandler.GetReferenceLocation();
 
     this._super(p);
+
+    this.onReady = onReady;
 
     this.sunVector = new THREE.Vector3(0, 1, 0);
 
@@ -141,7 +143,7 @@ var Skybox = PhysicsObject.extend({
 
     this.terrainOctree.add( this.terrainMesh, true );
 
-    this.isLoaded = true;
+    if ( this.onReady ) this.onReady();
 
   },
   Destroy: function() {

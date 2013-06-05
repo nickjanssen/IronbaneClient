@@ -15,17 +15,23 @@
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var cellStatusEnum = {
+    INIT: 0,
+    LOADING: 1,
+    LOADED: 2,
+    DESTROYED: 3
+};
+
 var Cell = Class.extend({
     Init: function(cellX, cellZ) {
 
         this.cellX = cellX;
         this.cellZ = cellZ;
 
-        this.isAddedToWorld = false;
+        var tempVec = CellToWorldCoordinates(this.cellX, this.cellZ, cellSize);
+        this.worldPosition = new THREE.Vector3(tempVec.x, 0, tempVec.z);
 
-        this.hasMeshesLoaded = false;
-
-        this.removeNextTick = false;
+        this.status = cellStatusEnum.INIT;
 
         this.objects = [];
         this.waypointMeshes = [];
@@ -37,8 +43,27 @@ var Cell = Class.extend({
         // Numbers of models that must be 0 before we can add the cell mesh
         this.modelsToBuild = 0;
 
+        this.objectData = null;
+        this.graphData = null;
+
+        this.filesToLoad = 0;
+
     },
     Tick: function(dTime) {
+
+        switch(this.status) {
+            case cellStatusEnum.INIT:
+                this.Load();
+                this.status = cellStatusEnum.LOADING;
+                break;
+            case cellStatusEnum.LOADING:
+
+                break;
+            case cellStatusEnum.LOADED:
+
+                break;
+        }
+
         if ( this.isAddedToWorld ) return;
 
         if ( !this.hasMeshesLoaded ) {
@@ -56,7 +81,47 @@ var Cell = Class.extend({
         }
 
     },
+    Load: function() {
+        var me = this;
+
+
+        // Todo: switch to promises
+        this.filesToLoad++;
+        // Make the request, and when the request is in, build the mesh
+        var objectsFile = 'plugins/game/data/'+terrainHandler.zone+'/'+this.cellX+'/'+this.cellZ+'/objects.json?'+(new Date()).getTime();
+        $.getJSON(objectsFile, function(data) {
+          me.filesToLoad--;
+          me.objectData = data;
+          console.log('Loaded: '+objectsFile);
+          me.FinishLoad();
+        }).error(function() {
+          console.warn('Not found: '+objectsFile);
+        });
+
+
+        if ( isEditor ) {
+          this.filesToLoad++;
+          var objectsFile = 'plugins/game/data/'+terrainHandler.zone+'/'+this.cellX+'/'+this.cellZ+'/graph.json?'+(new Date()).getTime();
+          $.getJSON(graphFile, function(data) {
+            me.filesToLoad--;
+            me.graphData = data;
+            console.log('Loaded graph: '+graphFile);
+            me.FinishLoad();
+          }).error(function() {
+            console.warn('No graph found: '+graphFile);
+          });
+        }
+
+    },
+    FinishLoad: function() {
+        if ( !this.filesToLoad ) {
+            // Make the mesh
+            this.LoadObjects();
+        }
+    },
     AddMesh: function() {
+
+        if ( this.modelsToBuild ) return;
 
         // Load all 3D models that belong to this group
         this.models = new THREE.Mesh(this.modelGeometry, new THREE.MeshFaceMaterial());
@@ -78,8 +143,11 @@ var Cell = Class.extend({
         ironbane.shadowMapUpdateTimer = setTimeout(function() {
             ironbane.renderer.shadowMapAutoUpdate = false;
         }, 100);
+
+
+        this.status = cellStatusEnum.LOADED;
     },
-    RemoveMesh: function() {
+    Destroy: function() {
 
         if ( this.modelGeometry ) {
             _.each(this.modelGeometry.materials, function(material) {
@@ -105,7 +173,7 @@ var Cell = Class.extend({
 
         this.objects = [];
 
-        this.isAddedToWorld = false;
+        this.status = cellStatusEnum.DESTROYED;
     },
     ReloadWaypointsOnly: function() {
 
@@ -148,9 +216,8 @@ var Cell = Class.extend({
         this.LoadObjects();
     },
     Reload: function() {
-        if ( this.isAddedToWorld ) {
-            this.RemoveMesh();
-        }
+        this.Destroy();
+        this.status = cellStatusEnum.INIT;
     },
     LoadObjects: function(waypointsOnly) {
 
@@ -161,15 +228,9 @@ var Cell = Class.extend({
 
         waypointsOnly = waypointsOnly || false;
 
+        _.each(this.objectData, function(gObject) {
 
-        if ( !ISDEF(terrainHandler.world[this.cellX][this.cellZ]['objects']) ) return;
-
-        for(var o=0;o<terrainHandler.world[this.cellX][this.cellZ]['objects'].length;o++) {
-
-            if ( waypointsOnly ) continue;
-
-            var gObject = terrainHandler.world[this.cellX][this.cellZ]['objects'][o];
-
+            if ( waypointsOnly ) return;
 
             var pos = new THREE.Vector3(gObject.x, gObject.y, gObject.z);
 
@@ -231,17 +292,19 @@ var Cell = Class.extend({
                         // Ready! Decrease modelsToBuild
                         cell.modelsToBuild--;
 
+                        cell.AddMesh();
+
                 }, meshData['scale']);
                 })(this, pos, rotation, metadata, meshData, param);
 
             }
 
         // Keep track of the ID's in a list of the cell
-        }
+        }, this);
 
         if ( showEditor && levelEditor.editorGUI.enablePathPlacer ) {
 
-            var graph = terrainHandler.world[this.cellX][this.cellZ]['graph'];
+            var graph = this.graphData;
 
             if ( graph && graph['nodes'] !== undefined ) {
                 for(var n=0;n<graph['nodes'].length;n++) {

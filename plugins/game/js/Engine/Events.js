@@ -188,7 +188,7 @@ $(document).keydown(function(event){
     if ( !cinema.IsPlaying() ) {
       hudHandler.MessageAlert("Back to the Main Menu?", "question", function() {
 
-        terrainHandler.readyToReceiveUnits = false;
+        socketHandler.readyToReceiveUnits = false;
 
         socketHandler.socket.emit('backToMainMenu', {}, function (reply) {
 

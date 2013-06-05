@@ -32,6 +32,7 @@ var SocketHandler = Class.extend({
 
         this.playerData = null;
 
+        this.readyToReceiveUnits = false;
 
         this.inGame = false;
 
@@ -502,7 +503,7 @@ var SocketHandler = Class.extend({
                         setTimeout(function(){ironbane.showingGame = false;}, 100);
 
 
-                        terrainHandler.readyToReceiveUnits = false;
+                        socketHandler.readyToReceiveUnits = false;
 
 
                         if ( data.z != terrainHandler.zone ) {
@@ -622,7 +623,7 @@ var SocketHandler = Class.extend({
             setTimeout(function(){ironbane.showingGame = false;}, 100);
 
 
-            terrainHandler.readyToReceiveUnits = false;
+            socketHandler.readyToReceiveUnits = false;
 
             if ( data.zone != terrainHandler.zone ) {
 

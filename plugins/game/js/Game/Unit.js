@@ -450,7 +450,7 @@ var Unit = PhysicsObject.extend({
     var radians = (this.rotation.y + 90) * (Math.PI/180);
 
     if ( this.dynamic
-      && terrainHandler.readyToReceiveUnits
+      && socketHandler.readyToReceiveUnits
       && !(this instanceof Mesh)
       && this.tickTimeout <= 0.0 ) {
 

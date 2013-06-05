@@ -104,7 +104,7 @@ var Game = Class.extend({
 
       hudHandler.MakeCharSelectionScreen();
 
-      terrainHandler.UpdateCells(0.1);
+      terrainHandler.Tick(0.1);
     });
 
 
