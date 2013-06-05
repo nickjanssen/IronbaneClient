@@ -213,14 +213,18 @@ var TerrainHandler = Class.extend({
     if ( !socketHandler.inGame ) loadRange = 1;
 
     // Do a pre-check, and if some are already loading we just return silently
-    if ( ironbane.showingGame ) {
-      for(var x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
-        if ( _.isUndefined(this.world[x) ) this.world[x] = {};
 
-        for(var z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
-          if ( _.isUndefined(this.world[x][z]) ) this.world[x][z] = {
-            isLoading: false
-          };
+    var x, z;
+    if ( ironbane.showingGame ) {
+      for(x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
+        if ( _.isUndefined(this.world[x]) ) this.world[x] = {};
+
+        for(z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
+          if ( _.isUndefined(this.world[x][z]) ) {
+            this.world[x][z] = {
+              isLoading: false
+            };
+          }
 
           if ( _.isUndefined(this.world[x][z].objects) ) {
             if ( this.world[x][z]['isLoading'] ) {
@@ -234,8 +238,14 @@ var TerrainHandler = Class.extend({
     }
 
 
-    for(var x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
-      for(var z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
+    for(x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
+      if ( _.isUndefined(this.world[x]) ) this.world[x] = {};
+      for(z=cp.z-loadRange;z<=cp.z+loadRange;z+=1){
+        if ( _.isUndefined(this.world[x][z]) ) {
+          this.world[x][z] = {
+            isLoading: false
+          };
+        }
         if ( _.isUndefined(this.world[x][z].objects) ) {
           if ( !this.world[x][z]['isLoading'] ) {
             this.LoadCell(x, z);
@@ -285,7 +295,7 @@ var TerrainHandler = Class.extend({
       }
     }
 
-    var p = this.GetReferenceLocation();
+    p = this.GetReferenceLocation();
 
     var cellUnloadRange = cellLoadRange+1;
     for (c = 0; c < this.cells.length; c++) {
@@ -316,18 +326,17 @@ var TerrainHandler = Class.extend({
 
         var pcp2 = CellToWorldCoordinates(x, z, cellSize);
 
-        var cell = this.cells[pcp2.x+'-'+pcp2.z];
+        var cell = this.cells[x+'-'+z];
 
         var distance = p.clone().subSelf(new THREE.Vector3(pcp2.x, 0, pcp2.z)).lengthSq();
 
         if ( distance > cellLoadRange*cellLoadRange ) continue;
 
-
-        if ( !ISDEF(this.cells[pcp2.x+'-'+pcp2.z]) || !this.cells[pcp2.x+'-'+pcp2.z].isAddedToWorld) {
+        if ( !ISDEF(this.cells[x+'-'+z]) || !this.cells[x+'-'+z].isAddedToWorld) {
           this.hasCellsLoaded = false;
         }
 
-        terrainHandler.GetCellByWorldPosition(pcp2);
+        terrainHandler.GetCellByGridPosition(x, z);
 
       }
     }
@@ -348,7 +357,6 @@ var TerrainHandler = Class.extend({
 
     return this.cells[id];
   },
-
   GetReferenceLocation: function() {
     return this.GetReferenceLocationNoClone().clone();
   },
@@ -414,7 +422,7 @@ var TerrainHandler = Class.extend({
       }
     }
 
-    var meshList = []
+    var meshList = [];
 
     if ( !noMeshes ) {
       for(var u=0;u<ironbane.unitList.length;u++) {
@@ -453,10 +461,10 @@ var TerrainHandler = Class.extend({
 
 
     if ( reverseRaySortOrder ) {
-      intersects.sort(function(a,b) { return b.distance - a.distance } );
+      intersects.sort(function(a,b) { return b.distance - a.distance; } );
     }
     else {
-      intersects.sort(function(a,b) { return a.distance - b.distance } );
+      intersects.sort(function(a,b) { return a.distance - b.distance; } );
     }
 
     if ( intersects.length > 0 && unitReference ) {

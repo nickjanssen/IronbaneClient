@@ -129,7 +129,7 @@ $internals = array(
     "Game/LootableMesh",
     "Game/Fighter",
     "Game/Player",
-    "Game/Chunk",
+    "Game/Cell",
     "Game/Cinema",
     "Game/Cutscenes",
 
