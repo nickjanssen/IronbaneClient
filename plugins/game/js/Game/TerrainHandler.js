@@ -14,66 +14,36 @@
     You should have received a copy of the GNU General Public License
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * Terrain exists out of tiles
- *
- *
- * Units: 1.0 = 1 meter = one '
- *
- */
-
-
 
 // How big the server will send us a chunk
 // Must be dividable by 2
-var chunkSize =  le("globalEnable") ? 16 : 96+16;
-//var chunkSize = 16;
+var chunkSize =  96+16;
 var chunkHalf = chunkSize / 2;
 
-//var chunkLoadRange = ISDEF(localStorage.chunkDistance) ? parseFloat(localStorage.chunkDistance) : chunkSize+16;
 var chunkLoadRange = chunkSize+16;
 
-
-// chunkLoadRange = 224;
-
-//var previewLocation = new THREE.Vector3(40, 50, 20);
 var previewLocation = new THREE.Vector3(0, 10, 0);
-//var previewLocation = new THREE.Vector3(0, 0, 0);
+
 var previewDistance = 15;
 var previewHeight = 5;
 
-//var cellLoadRange = 400;
-//var cellUnloadRange = 1000;
-//var chunkBufferRange = 1000;
-
 var TerrainHandler = Class.extend({
   Init: function() {
-    // Multidimensional array per x/y chunk that holds tiles
+    // Multidimensional array per x/y chunk
     this.chunks = {};
 
     this.previewZone = 1;
     this.zone = this.previewZone;
-
-    // Add a chunk with a test tile
-    // this.chunks.push(new Chunk(new THREE.Vector3(chunkHalf, 0, chunkHalf)));
-    // this.chunks[0].AddTile(new THREE.Vector3(0.5, 0, 0.5), 11);
-    // this.chunks[0].isLoaded = true;
 
     // [cellX][cellZ]
     this.world = {};
 
     this.chunkCheckTimer = 0.0;
 
-
-    //this.LoadTiles();
     this.waterMesh = null;
-
     this.skybox = null;
-
     this.hasChunksLoaded = false;
-
     this.readyToReceiveUnits = false;
-
     this.isLoaded = false;
 
     this.lastOctreeBuildPosition = new THREE.Vector3(0, 1000000000, 0);
@@ -81,7 +51,10 @@ var TerrainHandler = Class.extend({
     this.currentMusic = "";
   },
   Destroy: function() {
-    for(var c in this.chunks) this.chunks[c].RemoveMesh();
+    _.each(this.chunks, function(chunk) {
+      chunk.RemoveMesh();
+    });
+
     this.chunks = {};
     this.world = {};
     this.isLoaded = false;
@@ -93,23 +66,15 @@ var TerrainHandler = Class.extend({
 
     this.readyToReceiveUnits = false;
 
-
     particleHandler.RemoveAll();
   },
   Awake: function() {
     // Called after everything is loaded
 
-
-
     this.BuildWaterMesh();
 
-
-
     // Add a skybox
-
     this.skybox = new Skybox();
-
-    // particleHandler.RemoveAll();
 
     if ( GetZoneConfig("enableClouds") ) {
       particleHandler.Add(ParticleTypeEnum.CLOUD, {});
@@ -144,10 +109,7 @@ var TerrainHandler = Class.extend({
   },
   LoadCell: function(cellX, cellZ) {
 
-    // ba('dont make too many ajax calls! if one is already busy, wait a frame before we send the next request. or try something else')
-
     terrainHandler.world[cellX][cellZ]['isLoading'] = true;
-
     terrainHandler.world[cellX][cellZ]['hasObjectsLoaded'] = false;
 
     var objectsFile = 'plugins/game/data/'+this.zone+'/'+cellX+'/'+cellZ+'/objects.json?'+(new Date()).getTime();
@@ -161,9 +123,7 @@ var TerrainHandler = Class.extend({
     });
 
 
-
     if ( isEditor ) {
-
       var graphFile = 'plugins/game/data/'+this.zone+'/'+cellX+'/'+cellZ+'/graph.json?'+(new Date()).getTime();
       $.getJSON(graphFile, function(data) {
         terrainHandler.world[cellX][cellZ]['graph'] = data;
@@ -171,17 +131,10 @@ var TerrainHandler = Class.extend({
       }).error(function() {
         console.warn('No graph found: '+graphFile);
       });
-
     }
-
 
   },
   BuildWaterMesh: function() {
-    //if ( debugging ) return;
-
-
-
-    // Build the water mesh
     if ( this.waterMesh ) {
       ironbane.scene.remove(this.waterMesh);
     }
@@ -234,10 +187,6 @@ var TerrainHandler = Class.extend({
         type: 'f',
         value: 0.0
       }
-    //            camPos : {
-    //                type: 'v3',
-    //                value: ironbane.camera.position
-    //            }
     };
 
     var shaderMaterial = new THREE.ShaderMaterial({
@@ -248,25 +197,9 @@ var TerrainHandler = Class.extend({
     //alphaTest: 0.5
     });
 
-    //    this.waterMesh = new THREE.Mesh(planeGeo,
-    //      textureHandler.GetTexture('plugins/game/images/tiles/'+
-    //      GetZoneConfig('waterTexture')+'.png',
-    //      false,
-    //      {
-    //        transparent:true,
-    //        alphaTest:0.01
-    //      },
-    //      {
-    //        repeat: new THREE.Vector2(50, 50)
-    //      }));
-
     this.waterMesh = new THREE.Mesh(planeGeo, shaderMaterial);
-
     this.waterMesh.rotation.x = -Math.PI/2;
-
     this.waterMesh.position.y = GetZoneConfig('waterLevel');
-    //this.mesh.p
-
     this.waterMesh.geometry.dynamic = true;
 
     ironbane.scene.add(this.waterMesh);
@@ -280,25 +213,12 @@ var TerrainHandler = Class.extend({
     debug.SetWatch('Player Cell X', cp.x);
     debug.SetWatch('Player Cell Z', cp.z);
 
-
-    var chp = WorldToCellCoordinates(p.x, p.z, chunkSize);
-
-    debug.SetWatch('Player Chunk X', chp.x);
-    debug.SetWatch('Player Chunk Z', chp.z);
-
     debug.SetWatch('Unit count', ironbane.unitList.length);
 
-
-    // Load cells around us
-
-
-
     var isLoaded = true;
-
     var loadRange = cellLoadRange;
 
     if ( !socketHandler.inGame ) loadRange = 1;
-
 
     // Do a pre-check, and if some are already loading we just return silently
     if ( ironbane.showingGame ) {
@@ -324,8 +244,6 @@ var TerrainHandler = Class.extend({
         }
       }
     }
-
-
 
 
     for(var x=cp.x-loadRange;x<=cp.x+loadRange;x+=1){
@@ -359,38 +277,9 @@ var TerrainHandler = Class.extend({
       this.Awake();
     }
 
-  //        debug.SetWatch('this.isLoaded', this.isLoaded);
-  //        debug.SetWatch('this.hasChunksLoaded', this.hasChunksLoaded);
-
-  //        for(var x=0;x<=0;x+=cellSize){
-  //            if ( typeof this.world[x] == 'undefined' ) this.world[x] = {};
-  //
-  //            for(var z=0;z<=0;z+=cellSize){
-  //
-  //                if ( typeof this.world[x][z] == 'undefined' ) this.world[x][z] = { isLoading: false };
-  //
-  //                if ( typeof this.world[x][z]['terrain'] == 'undefined' ) {
-  //
-  //                    if ( !this.world[x][z]['isLoading'] ) {
-  //
-  //                        this.LoadCell(x, z);
-  //
-  //                    }
-  //                }
-  //
-  //
-  //            }
-  //        }
 
   },
   GetChunkByAccurateWorldPosition: function(x, z) {
-    // Op welke chunk bevind ik me?
-    //        x = Math.floor(x / chunkSize);
-    //        z = Math.floor(z / chunkSize);
-    //
-
-
-
     var cp = WorldToCellCoordinates(x, z, chunkSize);
     cp = CellToWorldCoordinates(cp.x, cp.z, chunkSize);
 
@@ -403,10 +292,6 @@ var TerrainHandler = Class.extend({
     return this.chunks[id];
   },
   GetChunkByWorldPosition: function(x, z) {
-    // Op welke chunk bevind ik me?
-    //        x = Math.floor(x / chunkSize);
-    //        z = Math.floor(z / chunkSize);
-
     var id = x+'-'+z;
 
     if ( typeof this.chunks[id] == 'undefined' ) {
@@ -439,8 +324,6 @@ var TerrainHandler = Class.extend({
 
     return p;
   },
-  // RayTest: function(ray, testMeshesNearPosition, noTerrain, noMeshes,
-  //   extraRange, reverseRaySortOrder) {
   RayTest: function(ray, options) {
 
     options = options || {};
@@ -464,7 +347,6 @@ var TerrainHandler = Class.extend({
     if ( le("mpIgnoreOtherModels") ) {
       noMeshes = true;
     }
-
 
     // To optimize, we keep track of the last mesh & face that had a succesful
     // hit. In our use case, it is very likely that the next hit will be the
@@ -523,27 +405,8 @@ var TerrainHandler = Class.extend({
       }
 
       var subIntersects = ray.intersectOctreeObjects( this.octreeResults );
-
-      //var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
       intersects = intersects.concat(subIntersects);
     }
-
-    // if ( !noTerrain ) {
-
-    //   _.each(terrainHandler.chunks, function(chunk) {
-
-    //   })
-
-    //   if ( DistanceSq(this.lastOctreeBuildPosition, ironbane.player.position) > 10*10 ) {
-    //       this.lastOctreeBuildPosition = ironbane.player.position.clone();
-    //       this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
-    //   }
-
-    //   var subIntersects = ray.intersectOctreeObjects( this.octreeResults );
-
-    //   //var subIntersects = ray.intersectOctreeObjects( terrainHandler.skybox.terrainOctree.objects );
-    //   intersects = intersects.concat(subIntersects);
-    // }
 
 
     if ( reverseRaySortOrder ) {
@@ -605,7 +468,6 @@ var TerrainHandler = Class.extend({
 
     if ( this.skybox ) this.skybox.Tick(dTime);
 
-
     // If one of us is still loading, don't tick further!
     var goFurther = true;
     _.each(this.chunks, function(chunk) {
@@ -623,37 +485,25 @@ var TerrainHandler = Class.extend({
 
     this.chunkCheckTimer = 0.0;
 
-    for(var c in this.chunks) {
+    var c;
+    for (c = 0; c < this.chunks.length; c++) {
       this.chunks[c].Tick(dTime);
     }
-
-    // We ask the server for a chunk that has tiles near a point we give
-
 
     // Check if there are new chunks available for us using chunkLoadRange and request them
     // Also see if there are chunks that are out of range using chunkUnloadRange and unload them
 
-
-
     // Remove chunks
-    for(var c in this.chunks) {
+    for (c = 0; c < this.chunks.length; c++) {
       if ( this.chunks[c].removeNextTick ) {
         delete this.chunks[c];
-      //newChunkListArray.push(this.chunks[x]);
       }
     }
 
-
     var p = this.GetReferenceLocation();
 
-    // p.x = (Math.floor(p.x / chunkSize) * chunkSize) + chunkHalf;
-    // p.z = (Math.floor(p.z / chunkSize) * chunkSize) + chunkHalf;
-
-    // First see if we can unload chunks
-
-
     var chunkUnloadRange = chunkLoadRange+1;
-    for(var c in this.chunks) {
+    for (c = 0; c < this.chunks.length; c++) {
       var chunk = this.chunks[c];
       if ( !chunk.removeNextTick ) {
         var pground = p.clone();
@@ -669,24 +519,17 @@ var TerrainHandler = Class.extend({
     }
 
     p = this.GetReferenceLocation();
-    //        p.x = (Math.round(p.x / chunkSize) * chunkSize) + 0;
-    //        p.z = (Math.round(p.z / chunkSize) * chunkSize) + 0;
     var pcp = WorldToCellCoordinates(p.x, p.z, chunkSize);
 
     var loadcount = 1;
 
-
     this.hasChunksLoaded = true;
-
-
     var bogusLoadRange = 10;
 
     for(var x=pcp.x-bogusLoadRange;x<=pcp.x+bogusLoadRange;x+=1){
       for(var z=pcp.z-bogusLoadRange;z<=pcp.z+bogusLoadRange;z+=1){
 
-
         var pcp2 = CellToWorldCoordinates(x, z, chunkSize);
-
 
         var chunk = this.chunks[pcp2.x+'-'+pcp2.z];
 
@@ -699,15 +542,10 @@ var TerrainHandler = Class.extend({
           this.hasChunksLoaded = false;
         }
 
-
-          terrainHandler.GetChunkByWorldPosition(pcp2.x, pcp2.z);
-
-
+        terrainHandler.GetChunkByWorldPosition(pcp2.x, pcp2.z);
 
       }
     }
-
-
 
   }
 
