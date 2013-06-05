@@ -712,7 +712,7 @@ function RawVector3(vec) {
 
 
 function ISDEF(o) {
-  return typeof o != "undefined"
+  return typeof o != "undefined";
 };
 
 
@@ -739,6 +739,10 @@ THREE.Vector3.prototype.ToRadians = function(n) {
   this.z = this.z.ToRadians();
 
   return this;
+};
+
+THREE.Vector3.prototype.InRangeOf = function(vector, range) {
+    return vector.clone().subSelf(this).lengthSq() < range*range;
 };
 
 THREE.Vector3.prototype.ToDegrees = function(n) {

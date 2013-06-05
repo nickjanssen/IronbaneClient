@@ -145,12 +145,13 @@ var Game = Class.extend({
     if ( socketHandler.loggedIn ) {
 
       // Add the player once we have terrain we can walk on
-      if(  this.player === null ) {
+      if(  !this.player ) {
 
         // We have a spawn location, check the cell
         var cell = WorldToCellCoordinates(socketHandler.spawnLocation.x, socketHandler.spawnLocation.z, cellSize);
 
-        if ( terrainHandler.isLoaded ) {
+        if ( terrainHandler.status === terrainHandlerStatusEnum.LOADED &&
+          !terrainHandler.IsLoadingCells() ) {
           ironbane.player = new Player(socketHandler.spawnLocation, new THREE.Vector3(0, socketHandler.spawnRotation, 0), socketHandler.playerData.id, socketHandler.playerData.name);
           ironbane.unitList.push(ironbane.player);
         }
@@ -184,9 +185,7 @@ var Game = Class.extend({
 
     // sw("Monsters ticking", monstersTickingCount);
 
-    if (
-      terrainHandler.isLoaded
-      && terrainHandler.hasCellsLoaded
+    if ( ironbane.player
       && soundHandler.loadedMainMenuMusic
       && !ironbane.showingGame) {
 
@@ -195,8 +194,6 @@ var Game = Class.extend({
       }
 
       ironbane.showingGame = true;
-
-
 
       setTimeout(function() {
         $('#gameFrame').animate({

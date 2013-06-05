@@ -64,22 +64,6 @@ var Cell = Class.extend({
                 break;
         }
 
-        if ( this.isAddedToWorld ) return;
-
-        if ( !this.hasMeshesLoaded ) {
-            this.LoadObjects();
-
-            this.hasMeshesLoaded = true;
-        }
-        else if ( !this.removeNextTick ) {
-
-            if ( terrainHandler.isLoaded && this.modelsToBuild <= 0 ) {
-                this.AddMesh();
-                this.isAddedToWorld = true;
-            }
-
-        }
-
     },
     Load: function() {
         var me = this;
@@ -101,7 +85,7 @@ var Cell = Class.extend({
 
         if ( isEditor ) {
           this.filesToLoad++;
-          var objectsFile = 'plugins/game/data/'+terrainHandler.zone+'/'+this.cellX+'/'+this.cellZ+'/graph.json?'+(new Date()).getTime();
+          var graphFile = 'plugins/game/data/'+terrainHandler.zone+'/'+this.cellX+'/'+this.cellZ+'/graph.json?'+(new Date()).getTime();
           $.getJSON(graphFile, function(data) {
             me.filesToLoad--;
             me.graphData = data;

@@ -197,11 +197,7 @@ var SocketHandler = Class.extend({
 
 
             hudHandler.MakeSlotItems(false);
-			//$('button').blur();
 
-        // Add a player
-        //ironbane.unitList.push(new Player(socketHandler.spawnLocation, reply.rotY, reply.id, reply.name));
-        //alert('got reply: '+reply);
         });
     },
     Setup: function() {

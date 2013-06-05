@@ -48,8 +48,7 @@ var TerrainHandler = Class.extend({
     this.waterMesh = null;
     this.skybox = null;
 
-    this.isLoadingCells = false;
-
+    this.status = terrainHandlerStatusEnum.INIT;
 
     this.lastOctreeBuildPosition = new THREE.Vector3(0, 1000000000, 0);
 
@@ -107,9 +106,10 @@ var TerrainHandler = Class.extend({
         }
     }
 
+    var me = this;
     this.skybox = new Skybox(function() {
-      this.status = terrainHandlerStatusEnum.LOADED;
-    }, this);
+      me.status = terrainHandlerStatusEnum.LOADED;
+    });
 
 
   },
@@ -372,35 +372,40 @@ var TerrainHandler = Class.extend({
 
         break;
       case terrainHandlerStatusEnum.LOADED:
+        for(x=cp.x-2;x<=cp.x+2;x+=1){
+          for(z=cp.z-2;z<=cp.z+2;z+=1){
+            var coords = CellToWorldCoordinates(x, z, cellSize);
+            var tempVec = new THREE.Vector3(coords.x, p.y,
+               coords.z);
 
+            if ( p.InRangeOf(tempVec, cellLoadRange)) {
+              this.GetCellByGridPosition(x, z);
+            }
+          }
+        }
+
+        _.each(this.cells, function(cell) {
+            if ( !p.InRangeOf(cell.worldPosition, cellLoadRange+16)) {
+              cell.Destroy();
+            }
+        });
+
+
+        if ( this.skybox ) this.skybox.Tick(dTime);
+
+        _.each(this.cells, function(cell) {
+          cell.Tick(dTime);
+        });
         break;
     }
 
-    for(x=cp.x-2;x<=cp.x+2;x+=1){
-      for(z=cp.z-2;z<=cp.z+2;z+=1){
-        var coords = CellToWorldCoordinates(x, z, cellSize);
-        var tempVec = new THREE.Vector3(tempVec.x, ironbane.player.position.y,
-           tempVec.z);
 
-        if ( ironbane.player.InRangeOfPosition(tempVec, cellLoadRange)) {
-          this.GetCellByGridPosition(x, z);
-        }
-      }
-    }
 
-    _.each(this.cells, function(cell) {
-        if ( !ironbane.player.InRangeOfPosition(tempVec, cellLoadRange+16)) {
-          cell.Destroy();
-        }
+  },
+  IsLoadingCells: function() {
+    return _.every(this.cells, function(cell) {
+      return cell.status === cellStatusEnum.LOADED;
     });
-
-
-    if ( this.skybox ) this.skybox.Tick(dTime);
-
-    _.each(this.cells, function(cell) {
-      cell.Tick(dTime);
-    });
-
   }
 });
 
