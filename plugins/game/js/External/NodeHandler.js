@@ -66,7 +66,7 @@ var NodeHandler = Class.extend({
             worldHandler.world[zone][cellPos.x][cellPos.z]['graph']['nodes'].push(newNode);
         }
         else {
-            var graphData = terrainHandler.GetCellByGridPosition(x, z).graphData;
+            var graphData = terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).graphData;
             if ( graphData['nodes'] === undefined ) {
                 graphData['nodes'] = [];
             }
@@ -93,9 +93,13 @@ var NodeHandler = Class.extend({
         }
         else {
             var graphData = terrainHandler.GetCellByGridPosition(nodeInfoFrom.cx, nodeInfoFrom.cz).graphData;
-            graphData[nodeInfoFrom.index]['edges'].push(to);
-            graphData[nodeInfoFrom.index]['edges']
-                = _.uniq(graphData[nodeInfoFrom.index]['edges']);
+
+            if ( !graphData.nodes ) return;
+
+
+            graphData.nodes[nodeInfoFrom.index]['edges'].push(to);
+            graphData.nodes[nodeInfoFrom.index]['edges']
+                = _.uniq(graphData.nodes[nodeInfoFrom.index]['edges']);
 
             if ( !twoway ) {
 
@@ -147,11 +151,10 @@ var NodeHandler = Class.extend({
         else {
 
 
-            _.each(terrainHandler.cells, function(cx) {
-                _.each(cx, function(cz) {
-                    var graphData = cz.graphData;
+            _.each(terrainHandler.cells, function(cell) {
+                    var graphData = cell.graphData;
 
-                    if ( graphData["nodes"] === undefined ) continue;
+                    if ( graphData["nodes"] === undefined ) return;
 
                     var graphArr = graphData["nodes"];
 
@@ -164,7 +167,6 @@ var NodeHandler = Class.extend({
                         }
                         graphArr[n]['edges'] = edgesToKeep;
                     }
-                });
             });
 
 

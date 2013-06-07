@@ -115,7 +115,7 @@ var EditorGUI = function() {
   this.mpIgnoreOtherModels = false;
   this.mpIgnoreBoundingBox = false;
   this.mpGridSnap = true;
-  // this.mpHeightOffset = 0.0;
+  this.mpHeightOffset = 0;
 
   // Entity placer mode
   this.epmoMesh = firstOfObject(ModelEnum);
@@ -841,7 +841,7 @@ var LevelEditor = Class.extend({
     guiControls['mpIgnoreOtherModels'] = fModelPlacer.add(this.editorGUI, 'mpIgnoreOtherModels');
     guiControls['mpIgnoreBoundingBox'] = fModelPlacer.add(this.editorGUI, 'mpIgnoreBoundingBox');
     guiControls['mpGridSnap'] = fModelPlacer.add(this.editorGUI, 'mpGridSnap');
-    // guiControls['mpHeightOffset'] = fModelPlacer.add(this.editorGUI, 'mpHeightOffset', -20.0, 20.0);
+    guiControls['mpHeightOffset'] = fModelPlacer.add(this.editorGUI, 'mpHeightOffset', -19.9, 19.9);
 
     guiControls['enableModelPainter'] = fModelPainter.add(this.editorGUI, 'enableModelPainter');
     guiControls['mpClearMode'] = fModelPainter.add(this.editorGUI, 'mpClearMode');
@@ -1004,13 +1004,10 @@ var LevelEditor = Class.extend({
 
 
     guiControls['globalEnable'].onFinishChange(function(value) {
-     // var fogchange = 50;
+
      if ( value ) {
-       // Update player camera
-       //                ironbane.scene.fog.near += fogchange;
-       //                ironbane.scene.fog.far += fogchange;
+
        ironbane.player.thirdPersonReference.y = levelEditor.editorGUI.camDistance;
-       //ironbane.player.thirdPersonReference.x = levelEditor.editorGUI.camHeight;
        ironbane.player.thirdPersonReference.z = -levelEditor.editorGUI.camHeight;
        if ( levelEditor.editorGUI.enableModelPlacer ) {
          levelEditor.SetPreviewMesh(levelEditor.editorGUI.selectModel);
@@ -1019,34 +1016,19 @@ var LevelEditor = Class.extend({
          levelEditor.SetPreviewMesh(null);
        }
 
-
-       cellSize = 16;
-
      }
      else {
-       //                ironbane.scene.fog.near -= fogchange;
-       //                ironbane.scene.fog.far -= fogchange;
+
        ironbane.player.thirdPersonReference.y = 3;
-       //ironbane.player.thirdPersonReference.x = 0;
+
        ironbane.player.thirdPersonReference.z = -4;
        levelEditor.SetPreviewMesh(null);
 
-       cellSize = 96+16;
      }
 
-     cellHalf = cellSize/2;
 
       localStorage.globalEnable = value;
 
-      _.each(terrainHandler.cells, function(cell) {
-        cell.Reload();
-      });
-
-      terrainHandler.cells = {};
-
-    // bm("Reloading game with Editor "+(value?"enabled":"disabled"));
-        // localStorage.globalEnable = value;
-    // setTimeout(function(){location.reload();}, 1000);
 
     });
 
@@ -1205,7 +1187,7 @@ var LevelEditor = Class.extend({
 
     position = position.Round(2);
 
-    // position.y += levelEditor.editorGUI.mpHeightOffset;
+    //position.y += levelEditor.editorGUI.mpHeightOffset;
 
     // We emit, and must add the Object ourselves because it is static
     // Set the cell to reload
@@ -1234,6 +1216,8 @@ var LevelEditor = Class.extend({
     else {
       ba("Bad unit for PlaceModel!");
     }
+
+    terrainHandler.RebuildOctree();
   },
   Tick: function(dTime) {
 
@@ -1298,7 +1282,7 @@ var LevelEditor = Class.extend({
         }
 
 
-        // this.previewMesh.localPosition.y += levelEditor.editorGUI.mpHeightOffset;
+        this.previewMesh.localPosition.y += levelEditor.editorGUI.mpHeightOffset;
         this.previewMesh.Tick(dTime);
       }
     }

@@ -184,7 +184,6 @@ var TerrainHandler = Class.extend({
   },
   GetCellByWorldPosition: function(position) {
     var cp = WorldToCellCoordinates(position.x, position.z, cellSize);
-    cp = CellToWorldCoordinates(cp.x, cp.z, cellSize);
 
     return this.GetCellByGridPosition(cp.x, cp.z);
   },
@@ -296,8 +295,7 @@ var TerrainHandler = Class.extend({
     if ( !noTerrain ) {
 
       if ( DistanceSq(this.lastOctreeBuildPosition, ironbane.player.position) > 10*10 ) {
-          this.lastOctreeBuildPosition = ironbane.player.position.clone();
-          this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
+          this.RebuildOctree();
       }
 
       var subIntersects = ray.intersectOctreeObjects( this.octreeResults );
@@ -320,6 +318,10 @@ var TerrainHandler = Class.extend({
     }
 
     return intersects;
+  },
+  RebuildOctree: function() {
+    this.lastOctreeBuildPosition = ironbane.player.position.clone();
+    this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
   },
   Tick: function(dTime) {
 
