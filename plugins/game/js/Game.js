@@ -185,7 +185,8 @@ var Game = Class.extend({
 
     // sw("Monsters ticking", monstersTickingCount);
 
-    if ( ironbane.player
+     if ( terrainHandler.status === terrainHandlerStatusEnum.LOADED &&
+          !terrainHandler.IsLoadingCells()
       && soundHandler.loadedMainMenuMusic
       && !ironbane.showingGame) {
 

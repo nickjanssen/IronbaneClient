@@ -67,7 +67,7 @@ var HUDHandler = Class.extend({
 
     this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
 
-    $("#gameFrame").css('opacity', '');
+    //$("#gameFrame").css('opacity', '');
 
     if ( Detector.webgl ) {
       if ( socketHandler.serverOnline ) {

@@ -88,6 +88,20 @@ var EditorGUI = function() {
     //setTimeout(function(){location.reload();}, 7000);
   };
 
+  this.pmCharacterName = "";
+  this.pmAction = 0;
+  this.pmHours = 1;
+  this.pmReason = "";
+
+  this.pmExecute = function() {
+    socketHandler.socket.emit('pmManage', {
+      action: parseInt(levelEditor.editorGUI.pmAction),
+      characterName: levelEditor.editorGUI.pmCharacterName,
+      reason: levelEditor.editorGUI.pmReason,
+      hours: levelEditor.editorGUI.pmHours
+    });
+  };
+
   setTimeout(function(){
     socketHandler.socket.emit('chGodMode', levelEditor.editorGUI.chGodMode);
     socketHandler.socket.emit('chInvisibleByMonsters', levelEditor.editorGUI.chInvisibleByMonsters);
@@ -803,6 +817,8 @@ var LevelEditor = Class.extend({
     var fCheats = this.editorGUI.gui.addFolder('Cheats');
     var fOptions = this.editorGUI.gui.addFolder('Options');
 
+    var fPlayerManagement = this.editorGUI.gui.addFolder('Player Management');
+
     //        guiControls['enableObjectPlacer'] = fObjectPlacer.add(this.editorGUI, 'enableObjectPlacer');
     //
     //        guiControls['opMode'] = fObjectPlacer.add(this.editorGUI, 'opMode', {
@@ -947,14 +963,17 @@ var LevelEditor = Class.extend({
 
 
 
-
-
-
-
     guiControls['opShowDebug'] = fOptions.add(this.editorGUI, 'opShowDebug');
-
     guiControls['opBackupServer'] = fOptions.add(this.editorGUI, 'opBackupServer');
     guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
+
+
+    guiControls['pmCharacterName'] = fPlayerManagement.add(this.editorGUI, 'pmCharacterName');
+    guiControls['pmAction'] = fPlayerManagement.add(this.editorGUI, 'pmAction', UserManagementTypeEnum);
+    guiControls['pmHours'] = fPlayerManagement.add(this.editorGUI, 'pmHours');
+    guiControls['pmReason'] = fPlayerManagement.add(this.editorGUI, 'pmReason');
+    guiControls['pmExecute'] = fPlayerManagement.add(this.editorGUI, 'pmExecute');
+
 
     guiControls['chFlyMode'].onFinishChange(function(value) {
 

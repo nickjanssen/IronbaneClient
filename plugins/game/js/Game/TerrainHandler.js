@@ -56,7 +56,7 @@ var TerrainHandler = Class.extend({
   },
   Destroy: function() {
     _.each(this.cells, function(cell) {
-      cell.RemoveMesh();
+      cell.Destroy();
     });
 
     this.cells = {};
