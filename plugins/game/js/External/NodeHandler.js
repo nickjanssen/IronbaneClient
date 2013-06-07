@@ -30,15 +30,15 @@ var NodeHandler = Class.extend({
             var cp = WorldToCellCoordinates(p.x, p.z, cellSize);
 
             for(var x=cp.x-1;x<=cp.x+1;x+=1){
-                if ( terrainHandler.world[x] === undefined ) continue;
-
                 for(var z=cp.z-1;z<=cp.z+1;z+=1){
 
-                    if ( terrainHandler.world[x][z] === undefined ) continue;
-                    if ( terrainHandler.world[x][z]["graph"] === undefined ) continue;
-                    if ( terrainHandler.world[x][z]["graph"]["nodes"] === undefined ) continue;
+                    if ( _.isUndefined(terrainHandler.cells[x+'-'+z])  ) continue;
 
-                    var graphArr = terrainHandler.world[x][z]['graph']['nodes'];
+                    var graphData = terrainHandler.GetCellByGridPosition(x, z).graphData;
+
+                    if ( graphData["nodes"] === undefined ) continue;
+
+                    var graphArr = graphData["nodes"];
                     var index = _.indexOf(graphArr, (_.where(graphArr, {id:id}))[0]);
                     if ( index != -1 ) return {index:index,cx:x,cz:z};
 
@@ -66,10 +66,11 @@ var NodeHandler = Class.extend({
             worldHandler.world[zone][cellPos.x][cellPos.z]['graph']['nodes'].push(newNode);
         }
         else {
-            if ( terrainHandler.world[cellPos.x][cellPos.z]['graph']['nodes'] === undefined ) {
-                terrainHandler.world[cellPos.x][cellPos.z]['graph']['nodes'] = [];
+            var graphData = terrainHandler.GetCellByGridPosition(x, z).graphData;
+            if ( graphData['nodes'] === undefined ) {
+                graphData['nodes'] = [];
             }
-            terrainHandler.world[cellPos.x][cellPos.z]['graph']['nodes'].push(newNode);
+            graphData['nodes'].push(newNode);
 
             terrainHandler.GetCellByWorldPosition(position).ReloadWaypointsOnly();
         }
@@ -91,12 +92,17 @@ var NodeHandler = Class.extend({
                 = _.uniq(worldHandler.world[zone][nodeInfoFrom.cx][nodeInfoFrom.cz]['graph']['nodes'][nodeInfoFrom.index]['edges']);
         }
         else {
-            terrainHandler.world[nodeInfoFrom.cx][nodeInfoFrom.cz]['graph']['nodes'][nodeInfoFrom.index]['edges'].push(to);
-            terrainHandler.world[nodeInfoFrom.cx][nodeInfoFrom.cz]['graph']['nodes'][nodeInfoFrom.index]['edges']
-                = _.uniq(terrainHandler.world[nodeInfoFrom.cx][nodeInfoFrom.cz]['graph']['nodes'][nodeInfoFrom.index]['edges']);
+            var graphData = terrainHandler.GetCellByGridPosition(nodeInfoFrom.cx, nodeInfoFrom.cz).graphData;
+            graphData[nodeInfoFrom.index]['edges'].push(to);
+            graphData[nodeInfoFrom.index]['edges']
+                = _.uniq(graphData[nodeInfoFrom.index]['edges']);
 
             if ( !twoway ) {
-                for(var c in terrainHandler.cells) terrainHandler.cells[c].ReloadWaypointsOnly();
+
+                _.each(terrainHandler.cells, function(cell) {
+                    cell.ReloadWaypointsOnly();
+                });
+
             }
         }
 
@@ -113,7 +119,8 @@ var NodeHandler = Class.extend({
             worldHandler.world[zone][nodeInfoDelete.cx][nodeInfoDelete.cz]['graph']['nodes'].splice(nodeInfoDelete.index, 1);
         }
         else {
-            terrainHandler.world[nodeInfoDelete.cx][nodeInfoDelete.cz]['graph']['nodes'].splice(nodeInfoDelete.index, 1);
+            var graphData = terrainHandler.GetCellByGridPosition(nodeInfoDelete.cx, nodeInfoDelete.cz).graphData;
+            graphData['nodes'].splice(nodeInfoDelete.index, 1);
         }
 
 
@@ -138,26 +145,32 @@ var NodeHandler = Class.extend({
             }
         }
         else {
-            for(var cx in terrainHandler.world) {
-                for(var cz in terrainHandler.world[cx]) {
 
-                    if ( terrainHandler.world[cx][cz]["graph"] === undefined ) continue;
-                    if ( terrainHandler.world[cx][cz]["graph"]["nodes"] === undefined ) continue;
 
-                    for(var n=0;n<terrainHandler.world[cx][cz]['graph']['nodes'].length;n++) {
+            _.each(terrainHandler.cells, function(cx) {
+                _.each(cx, function(cz) {
+                    var graphData = cz.graphData;
+
+                    if ( graphData["nodes"] === undefined ) continue;
+
+                    var graphArr = graphData["nodes"];
+
+                    for(var n=0;n<graphArr.length;n++) {
                         var edgesToKeep = [];
-                        for(var e=0;e<terrainHandler.world[cx][cz]['graph']['nodes'][n]['edges'].length;e++){
-                            if ( terrainHandler.world[cx][cz]['graph']['nodes'][n]['edges'][e] != id ) {
-                                edgesToKeep.push(terrainHandler.world[cx][cz]['graph']['nodes'][n]['edges'][e]);
+                        for(var e=0;e<graphArr[n]['edges'].length;e++){
+                            if ( graphArr[n]['edges'][e] != id ) {
+                                edgesToKeep.push(graphArr[n]['edges'][e]);
                             }
                         }
-                        terrainHandler.world[cx][cz]['graph']['nodes'][n]['edges'] = edgesToKeep;
+                        graphArr[n]['edges'] = edgesToKeep;
                     }
-                }
-            }
+                });
+            });
 
 
-            for(var c in terrainHandler.cells) terrainHandler.cells[c].ReloadWaypointsOnly();
+            _.each(terrainHandler.cells, function(cell) {
+                cell.ReloadWaypointsOnly();
+            });
         }
     }
 });

@@ -441,6 +441,8 @@ var Player = Fighter.extend({
     }
 
 
+
+
     if ( this.unitStandingOn ) {
       this.targetRotation.y = this.localRotationY + this.unitStandingOn.rotation.y;
     }
@@ -461,8 +463,8 @@ var Player = Fighter.extend({
       this.localRotationY = this.targetRotation.y;
     }
 
-
-
+    sw("this.localRotationY", this.localRotationY);
+    sw("this.targetRotation", this.targetRotation);
 
 
     //if ( !this.freeFall ) {

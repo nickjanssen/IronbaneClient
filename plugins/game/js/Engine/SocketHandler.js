@@ -730,7 +730,7 @@ var SocketHandler = Class.extend({
                 var cellPos = WorldToCellCoordinates(data.pos.x,
                     data.pos.z, cellSize);
 
-                _.each(terrainHandler.world[cellPos.x][cellPos.z]['objects'],
+                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData,
                     function(obj) {
 
                         if ( obj.metadata &&
@@ -751,7 +751,7 @@ var SocketHandler = Class.extend({
                 var cellPos = WorldToCellCoordinates(data.pos.x,
                     data.pos.z, cellSize);
 
-                _.each(terrainHandler.world[cellPos.x][cellPos.z]['objects'],
+                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData,
                     function(obj) {
 
                         if ( _.isEmpty(data.metadata) ) {
@@ -807,13 +807,14 @@ var SocketHandler = Class.extend({
 
                     var cellPos = WorldToCellCoordinates(obj.position.x, obj.position.z, cellSize);
 
-                    var objInList = _.find(terrainHandler.world[cellPos.x][cellPos.z]['objects'], function(otherObj) {
+                    var objInList = _.find(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData, function(otherObj) {
                         return obj.position.clone().Round(2).equals(ConvertVector3(otherObj));
                     });
 
                     if ( objInList ) {
-                        terrainHandler.world[cellPos.x][cellPos.z]['objects'] =
-                            _.without(terrainHandler.world[cellPos.x][cellPos.z]['objects'], objInList);
+                        var temp = terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData;
+                        temp =
+                            _.without(temp, objInList);
                     }
 
 

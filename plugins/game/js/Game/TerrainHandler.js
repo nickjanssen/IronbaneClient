@@ -60,7 +60,6 @@ var TerrainHandler = Class.extend({
     });
 
     this.cells = {};
-    this.world = {};
 
     this.zone = this.previewZone;
 
@@ -340,22 +339,24 @@ var TerrainHandler = Class.extend({
 
     }
 
-    // if ( !socketHandler.readyToReceiveUnits && this.isLoaded && this.hasCellsLoaded && socketHandler.loggedIn ) {
+    if ( !socketHandler.readyToReceiveUnits &&
+      this.status === terrainHandlerStatusEnum.LOADED &&
+      socketHandler.loggedIn ) {
 
-    //   // soundHandler.Play("enterGame");
+      // soundHandler.Play("enterGame");
 
-    //   socketHandler.readyToReceiveUnits = true;
+      socketHandler.readyToReceiveUnits = true;
 
-    //   // Bring it on!
-    //   socketHandler.socket.emit('readyToReceiveUnits', true, function (reply) {
-    //     if ( ISDEF(reply.errmsg) ) {
-    //       hudHandler.MessageAlert(reply.errmsg);
-    //       return;
-    //     }
-    //   });
+      // Bring it on!
+      socketHandler.socket.emit('readyToReceiveUnits', true, function (reply) {
+        if ( ISDEF(reply.errmsg) ) {
+          hudHandler.MessageAlert(reply.errmsg);
+          return;
+        }
+      });
 
 
-    // }
+    }
 
     var p = this.GetReferenceLocation();
     var cp = WorldToCellCoordinates(p.x, p.z, cellSize);

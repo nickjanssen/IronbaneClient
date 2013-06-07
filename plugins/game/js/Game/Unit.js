@@ -510,8 +510,8 @@ var Unit = PhysicsObject.extend({
       // Also, move towards our targetPosition
       this.RotateTowardsTargetPosition(dTime);
 
-
-
+        // sw("this.targetRotation", this.targetRotation.ToString());
+        // sw("this.rotation", this.rotation.ToString());
 
 
 

@@ -1213,7 +1213,7 @@ var LevelEditor = Class.extend({
 
     var cellPos = WorldToCellCoordinates(position.x, position.z, cellSize);
     //[{"x":1.83,"y":0,"z":13.04,"t":5,"p":"1","rX":0,"rY":0,"rZ":0}]
-    terrainHandler.world[cellPos.x][cellPos.z]['objects'].push({
+    terrainHandler.GetCellByWorldPosition(position).objectData.push({
       x:position.x,
       y:position.y,
       z:position.z,
@@ -1222,7 +1222,7 @@ var LevelEditor = Class.extend({
       rX:rotX,
       rY:rotY,
       rZ:rotZ
-    })
+    });
 
     var unit = new Mesh(position, new THREE.Vector3(rotX, rotY, rotZ), 0, id);
 
@@ -1234,118 +1234,6 @@ var LevelEditor = Class.extend({
     else {
       ba("Bad unit for PlaceModel!");
     }
-  },
-  SetTileImage: function(tx, tz, image, doEmit, doReload) {
-
-    tx = roundNumber(tx);
-    tz = roundNumber(tz);
-
-    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var cellPosWorld = CellToWorldCoordinates(cellPos.x, cellPos.z, cellSize);
-
-    if ( ISDEF(terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z]) ) {
-      var cell = terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z];
-
-
-
-      for(var t=0;t<cell.tiles.length;t++) {
-        if ( cell.tiles[t].position.x == tx && cell.tiles[t].position.z == tz ) {
-          cell.tiles[t].image = image;
-
-
-          // Alter the terrainHandler as well
-          terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].t = image;
-
-          if ( doEmit ) {
-            socketHandler.socket.emit('setTileImage', {
-              cx:cellPos.x,
-              cz:cellPos.z,
-              tx:tx,
-              tz:tz,
-              image:image
-            });
-          }
-
-          break;
-        }
-      }
-
-      if ( doReload ) {
-        cell.ReloadTerrainOnly();
-      }
-    }
-
-  },
-  SetTileHeight: function(tx, tz, height, relative, doEmit, doReload) {
-
-    // We don't work for nothing
-    //if ( height == 0 && relative ) return;
-
-    tx = roundNumber(tx);
-    tz = roundNumber(tz);
-
-    // Get the cell
-
-    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var cellPos = WorldToCellCoordinates(tx, tz, cellSize);
-    var cellPosWorld = CellToWorldCoordinates(cellPos.x, cellPos.z, cellSize);
-
-    if ( ISDEF(terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z]) ) {
-      var cell = terrainHandler.cells[cellPosWorld.x+'-'+cellPosWorld.z];
-
-
-
-      for(var t=0;t<cell.tiles.length;t++) {
-        if ( cell.tiles[t].position.x == tx && cell.tiles[t].position.z == tz ) {
-
-          // Alter the terrainHandler as well
-          if ( relative ) {
-            terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y += height;
-          }
-          else {
-            terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y = height;
-          }
-
-          terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y = (terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y).Round(2);
-
-          if ( doEmit ) {
-            this.setTileHeightBuffer.push({
-              cx:cellPos.x,
-              cz:cellPos.z,
-              tx:tx,
-              tz:tz,
-              height: terrainHandler.world[cellPos.x][cellPos.z]['terrain'][tx][tz].y
-            });
-
-
-
-            if ( ISDEF(this.setTileHeightTimer) ) {
-              //log("clearTimer");
-              clearTimeout(this.setTileHeightTimer);
-            }
-            this.setTileHeightTimer = setTimeout(function() {
-
-              socketHandler.socket.emit('setTileHeight', levelEditor.setTileHeightBuffer);
-              levelEditor.setTileHeightBuffer = [];
-            }, 5000);
-          }
-
-          break;
-        }
-      }
-
-      if ( doReload ) {
-        cell.ReloadTerrainOnly();
-      }
-    }
-
-    // Make all gameobjects re-init their height
-    for(var u=0;u<ironbane.unitList.length;u++){
-      ironbane.unitList[u].positionedShadowMesh = false;
-    }
-
-
   },
   Tick: function(dTime) {
 

@@ -319,12 +319,13 @@ var Cell = Class.extend({
                             for(var x=this.cellX-1;x<=this.cellX+1;x+=1){
                                 for(var z=this.cellZ-1;z<=this.cellZ+1;z+=1){
 
-                                    if ( terrainHandler.world[x] === undefined ) continue;
-                                    if ( terrainHandler.world[x][z] === undefined ) continue;
-                                    if ( terrainHandler.world[x][z]['graph'] === undefined ) continue;
-                                    if ( terrainHandler.world[x][z]['graph']['nodes'] === undefined ) continue;
+                                    if ( _.isUndefined(terrainHandler.cells[x+'-'+z])  ) continue;
 
-                                    var subnodes = terrainHandler.world[x][z]['graph']['nodes'];
+                                    var graphData = terrainHandler.GetCellByGridPosition(x, z).graphData;
+
+                                    if ( graphData["nodes"] === undefined ) continue;
+
+                                    var subnodes = graphData['nodes'];
 
                                     for( var sn=0;sn<subnodes.length;sn++ ) {
 
