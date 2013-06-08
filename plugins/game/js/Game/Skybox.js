@@ -84,7 +84,7 @@ var Skybox = PhysicsObject.extend({
     ironbane.scene.add( this.shadowLight );
 
     // Add terrain
-    if ( zones[terrainHandler.zone]['type'] == ZoneTypeEnum.WORLD ) {
+    //if ( zones[terrainHandler.zone]['type'] == ZoneTypeEnum.WORLD ) {
       var model = skyboxPath + terrainHandler.zone+".js";
       //this.texture = textureHandler.GetTexture( texture, true);
 
@@ -95,7 +95,7 @@ var Skybox = PhysicsObject.extend({
         }, null, 300);
       })(this);
 
-    }
+    //}
 
     this.isLoaded = false;
 
@@ -158,6 +158,7 @@ var Skybox = PhysicsObject.extend({
     if ( this.terrainMesh ) {
       ironbane.scene.remove(this.terrainMesh);
       releaseMesh(this.terrainMesh);
+      this.terrainOctree.remove( this.skyboxMesh, true );
     }
     if ( this.ambientLight ) {
       ironbane.scene.remove(this.ambientLight);

@@ -176,7 +176,7 @@ var SocketHandler = Class.extend({
             if ( reply.zone != terrainHandler.zone ) {
                 terrainHandler.Destroy();
                 terrainHandler.zone = reply.zone;
-                terrainHandler.BuildWaterMesh();
+                terrainHandler.status = terrainHandlerStatusEnum.INIT;
             }
 
             // Hacky, fill em up later
@@ -508,7 +508,7 @@ var SocketHandler = Class.extend({
 
                             terrainHandler.zone = data.z;
 
-                            terrainHandler.BuildWaterMesh();
+                            terrainHandler.status = terrainHandlerStatusEnum.INIT;
 
                             bm(zones[data.z].name);
 
