@@ -156,9 +156,10 @@ var Skybox = PhysicsObject.extend({
       releaseMesh(this.sunMesh);
     }
     if ( this.terrainMesh ) {
+      this.terrainOctree.remove( this.terrainMesh );
       ironbane.scene.remove(this.terrainMesh);
       releaseMesh(this.terrainMesh);
-      this.terrainOctree.remove( this.skyboxMesh, true );
+      terrainHandler.RebuildOctree();
     }
     if ( this.ambientLight ) {
       ironbane.scene.remove(this.ambientLight);

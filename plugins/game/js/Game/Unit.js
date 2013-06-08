@@ -775,27 +775,28 @@ var Unit = PhysicsObject.extend({
           // 6/9/12: Actually there is, when we build underground meshes.
           // 31/10/12: Removed, as we require raycastGroundPosition anyway.
           // Even when building underground we'll have a valid raycastGroundPosition since we're standing on a mesh
-          if ( !raycastGroundPosition ) {
-            // We didn't find anything for our shadow
-            // Reverse a raycast
-            ray = new THREE.Ray( this.position, new THREE.Vector3(0, 1, 0));
+          // 8/6/13: Removed again due to skybox-only approach
+          // if ( !raycastGroundPosition ) {
+          //   // We didn't find anything for our shadow
+          //   // Reverse a raycast
+          //   ray = new THREE.Ray( this.position, new THREE.Vector3(0, 1, 0));
 
 
-            var intersects = terrainHandler.RayTest(ray, {
-              testMeshesNearPosition:this.position,
-              unitReference: this,
-              unitRayName: "colunderneath"
-            });
+          //   var intersects = terrainHandler.RayTest(ray, {
+          //     testMeshesNearPosition:this.position,
+          //     unitReference: this,
+          //     unitRayName: "colunderneath"
+          //   });
 
 
-            if ( (intersects.length > 0 ) ) {
-              raycastNormal = intersects[0].face.normal;
-              raycastGroundPosition = intersects[0].point;
-              //this.position = ConvertVector3(intersects[0].point);
-              this.localPosition.y = intersects[0].point.y;
-            //bm("underneath!");
-            }
-          }
+          //   if ( (intersects.length > 0 ) ) {
+          //     raycastNormal = intersects[0].face.normal;
+          //     raycastGroundPosition = intersects[0].point;
+          //     //this.position = ConvertVector3(intersects[0].point);
+          //     this.localPosition.y = intersects[0].point.y;
+          //   //bm("underneath!");
+          //   }
+          // }
 
 
         }

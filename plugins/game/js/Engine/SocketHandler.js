@@ -628,7 +628,7 @@ var SocketHandler = Class.extend({
 
                 terrainHandler.zone = data.zone;
 
-                terrainHandler.BuildWaterMesh();
+                terrainHandler.status = terrainHandlerStatusEnum.INIT;
 
 
 

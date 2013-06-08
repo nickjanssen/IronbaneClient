@@ -211,6 +211,8 @@ $(document).keydown(function(event){
 
             terrainHandler.Destroy();
 
+            terrainHandler.status = terrainHandlerStatusEnum.INIT;
+
             ironbane.player = null;
 
             socketHandler.loggedIn = false;
