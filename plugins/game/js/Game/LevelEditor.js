@@ -1048,6 +1048,8 @@ var LevelEditor = Class.extend({
 
       localStorage.globalEnable = value;
 
+      terrainHandler.ReloadCells();
+
 
     });
 
@@ -1236,7 +1238,10 @@ var LevelEditor = Class.extend({
       ba("Bad unit for PlaceModel!");
     }
 
+    if ( !le("globalEnable") ) terrainHandler.GetCellByWorldPosition(position).Reload();
+
     terrainHandler.RebuildOctree();
+
   },
   Tick: function(dTime) {
 

@@ -359,6 +359,18 @@ a:hover {
   padding-bottom:20px;
 }
 
+#chatContent h1 {
+  margin:0;
+}
+
+#chatContent h2 {
+  margin:0;
+}
+
+#chatContent h3 {
+  margin:0;
+}
+
 #chatContent .jspVerticalBar {
   pointer-events:auto;
 }

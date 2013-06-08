@@ -798,31 +798,43 @@ var SocketHandler = Class.extend({
 
 
             hudHandler.AddChatMessage("Removing model...");
-        // Check
-        _.each(terrainHandler.cells, function(cell) {
-            _.each(cell.objects, function(obj) {
-                if ( obj.position.clone().Round(2).equals(pos) ) {
 
-                    cell.objects = _.without(cell.objects, obj);
+            // Check
+            _.each(terrainHandler.cells, function(cell) {
+                _.each(cell.objects, function(obj) {
+                    if ( obj.position.clone().Round(2).equals(pos) ) {
 
-                    var cellPos = WorldToCellCoordinates(obj.position.x, obj.position.z, cellSize);
+                        cell.objects = _.without(cell.objects, obj);
 
-                    var objInList = _.find(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData, function(otherObj) {
-                        return obj.position.clone().Round(2).equals(ConvertVector3(otherObj));
-                    });
+                        var cellPos = WorldToCellCoordinates(obj.position.x, obj.position.z, cellSize);
 
-                    if ( objInList ) {
-                        var temp = terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData;
-                        temp =
-                            _.without(temp, objInList);
+                        var objInList = _.find(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData, function(otherObj) {
+                            return obj.position.clone().Round(2).equals(ConvertVector3(otherObj));
+                        });
+
+                        if ( objInList ) {
+                            var temp = terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData;
+                            temp =
+                                _.without(temp, objInList);
+                        }
+
+                        obj.Destroy();
                     }
+                });
 
+                if ( !le("globalEnable") ) {
+                    var newList = [];
+                    _.each(cell.objectData, function(obj) {
+                        if ( !ConvertVector3(obj).equals(pos) ) newList.push(obj);
+                    });
+                    cell.objectData = newList;
 
-
-                    obj.Destroy();
                 }
             });
-        });
+
+            if ( !le("globalEnable") ) {
+                terrainHandler.GetCellByWorldPosition(pos).Reload();
+            }
 
 
         });

@@ -219,6 +219,11 @@ var TerrainHandler = Class.extend({
 
     return p;
   },
+  ReloadCells: function() {
+    _.each(this.cells, function(cell) {
+      cell.Reload();
+    });
+  },
   RayTest: function(ray, options) {
 
     options = options || {};
