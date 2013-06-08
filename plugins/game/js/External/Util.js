@@ -130,7 +130,7 @@ if ( !SERVER ) {
 
     // var uid = "";
 
-    var props = ['skin', 'eyes', 'hair', 'feet', 'body', 'head', 'big'];
+    var props = ['skin', 'eyes', 'hair', 'head', 'body', 'feet', 'big'];
     for (var i = props.length - 1; i >= 0; i--) {
       if ( !ISDEF(options[props[i]]) ) options[props[i]] = 0;
 
@@ -143,9 +143,9 @@ if ( !SERVER ) {
     options.skin+
     '_'+options.eyes+
     '_'+options.hair+
-    '_'+options.feet+
-    '_'+options.body+
     '_'+options.head+
+    '_'+options.body+
+    '_'+options.feet+
     '_'+(options.big?1:0)+
     '.png';
 
