@@ -84,8 +84,10 @@ var EditorGUI = function() {
 
   this.opBackupServer = function() {
     socketHandler.socket.emit('backup');
+  };
 
-    //setTimeout(function(){location.reload();}, 7000);
+  this.opReloadData = function() {
+    socketHandler.socket.emit('opReloadData');
   };
 
   this.pmCharacterName = "";
@@ -964,8 +966,9 @@ var LevelEditor = Class.extend({
 
 
     guiControls['opShowDebug'] = fOptions.add(this.editorGUI, 'opShowDebug');
-    guiControls['opBackupServer'] = fOptions.add(this.editorGUI, 'opBackupServer');
-    guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
+    //guiControls['opBackupServer'] = fOptions.add(this.editorGUI, 'opBackupServer');
+    //guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
+    guiControls['opReloadData'] = fOptions.add(this.editorGUI, 'opReloadData');
 
 
     guiControls['pmCharacterName'] = fPlayerManagement.add(this.editorGUI, 'pmCharacterName');
