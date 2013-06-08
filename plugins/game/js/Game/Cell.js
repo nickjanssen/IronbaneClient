@@ -79,6 +79,8 @@ var Cell = Class.extend({
           console.log('Loaded: '+objectsFile);
           me.FinishLoad();
         }).error(function() {
+          me.filesToLoad--;
+          me.objectData = [];
           console.warn('Not found: '+objectsFile);
         });
 
@@ -92,6 +94,8 @@ var Cell = Class.extend({
             console.log('Loaded graph: '+graphFile);
             me.FinishLoad();
           }).error(function() {
+            me.filesToLoad--;
+            me.graphData = {};
             console.warn('No graph found: '+graphFile);
           });
         }
@@ -130,6 +134,8 @@ var Cell = Class.extend({
 
 
         this.status = cellStatusEnum.LOADED;
+
+        terrainHandler.RebuildOctree();
     },
     Destroy: function() {
 

@@ -248,7 +248,7 @@ var TerrainHandler = Class.extend({
     // same face/object
     var intersects = [];
 
-    if ( unitReference ) {
+    if ( unitReference && false ) {
       if ( !unitReference.lastRayData ) {
         unitReference.lastRayData = {};
       }
@@ -310,7 +310,7 @@ var TerrainHandler = Class.extend({
       intersects.sort(function(a,b) { return a.distance - b.distance; } );
     }
 
-    if ( intersects.length > 0 && unitReference ) {
+    if ( intersects.length > 0 && unitReference && false ) {
       unitReference.lastRayData[unitRayName] = {
         mesh: intersects[0].object,
         faceId: intersects[0].faceIndex
@@ -320,7 +320,7 @@ var TerrainHandler = Class.extend({
     return intersects;
   },
   RebuildOctree: function() {
-    this.lastOctreeBuildPosition = ironbane.player.position.clone();
+    this.lastOctreeBuildPosition = terrainHandler.GetReferenceLocation();
     this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
   },
   Tick: function(dTime) {
