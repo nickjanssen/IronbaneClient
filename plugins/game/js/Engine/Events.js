@@ -544,6 +544,8 @@ var mouseIntervalFunction = function(event){
 
                   currentMetadata["t"+materialIndex] = tileToPaint;
 
+                  _.extend(currentMetadata, obj.metadata);
+
                   socketHandler.socket.emit('paintModel', {
                     pos: obj.position.clone().Round(2),
                     id: obj.meshData.id,

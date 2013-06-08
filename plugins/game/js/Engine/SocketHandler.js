@@ -759,7 +759,8 @@ var SocketHandler = Class.extend({
                         }
 
                         if ( obj.metadata ) {
-                            _.extend(obj.metadata, data.metadata);
+                            //_.extend(obj.metadata, data.metadata);
+                            obj.metadata = data.metadata;
                         }
                     });
 
