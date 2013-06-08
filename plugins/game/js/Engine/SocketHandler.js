@@ -837,6 +837,8 @@ var SocketHandler = Class.extend({
             }
 
 
+            terrainHandler.RebuildOctree();
+
         });
 
 
