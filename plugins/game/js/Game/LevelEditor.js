@@ -916,10 +916,10 @@ var LevelEditor = Class.extend({
     // var fHeartPieces = fEntityPlacer.addFolder('Heart Pieces');
     // guiControls['ephpAdd'] = fHeartPieces.add(this.editorGUI, 'ephpAdd');
 
-    var fMusicPlayer = fEntityPlacer.addFolder('Music Player');
-    guiControls['epmpMusicPiece'] = fMusicPlayer.add(this.editorGUI, 'epmpMusicPiece');
-    guiControls['epmpRange'] = fMusicPlayer.add(this.editorGUI, 'epmpRange');
-    guiControls['epmpAdd'] = fMusicPlayer.add(this.editorGUI, 'epmpAdd');
+    // var fMusicPlayer = fEntityPlacer.addFolder('Music Player');
+    // guiControls['epmpMusicPiece'] = fMusicPlayer.add(this.editorGUI, 'epmpMusicPiece');
+    // guiControls['epmpRange'] = fMusicPlayer.add(this.editorGUI, 'epmpRange');
+    // guiControls['epmpAdd'] = fMusicPlayer.add(this.editorGUI, 'epmpAdd');
 
 
     guiControls['enableNPCEditor'] = fNPCEditor.add(this.editorGUI, 'enableNPCEditor');
