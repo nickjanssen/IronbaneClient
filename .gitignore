@@ -1,5 +1,6 @@
 /plugins/game/images/characters/cache/*.*
 /plugins/game/data/
+/plugins/game/images/
 /workshop/
 /uploads/
 config.php
