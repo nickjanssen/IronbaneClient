@@ -70,7 +70,7 @@ switch ($interest) {
         <h2>What\'s the model format?</h2>
         <p>.OBJ, and then it is converted by a script to a .JS file.</p>
 
-        <p>First, to get an .OBJ file, you have to use your modeling package\'s export function and then select the OBJ file format. if you\'re working with Blender, <a href="https://github.com/ironbane/IronbaneClient/blob/master/plugins/game/images/meshes/convert_obj_three.py#L86" target="_new">here are some good settings</a> to ensure your file gets exported correctly:</p>
+        <p>First, to get an .OBJ file, you have to use your modeling package\'s export function and then select the OBJ file format. if you\'re working with Blender, <a href="https://github.com/nickjanssen/IronbaneClient/blob/master/plugins/game/images/meshes/convert_obj_three.py#L86" target="_new">here are some good settings</a> to ensure your file gets exported correctly:</p>
 
 		<h2>Which models can I make?</h2>
 

@@ -131,11 +131,11 @@ var TerrainHandler = Class.extend({
     texture2.repeat.x = 1000;
     texture2.repeat.y = 1000;
 
-    var planeGeo = new THREE.PlaneGeometry(100, 100, 30, 30);
+    var planeGeo = new THREE.PlaneGeometry(1000, 1000, 300, 300);
     var uniforms = {
       uvScale : {
         type: 'v2',
-        value: new THREE.Vector2(0.02,0.02)
+        value: new THREE.Vector2(0.002,0.002)
       },
       size : {
         type: 'v2',
