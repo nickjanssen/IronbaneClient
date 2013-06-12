@@ -48,6 +48,8 @@ var Cell = Class.extend({
 
         this.filesToLoad = 0;
 
+        this.octree = new THREE.Octree();
+
     },
     Tick: function(dTime) {
 
@@ -117,7 +119,7 @@ var Cell = Class.extend({
         ironbane.scene.add(this.models);
 
         // Collision data goes to one big octree that sits on the skybox
-        terrainHandler.skybox.terrainOctree.add(this.models, true);
+        this.octree.add(this.models, true);
 
         ironbane.renderer.shadowMapEnabled = true;
         ironbane.renderer.shadowMapAutoUpdate = true;
@@ -148,7 +150,10 @@ var Cell = Class.extend({
         }
 
         if ( this.models ) {
-            terrainHandler.skybox.terrainOctree.remove(this.models);
+            //terrainHandler.skybox.terrainOctree.remove(this.models);
+
+            // Possible mem leak suspect
+            this.octree = new THREE.Octree();
 
             ironbane.scene.remove(this.models);
         }

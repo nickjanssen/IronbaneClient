@@ -61,6 +61,8 @@ var TerrainHandler = Class.extend({
 
     this.cells = {};
 
+    this.cellOctrees = {};
+
     this.zone = this.previewZone;
 
     if ( this.skybox ) this.skybox.Destroy();
@@ -326,7 +328,14 @@ var TerrainHandler = Class.extend({
   },
   RebuildOctree: function() {
     this.lastOctreeBuildPosition = terrainHandler.GetReferenceLocation();
-    this.octreeResults = terrainHandler.skybox.terrainOctree.search(this.lastOctreeBuildPosition, 20, true);
+    this.octreeResults = terrainHandler.skybox.terrainOctree
+                            .search(this.lastOctreeBuildPosition, 20, true);
+
+    var me = this;
+    _.each(terrainHandler.cells, function(cell) {
+      me.octreeResults = me.octreeResults
+        .concat(cell.octree.search(me.lastOctreeBuildPosition, 20, true));
+    });
   },
   Tick: function(dTime) {
 
