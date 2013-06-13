@@ -118,7 +118,7 @@ var Cell = Class.extend({
         this.models.castShadow = true;
         ironbane.scene.add(this.models);
 
-        // Collision data goes to one big octree that sits on the skybox
+        // Collision data is now saved to this cell
         this.octree.add(this.models, true);
 
         ironbane.renderer.shadowMapEnabled = true;
@@ -126,7 +126,7 @@ var Cell = Class.extend({
         ironbane.renderer.shadowMapSoft = false;
 
 
-        if ( ISDEF(ironbane.shadowMapUpdateTimer) ) {
+        if ( ironbane.shadowMapUpdateTimer ) {
             clearTimeout(ironbane.shadowMapUpdateTimer);
         }
 
