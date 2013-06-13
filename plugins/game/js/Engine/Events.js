@@ -575,6 +575,25 @@ var mouseIntervalFunction = function(event){
     }
     else {
       // Todo: rotate around camera
+       //ironbane.player.thirdPersonReference.y = 0;
+
+      var rotationMatrix = new THREE.Matrix4();
+      rotationMatrix.setRotationFromEuler(
+        new THREE.Vector3(
+          0,
+          (10).ToRadians(),
+          0);
+
+
+      rotationMatrix.multiplyVector3(ironbane.player.thirdPersonReference);
+
+
+
+
+
+
+       // ironbane.player.thirdPersonReference.x = 0;
+       // ironbane.player.thirdPersonReference.z = 0;
     }
 
 

@@ -380,11 +380,8 @@ var Player = Fighter.extend({
           if ( (ironbane.camera.position.clone().subSelf(firstPersonTarget)).length() < 0.01 ) {
             this.cameraStatus = CameraStatusEnum.FirstPerson;
           }
-
-
           break;
         case CameraStatusEnum.ThirdPerson:
-
           //ironbane.camera.position.copy(target);
           ironbane.camera.position.lerpSelf(target, dTime*3);
           break;
