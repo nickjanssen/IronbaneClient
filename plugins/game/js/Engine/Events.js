@@ -289,7 +289,7 @@ $(document).mousedown(function(event) {
     if ( mouseCheckHoldInterval ) clearInterval(mouseCheckHoldInterval);
     mouseCheckHoldInterval = setInterval(function(){
       mouseIntervalFunction(event);
-    }, 10);
+    }, 100);
 
   }
 
@@ -297,8 +297,17 @@ $(document).mousedown(function(event) {
 //return false;
 }
 );
-$(document).mouseup(function() {
+$(document).mouseup(function(event) {
   clearInterval(mouseCheckHoldInterval);
+
+  if ( event.button === 0 ) {
+
+  }
+  else {
+    ironbane.player.isLookingAround = false;
+    ironbane.player.thirdPersonReference
+      .copy(ironbane.player.originalThirdPersonReference);
+  }
 //return false;
 });
 
@@ -576,7 +585,7 @@ var mouseIntervalFunction = function(event){
 
     if ( ironbane.player.dead ) return;
 
-    if ( event.button === 0 && false ) {
+    if ( event.button === 0 ) {
       if (currentMouseToWorldData) {
         var position = currentMouseToWorldData.point;
         ironbane.player.AttemptAttack(position);
@@ -586,7 +595,9 @@ var mouseIntervalFunction = function(event){
       // Todo: rotate around camera
        //ironbane.player.thirdPersonReference.y = 0;
 
-       var factorX = relativeMouse.x*10;
+       ironbane.player.isLookingAround = true;
+
+       var factorX = relativeMouse.x*20;
        if ( factorX > 0 ) {
         factorX = Math.min(1, factorX);
        }
@@ -594,7 +605,7 @@ var mouseIntervalFunction = function(event){
         factorX = Math.max(-1, factorX);
        }
 
-       var factorY = relativeMouse.y*10;
+       var factorY = relativeMouse.y*20;
        if ( factorY > 0 ) {
         factorY = Math.min(1, factorY);
        }
@@ -622,13 +633,13 @@ var mouseIntervalFunction = function(event){
 
       ironbane.player.thirdPersonReference.copy(newTPR);
 
-      var matrix = new THREE.Matrix4().makeRotationAxis( side, factorY );
+      var matrix = new THREE.Matrix4().makeRotationAxis( side, -factorY );
 
       var newTPR = ironbane.player.thirdPersonReference.clone();
 
       matrix.multiplyVector3(newTPR);
 
-      if ( newTPR.y > 0 && newTPR.y < 4 && false ) {
+      if ( newTPR.y > 0 && newTPR.y < 4 ) {
           ironbane.player.thirdPersonReference.copy(newTPR);
         }
       //ironbane.player.thirdPersonReference.multiplyVector3( matrix );

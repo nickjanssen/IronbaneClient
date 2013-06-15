@@ -111,6 +111,8 @@ var Player = Fighter.extend({
 
     this.localRotationY = rotation.y;
 
+    this.isLookingAround = false;
+
     //this.heartPieces = socketHandler.playerData.heartPieces.split(",");
 
   },
@@ -314,7 +316,7 @@ var Player = Fighter.extend({
       if ( intersects.length > 0 ) {
 
         var relativeDifference = intersects[0].distance;
-        relativeDifference = Math.min(relativeDifference, this.originalThirdPersonReference.length());
+        //
 
         //debug.SetWatch("camera col!", relativeDifference);
 
@@ -332,10 +334,11 @@ var Player = Fighter.extend({
           }
 
         }
-        else {
+        else if ( !this.isLookingAround ) {
           this.thirdPersonReference.lerpSelf(this.originalThirdPersonReference, dTime*10);
         }
 
+        relativeDifference = Math.min(relativeDifference, this.originalThirdPersonReference.length());
 
         uc.normalize();
         uc.multiplyScalar(relativeDifference-1.0);
@@ -382,8 +385,8 @@ var Player = Fighter.extend({
           }
           break;
         case CameraStatusEnum.ThirdPerson:
-          ironbane.camera.position.copy(target);
-          //ironbane.camera.position.lerpSelf(target, dTime*3);
+          //ironbane.camera.position.copy(target);
+          ironbane.camera.position.lerpSelf(target, dTime*3);
           break;
       }
 
@@ -397,8 +400,8 @@ var Player = Fighter.extend({
         lookAtTarget = this.position.clone().addSelf(new THREE.Vector3(0, 1, 0));
 
       }
-      //ironbane.camera.lookAtPosition.lerpSelf(lookAtTarget, dTime * 10);
-      ironbane.camera.lookAtPosition.copy(lookAtTarget);
+      ironbane.camera.lookAtPosition.lerpSelf(lookAtTarget, dTime * 10);
+      //ironbane.camera.lookAtPosition.copy(lookAtTarget);
 
 
       ironbane.camera.lookAt(ironbane.camera.lookAtPosition);
