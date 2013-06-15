@@ -319,23 +319,24 @@ var Player = Fighter.extend({
         //
 
         //debug.SetWatch("camera col!", relativeDifference);
+        if ( !this.isLookingAround ) {
+          if ( relativeDifference < 2.5 ) {
+            //manualLerp = true;
+            //ironbane.camera.position.lerpSelf(this.position.clone().addSelf(new THREE.Vector3(0, 2, 0)), dTime*3);
+            //ironbane.camera.position.y = this.position.y + 2;
 
-        if ( relativeDifference < 2.5 ) {
-          //manualLerp = true;
-          //ironbane.camera.position.lerpSelf(this.position.clone().addSelf(new THREE.Vector3(0, 2, 0)), dTime*3);
-          //ironbane.camera.position.y = this.position.y + 2;
+            needFirstPersonMode = true;
 
-          needFirstPersonMode = true;
+            switch(this.cameraStatus) {
+              case CameraStatusEnum.ThirdPerson:
+                this.cameraStatus = CameraStatusEnum.ThirdPersonToFirstPersonTransition;
+                break;
+            }
 
-          switch(this.cameraStatus) {
-            case CameraStatusEnum.ThirdPerson:
-              this.cameraStatus = CameraStatusEnum.ThirdPersonToFirstPersonTransition;
-              break;
           }
-
-        }
-        else if ( !this.isLookingAround ) {
-          this.thirdPersonReference.lerpSelf(this.originalThirdPersonReference, dTime*10);
+          else {
+            this.thirdPersonReference.lerpSelf(this.originalThirdPersonReference, dTime*10);
+          }
         }
 
         relativeDifference = Math.min(relativeDifference, this.originalThirdPersonReference.length());
