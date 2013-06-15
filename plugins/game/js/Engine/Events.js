@@ -271,6 +271,8 @@ $(document).keydown(function(event){
 })(jQuery);
 
 var mouse = new THREE.Vector2();
+var lastMouse = new THREE.Vector2();
+var relativeMouse = new THREE.Vector2();
 
 
 var mouseCheckHoldInterval = null;
@@ -286,8 +288,8 @@ $(document).mousedown(function(event) {
     event.preventDefault();
     if ( mouseCheckHoldInterval ) clearInterval(mouseCheckHoldInterval);
     mouseCheckHoldInterval = setInterval(function(){
-      mouseIntervalFunction(event)
-    }, (showEditor && levelEditor.editorGUI.enablePathPlacer) ? 100 : 100);
+      mouseIntervalFunction(event);
+    }, 10);
 
   }
 
@@ -304,14 +306,21 @@ var lastMouseToWorldData = null;
 var currentMouseToWorldData = null;
 
 $(document).mousemove(function(event) {
+
+  // lastMouse = mouse.clone();
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
 
 //    if ( ironbane.player ) ironbane.player.UpdateMouseProjectedPosition();
 });
 
 var mouseIntervalFunction = function(event){
 
+
+  // relativeMouse = mouse.clone().subSelf(lastMouse);
+
+  // sw("relativeMouse", ConvertVector3(relativeMouse));
 
   document.getSelection().removeAllRanges();
 
@@ -567,7 +576,7 @@ var mouseIntervalFunction = function(event){
 
     if ( ironbane.player.dead ) return;
 
-    if ( event.button === 0 ) {
+    if ( event.button === 0 && false ) {
       if (currentMouseToWorldData) {
         var position = currentMouseToWorldData.point;
         ironbane.player.AttemptAttack(position);
@@ -577,19 +586,56 @@ var mouseIntervalFunction = function(event){
       // Todo: rotate around camera
        //ironbane.player.thirdPersonReference.y = 0;
 
-      var rotationMatrix = new THREE.Matrix4();
-      rotationMatrix.setRotationFromEuler(
-        new THREE.Vector3(
-          0,
-          (10).ToRadians(),
-          0);
+       var factorX = relativeMouse.x*10;
+       if ( factorX > 0 ) {
+        factorX = Math.min(1, factorX);
+       }
+       else if ( factorX < 0 ) {
+        factorX = Math.max(-1, factorX);
+       }
+
+       var factorY = relativeMouse.y*10;
+       if ( factorY > 0 ) {
+        factorY = Math.min(1, factorY);
+       }
+       else if ( factorY < 0 ) {
+        factorY = Math.max(-1, factorY);
+       }
 
 
-      rotationMatrix.multiplyVector3(ironbane.player.thirdPersonReference);
+      var rotationMatrix = new THREE.Matrix4()
+        .makeRotationAxis( new THREE.Vector3(0, 1, 0), factorX );
 
+      var side = ironbane.camera.lookAtPosition.clone()
+        .subSelf(ironbane.camera.position).normalize()
+        .crossSelf(new THREE.Vector3(0, 1, 0)).normalize();
+        //debug.DrawVector(this.position, new THREE.Vector3(), 0xFF0000);
 
+        //side.copy(ironbane.player.heading);
 
+      // rotationMatrix.rotateByAxis(side, factorY);
 
+      // // sw("factorX", factorX);
+      var newTPR = ironbane.player.thirdPersonReference.clone();
+
+      rotationMatrix.multiplyVector3(newTPR);
+
+      ironbane.player.thirdPersonReference.copy(newTPR);
+
+      var matrix = new THREE.Matrix4().makeRotationAxis( side, factorY );
+
+      var newTPR = ironbane.player.thirdPersonReference.clone();
+
+      matrix.multiplyVector3(newTPR);
+
+      if ( newTPR.y > 0 && newTPR.y < 4 && false ) {
+          ironbane.player.thirdPersonReference.copy(newTPR);
+        }
+      //ironbane.player.thirdPersonReference.multiplyVector3( matrix );
+
+      ironbane.player.thirdPersonReference.normalize().multiplyScalar(ironbane.player.originalThirdPersonReference.length());
+
+      // ironbane.player.thirdPersonReference.y += factorY;
 
 
        // ironbane.player.thirdPersonReference.x = 0;

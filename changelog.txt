@@ -1,0 +1,4 @@
+0.2
+------
+New features:
+    * You can now rotate the camera around your character using the right mouse button

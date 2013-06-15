@@ -206,8 +206,9 @@ var Game = Class.extend({
       }, 500);
     }
 
-
-
+    relativeMouse = mouse.clone().subSelf(lastMouse);
+  lastMouse = mouse.clone();
+    sw("relativeMouse", ConvertVector3(relativeMouse));
   },
   Render: function () {
 

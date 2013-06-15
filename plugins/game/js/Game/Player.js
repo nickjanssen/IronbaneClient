@@ -382,21 +382,23 @@ var Player = Fighter.extend({
           }
           break;
         case CameraStatusEnum.ThirdPerson:
-          //ironbane.camera.position.copy(target);
-          ironbane.camera.position.lerpSelf(target, dTime*3);
+          ironbane.camera.position.copy(target);
+          //ironbane.camera.position.lerpSelf(target, dTime*3);
           break;
       }
 
       //debug.SetWatch("this.cameraStatus", this.cameraStatus);
 
-
+      var lookAtTarget = null;
       if ( this.cameraStatus != CameraStatusEnum.ThirdPerson ) {
-        ironbane.camera.lookAtPosition.lerpSelf(this.position.clone().addSelf(new THREE.Vector3(Math.sin(radians), 1, Math.cos(radians))), dTime * 10);
+        lookAtTarget = this.position.clone().addSelf(new THREE.Vector3(Math.sin(radians), 1, Math.cos(radians)));
       }
       else {
-        ironbane.camera.lookAtPosition.lerpSelf(this.position.clone().addSelf(new THREE.Vector3(0, 1, 0)), dTime * 10);
-      }
+        lookAtTarget = this.position.clone().addSelf(new THREE.Vector3(0, 1, 0));
 
+      }
+      //ironbane.camera.lookAtPosition.lerpSelf(lookAtTarget, dTime * 10);
+      ironbane.camera.lookAtPosition.copy(lookAtTarget);
 
 
       ironbane.camera.lookAt(ironbane.camera.lookAtPosition);
