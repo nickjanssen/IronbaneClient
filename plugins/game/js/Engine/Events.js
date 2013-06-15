@@ -605,7 +605,7 @@ var mouseIntervalFunction = function(event){
         factorX = Math.max(-1, factorX);
        }
 
-       var factorY = relativeMouse.y*20;
+       var factorY = relativeMouse.y*40;
        if ( factorY > 0 ) {
         factorY = Math.min(1, factorY);
        }
@@ -639,14 +639,14 @@ var mouseIntervalFunction = function(event){
 
       matrix.multiplyVector3(newTPR);
 
-      if ( newTPR.y > 0 && newTPR.y < 4 ) {
+      if ( newTPR.y > 0 && newTPR.y < 4 && false ) {
           ironbane.player.thirdPersonReference.copy(newTPR);
         }
       //ironbane.player.thirdPersonReference.multiplyVector3( matrix );
 
       ironbane.player.thirdPersonReference.normalize().multiplyScalar(ironbane.player.originalThirdPersonReference.length());
 
-      // ironbane.player.thirdPersonReference.y += factorY;
+      ironbane.player.thirdPersonReference.y += factorY;
 
 
        // ironbane.player.thirdPersonReference.x = 0;
