@@ -1034,7 +1034,6 @@ var HUDHandler = Class.extend({
 
       // if the element is already been rendered before just use it
       if(el.html() !== '') {
-          console.log('up', src, coins);
           el.find('.amount').text('x ' + coins).css('background-image', 'url(' + src + ')');
       } else {
           // todo: some of this can be done in the css file instead
