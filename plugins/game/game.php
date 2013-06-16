@@ -213,8 +213,6 @@ $result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __F
 for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $row = mysql_fetch_array($result);
 
-
-
     $preItemsLoad .= 'items[' . $row["id"] . '] = {
             id: ' . $row["id"] . ',
             name: "' . $row["name"] . '",
@@ -224,7 +222,8 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
             delay: ' . $row["delay"] . ',
             attr1: ' . $row["attr1"] . ',
             particle: "' . $row["particle"] . '",
-            subtype: "' . $row["subtype"] . '"
+            subtype: "' . $row["subtype"] . '",
+            baseValue: ' . $row["basevalue"] . '
         };
         ';
 }

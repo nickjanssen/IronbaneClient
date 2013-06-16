@@ -187,5 +187,7 @@ function CalculateItemPrice(item) {
   //                        attr1: dataHandler.items[item].attr1,
   //                        equipped: 0
   //                    }
-  return item.attr1;
+
+  // for now use basevalue directly, eventually will have modifiers on the shopkeep
+  return item.basevalue || 0;
 }
