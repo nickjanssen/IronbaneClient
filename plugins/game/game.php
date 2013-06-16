@@ -223,7 +223,7 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
             attr1: ' . $row["attr1"] . ',
             particle: "' . $row["particle"] . '",
             subtype: "' . $row["subtype"] . '",
-            baseValue: ' . $row["baseValue"] . '
+            baseValue: ' . $row["basevalue"] . '
         };
         ';
 }
