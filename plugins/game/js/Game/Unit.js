@@ -200,49 +200,8 @@ var Unit = PhysicsObject.extend({
     }
 
     //if ( ((this instanceof Fighter) && !(this instanceof Player) && this.id > 0) ) {
-    if ( this.drawNameMesh ) {
-
-      var c = document.createElement('canvas');
-      var ctx = c.getContext('2d');
-      var fillText = this.name;
-
-      c.width= 300;
-      c.height=50;
-      ctx.fillStyle='#FFFFFF';
-      ctx.strokeStyle='#000000';
-      ctx.font = '26pt Arial Black';
-      ctx.textAlign = 'center';
-      var dim = ctx.measureText(fillText);
-
-
-      //c.getContext('2d').textAlign= 'center';
-
-      ctx.fillText(fillText, c.width/2, 40);
-      ctx.strokeText(fillText, c.width/2, 40);
-
-      var tex = new THREE.Texture(c);
-      tex.needsUpdate = true;
-
-      var mat = new THREE.MeshBasicMaterial({
-        map: tex,
-        //transparent : true,
-        alphaTest: 0.5
-      });
-      //mat.transparent = true;
-
-      var scale = 0.01 * this.size;
-
-      mat.side = THREE.DoubleSide;
-
-      this.nameMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(c.width*scale, c.height*scale),
-        mat
-        );
-
-      //this.nameMesh.doubleSided = true;
-
-      ironbane.scene.add(this.nameMesh);
-
+    if (this.drawNameMesh) {
+        this.renderNameMesh(this.name);
     }
 
 
@@ -264,6 +223,40 @@ var Unit = PhysicsObject.extend({
   //        this.renderOffsetMultiplier = 1.0;
 
     this.AddShadow();
+  },
+  renderNameMesh: function(name) {
+
+      var unit = this,
+          c = document.createElement('canvas');
+          ctx = c.getContext('2d');
+          fillText = name;
+
+      c.width= 400;
+      c.height= 50;
+      ctx.fillStyle= '#FFFFFF';
+      ctx.strokeStyle= '#000000';
+      ctx.font = '26pt Arial Black';
+      ctx.textAlign = 'center';
+      ctx.fillText(fillText, c.width/2, 40);
+      ctx.strokeText(fillText, c.width/2, 40);
+
+      var tex = new THREE.Texture(c);
+      tex.needsUpdate = true;
+
+      // todo: need to cleanup old texture? can replace data instead?
+      if(!unit.nameMesh) {
+          var mat = new THREE.MeshBasicMaterial({
+              map: tex,
+              alphaTest: 0.5
+          });
+          var scale = 0.01 * this.size;
+          mat.side = THREE.DoubleSide;
+
+          unit.nameMesh = new THREE.Mesh(new THREE.PlaneGeometry(c.width*scale, c.height*scale), mat);
+          ironbane.scene.add(unit.nameMesh);
+      } else {
+          unit.nameMesh.material.map = tex;
+      }
   },
   AddShadow: function() {
     if ( this.enableShadow ) {
