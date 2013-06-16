@@ -1024,14 +1024,27 @@ var HUDHandler = Class.extend({
 
     return content;
   },
-  MakeCoinBar: function(doFlash) {
-    doFlash = doFlash || false;
-    var content = this.GetStatContent(ironbane.player.coins, doFlash ? 'misc/coin_medium_flash' : 'misc/coin_medium', ironbane.player.coins, true, true);
-    //var content = this.GetStatContent(1, 'misc/heart_medium', 6);
-    $('#coinBar').html(content);
-    if ( doFlash ) setTimeout(function(){
-      hudHandler.MakeCoinBar()
-    },50);
+  MakeCoinBar: function(flash) {
+      var self = this,
+          el = $('#coinBar'),
+          coins = ironbane.player.coins,
+          img = 'misc/coin_medium',
+          imgFlash = 'misc/coin_medium_flash',
+          src = 'plugins/game/images/' + (flash ? imgFlash : img) + '_full.png';
+
+      // if the element is already been rendered before just use it
+      if(el.html() !== '') {
+          console.log('up', src, coins);
+          el.find('.amount').text('x ' + coins).css('background-image', 'url(' + src + ')');
+      } else {
+          // todo: some of this can be done in the css file instead
+          $('<span class="amount" style="color:gold;padding-left: 25px;background-image:url(' + src + ');background-repeat:no-repeat;">x ' + coins + '</span>').appendTo(el);
+      }
+
+      // if this was a "flash" run again without flash
+      if(flash) {
+        setTimeout(function() { self.MakeCoinBar(false); }, 50);
+      }
   },
   MakeHealthBar: function(doFlash) {
     doFlash = doFlash || false;
