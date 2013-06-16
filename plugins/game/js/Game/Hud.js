@@ -758,73 +758,81 @@ var HUDHandler = Class.extend({
     return null;
   },
   MakeItemHover: function(div, item) {
+      var template = items[item.template],
+          content = '',
+          itemUrl = '',
+          itemInfo = '';
 
-    var template = items[item.template];
+      if ( template.type === 'armor' ) {
+          itemUrl = [
+              'plugins/game/images/characters/base/',
+              template.subtype,
+              '/medium.php?i=',
+              template.image
+          ].join('');
+      }
+      else {
+          itemUrl = 'plugins/game/images/items/medium.php?i=' + template.image;
+      }
 
-    var content = '';
+      function infoRow(label, value) {
+          return [
+              '<tr>',
+                  '<td style="text-align:right;"><strong>', label, '</strong></td>',
+                  '<td style="padding-left:10px;">',
+                      value,
+                  '</td>',
+              '</tr>'
+          ].join('');
+      }
 
-    var itemurl;
+      // info section
+      switch(template.type) {
+          case 'weapon':
+              itemInfo += infoRow((item.attr > 0 ? 'Damage' : 'Heals'), this.GetStatContent(Math.abs(item.attr1), "misc/heart", 0, false, true));
+              break;
+          case 'armor':
+              itemInfo += infoRow('Armor', this.GetStatContent(item.attr1, "misc/armor", 0, false, true));
+              break;
+          case 'consumable':
+              if(template.subtype === 'restorative') {
+                  iteminfo += infoRow('Restores', this.GetStatContent(item.attr1, "misc/heart", 0, false, true));
+              }
+              break;
+      }
 
-    if ( template.type == 'armor' ) {
-      itemurl = 'plugins/game/images/characters/base/'+(template['subtype'])+'/medium.php?i='+(template['image'])+'';
-    }
-    else {
-      itemurl = 'plugins/game/images/items/medium.php?i='+(template['image'])+'';
-    }
+      // if selling vendor sets price on server...
+      if(item.price) {
+          var priceHtml = [
+              '<span class="amount" style="color:gold;padding-left: 16px;',
+              'background-image:url(/plugins/game/images/misc/coin_full.png);',
+              'background-repeat:no-repeat;">',
+                  'x ', item.price,
+              '</span>'
+          ].join('');
+          itemInfo += infoRow('Price', priceHtml);
+      }
 
-    content += '<div style="min-height:20px;">';
-    content += '<div style="margin-top:-3px;width:33px;height:30px;float:left;"><img src="'+itemurl+'"></div>';
-    content += '<div style="margin-top:3px;">'+template.name+'</div>';
-    content += '</div>';
+      if(debugging) {
+          itemInfo += infoRow('ID', item.id);
+          itemInfo += infoRow('Slot', item.slot);
+      }
 
+      if(itemInfo !== '') {
+          itemInfo = '<hr><table>' + itemInfo + '</table>';
+      }
 
+      content = [
+          '<div style="min-height:20px;">',
+              '<div style="margin-top:-3px;width:33px;height:30px;float:left;">',
+                  '<img src="', itemUrl, '">',
+              '</div>',
+              '<div style="margin-top:3px;">', template.name, '</div>',
+          '</div>',
+          itemInfo
+      ].join('');
 
-
-
-    var itemInfo = "";
-
-    switch (template.type) {
-      case 'weapon':
-        if ( item.attr1 > 0 ) {
-          itemInfo += '<tr><td style="text-align:right;"><b>Damage</b></td><td style="padding-left:10px;">'+this.GetStatContent(item.attr1, "misc/heart", 0, false, true)+'</td></tr>';
-        }
-        else {
-          itemInfo += '<tr><td style="text-align:right;"><b>Heals</b></td><td style="padding-left:10px;">'+this.GetStatContent(Math.abs(item.attr1), "misc/heart", 0, false, true)+'</td></tr>';
-        }
-        break;
-      case 'armor':
-        itemInfo += '<tr><td style="text-align:right;"><b>Armor</b></td><td style="padding-left:10px;">'+this.GetStatContent(item.attr1, "misc/armor", 0, false, true)+'</td></tr>';
-        break;
-      case 'consumable':
-        switch (template.subtype) {
-          case "restorative":
-            itemInfo += '<tr><td style="text-align:right;"><b>Restores</b></td><td style="padding-left:10px;">'+this.GetStatContent(item.attr1, "misc/heart", 0, false, true)+'</td></tr>';
-            break;
-        }
-        break;
-    }
-
-    if ( ISDEF(item.price) ) {
-      itemInfo += '<tr><td style="text-align:right;"><b>Price</b></td><td style="padding-left:10px;">'+this.GetStatContent(item.price, "misc/coin", item.price, true, true)+'</td></tr>';
-    }
-
-    if ( debugging ) {
-      itemInfo += '<tr><td style="text-align:right;"><b>ID</b></td><td style="padding-left:10px;">'+item.id+'</td></tr>';
-      itemInfo += '<tr><td style="text-align:right;"><b>Slot</b></td><td style="padding-left:10px;">'+item.slot+'</td></tr>';
-    }
-
-    if ( itemInfo ) {
-      content += "<hr>";
-
-      content += '<table>';
-
-      content += itemInfo;
-
-      content += '</table>';
-    }
-
-
-    MakeHoverBox(div, content);
+      MakeHoverBox(div, content);
   },
   MakeSlotItems: function(isLoot) {
 
