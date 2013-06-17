@@ -145,6 +145,9 @@ var Skybox = PhysicsObject.extend({
 
     if ( this.onReady ) this.onReady();
 
+
+    terrainHandler.RebuildOctree();
+
   },
   Destroy: function() {
     if ( this.skyboxMesh ) {
