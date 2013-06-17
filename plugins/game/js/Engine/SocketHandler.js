@@ -55,7 +55,7 @@ var SocketHandler = Class.extend({
 
             // Socket behaviour
             this.socket.on('chatMessage', function (data) {
-                hudHandler.AddChatMessage(data.message);
+                hudHandler.AddChatMessage(data);
             });
 
             this.socket.on('bigMessage', function (data) {
