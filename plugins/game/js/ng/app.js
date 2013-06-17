@@ -13,10 +13,9 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
                 '</ul>',
             '</div>'
         ].join(''),
-        controller: ['$scope', function($scope) {
-            $scope.messages = [];
-        }],
         link: function(scope, el, attrs) {
+            scope.messages = [];
+
             var scroller = el.jScrollPane({
                 animateScroll: true
             }).data('jsp');
@@ -71,7 +70,9 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
                 return DEATH_MESSAGES[random];
             };
 
-            el.html($compile(getTemplate(scope.type))(scope));
+            el.html(getTemplate(scope.type));
+
+            $compile(el.contents())(scope);
         }
     };
 }])
