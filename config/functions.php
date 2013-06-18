@@ -1084,8 +1084,6 @@ function fromRGB($R, $G, $B){
      $B='0'.$B;
 
      return '#' . $R . $G . $B;
-
-
 }
 
 function writeChatMessage($author, $text, $type) {
@@ -1095,5 +1093,15 @@ function writeChatMessage($author, $text, $type) {
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 }
 
+function randomPassword() {
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 8; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
 
 ?>

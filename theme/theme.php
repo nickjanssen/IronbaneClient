@@ -25,10 +25,6 @@ if (!defined('BCS')) {
     die("ERROR");
 }
 
-if ( $time < 1368477668+(86400*7) ) {
-    $special_message = 'The login screen as well as automatic login is now working again! I\'m sorry for the inconvience.';
-}
-
 //
 // Build page
 //
