@@ -17,7 +17,7 @@
 */
 
 
-
+require 'PHPMailer/class.phpmailer.php';
 
 // Smilies
 
@@ -187,6 +187,9 @@ function requireLogin($this="") {
 
 }
 
+
+
+
 function mailToAll($subject, $content, $shownote) {
 
     set_time_limit(1000);
@@ -204,15 +207,6 @@ function mailto($to, $subject, $content, $shownote=0) {
 
     if ( empty($to) ) return;
 
-    $email_ontvanger = $to;
-
-    $naam_verzender = "Ironbane";
-    $email_verzender = "noreply@ironbane.com";
-
-    $headers .= "From: " . $naam_verzender . " <" . $email_verzender . ">\r\n";
-    $headers .= "Reply-To: " . $naam_verzender . " <" . $email_verzender . ">\r\n";
-
-      $headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
 
     $content = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -228,7 +222,39 @@ function mailto($to, $subject, $content, $shownote=0) {
 </body>
 </html>';
 
-    mail($email_ontvanger, $subject, $content, $headers);
+    $mail = new PHPMailer;
+
+    $mail->IsSMTP();                                      // Set mailer to use SMTP
+    $mail->Host = 'smtp.mandrillapp.com';  // Specify main and backup server
+    $mail->SMTPAuth = true;                               // Enable SMTP authentication
+    $mail->Username = 'nikke@ironbane.com';                            // SMTP username
+    $mail->Password = 'ohwYZUlVlKx4nttSHX_f-g';                           // SMTP password
+    //$mail->SMTPSecure = 'ssl';                            // Enable encryption, 'ssl' also accepted
+
+    $mail->From = 'ironbot@ironbane.com';
+    $mail->FromName = 'Ironbane';
+    //$mail->AddAddress('jinfo', 'Josh Adams');  // Add a recipient
+    $mail->AddAddress($to);               // Name is optional
+    //$mail->AddReplyTo('info@example.com', 'Information');
+    // $mail->AddCC('cc@example.com');
+    // $mail->AddBCC('bcc@example.com');
+
+    $mail->WordWrap = 50;                                 // Set word wrap to 50 characters
+    // $mail->AddAttachment('/var/tmp/file.tar.gz');         // Add attachments
+    // $mail->AddAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+    $mail->IsHTML(true);                                  // Set email format to HTML
+
+    $mail->Subject = $subject;
+    $mail->Body    = $content;
+    $mail->AltBody = $content;
+
+    if(!$mail->Send()) {
+       echo 'Message could not be sent.';
+       echo 'Mailer Error: ' . $mail->ErrorInfo;
+       exit;
+    }
+
+    echo 'Message has been sent';
 }
 
 

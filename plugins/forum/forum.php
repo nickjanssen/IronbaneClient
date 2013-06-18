@@ -22,6 +22,8 @@ if (!defined('BCS')) {
     die("ERROR");
 }
 
+bcs_die("For security reasons, the forum is currently unavailable.");
+
 if ( $userdata[pending_editor] ) $s_editor = false;
 
 $o_head .= "<script type=\"text/javascript\" src=\"bbeditor/ed.js\"></script>";
