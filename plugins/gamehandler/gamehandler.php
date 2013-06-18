@@ -37,6 +37,7 @@ function errmsg($msg) {
 
 if ( $s_admin ) {
     if ( $action === "hashem" ) {
+        //$hash =
         // Generate random passwords and hash them
     }
 }
@@ -45,11 +46,15 @@ if ( $action == "delchar" ) {
 
 	if ( !$s_auth ) errmsg("Please login first!");
 
-	$id = parseToDB($id);
+    if ( !isset($_POST['pass']) ) errmsg("No password given!");
 
-	if ( $userdata[pass] != $_POST['pass'] ) errmsg("The password you entered was incorrect!");
+    if ( !isset($_POST['id']) ) die('No id given!');
 
-        if ( getRowCount("ib_characters WHERE id = '$id' AND user = '$userdata[id]'") == 0 ) errmsg("No character found!");
+	$id = parseToDB($_GET['id']);
+
+	if ( $userdata["pass"] != $_POST['pass'] ) errmsg("The password you entered was incorrect!");
+
+    if ( getRowCount("ib_characters WHERE id = '$id' AND user = '$userdata[id]'") == 0 ) errmsg("No character found!");
 
 	$query = "DELETE FROM ib_characters WHERE id = '$id' AND user = '$userdata[id]'";
 	$result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -74,7 +79,9 @@ if ( $action == "delchar" ) {
 }
 else if ( $action == "clothes" ) {
 
-    $p = explode(" ", $c);
+    if ( !isset($_GET['c']) ) die("No cloth params given!");
+
+    $p = explode(" ", $_GET['c']);
 
     // $character, $skin, $hair, $head, $body, $feet, $big=false
 
@@ -89,7 +96,17 @@ else if ( $action == "clothes" ) {
 else if ( $action == "makechar" ) {
 
 	if ( $s_auth ) {
-		$name = parseToDB($name);
+
+
+        if ( !isset($_POST['name']) ) die('No name given!');
+
+        if ( !isset($_POST['skin']) ) die('No skin given!');
+
+        if ( !isset($_POST['eyes']) ) die('No eyes given!');
+
+        if ( !isset($_POST['hair']) ) die('No hair given!');
+
+		$name = parseToDB($_POST['name']);
 
 
 
@@ -138,9 +155,9 @@ else if ( $action == "makechar" ) {
 		$query = "INSERT INTO ib_characters (name, user, skin, eyes, hair, creationtime) VALUES('$name', '$userdata[id]', $skin, $eyes, $hair, $time)";
 		$result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
-                $id = mysql_insert_id();
+        $id = mysql_insert_id();
 
-                // Add a sword
+        // Add a sword
 		// $query = "INSERT INTO ib_items (template, attr1, owner, equipped, slot) VALUES(1, 2, '$id', 1, 0)";
 		// $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
@@ -208,7 +225,10 @@ else if ( $action == "logout" ) {
     die("OK");
 }
 else if ( $action == "book" ) {
-  if ( !is_numeric($book) ) errmsg("No book given!");
+
+    if ( !isset($_GET["book"]) || !is_numeric($_GET["book"]) ) errmsg("No book given!");
+
+    $book = parseToDB($_GET["book"]);
 
     $sql3 = "SELECT text FROM ib_books WHERE id = '$book'";
     $result3 = bcs_query($sql3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -219,6 +239,12 @@ else if ( $action == "book" ) {
 else if ( $action == "register" ) {
 
     if ( $s_auth ) errmsg("Already registered!");
+
+    if ( !isset($_POST['Ux466hj8']) ) die("No username given!");
+    if ( !isset($_POST['Ed2h18Ks']) ) die("No pass given!");
+    if ( !isset($_POST['s8HO5oYe']) ) die("No email given!");
+
+    if ( !isset($_POST['url']) ) die("No url given!");
 
     $safe_name = parseToDB($_POST['Ux466hj8']);
     $safe_pass = parseToDB($_POST['Ed2h18Ks']);
@@ -297,10 +323,7 @@ else if ( $action == "register" ) {
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $userdata = mysql_fetch_array($result);
 
-
     // Send a mail
-
-
         mailto($safe_email, "Welcome to Ironbane!", '
 
 <div id="mailbox">Hi ' . $safe_name . ', thanks for registering!<br><br>To really enjoy our game and use all features, please verify your e-mail by clicking on the following link:<br><br><a href="http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'">http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'</a><br><br>This way, we know you are a real player and we can treat you like one!<br><br>Here are your account details, it\'s probably handy should you ever forget.<br><br><b>Username: ' . $safe_name . '<br>Password: ' . $safe_pass . '</b><br><br>Have fun!<br><br>The Ironbane Team<br><br>') ? "true" : "false" . "</div>
@@ -327,13 +350,13 @@ else if ( $action == "login" ) {
 
 	    if ( $s_auth ) errmsg("Already logged in!");
 
-		$user = $_POST['user'];
-		$pass = $_POST['pass'];
-		$remember = $_POST['remember'];
+        if ( !isset($_POST['user']) ) die("No user given!");
+        if ( !isset($_POST['pass']) ) die("No pass given!");
+
+		$user = parseToDB($_POST['user']);
+		$pass = parseToDB($_POST['pass']);
 
 		$s_auth = FALSE;
-
-		$resolution = $_POST['fieldresolution'];
 
 		if ( empty($user) ) {
 			die("Please enter a username.");
@@ -343,8 +366,8 @@ else if ( $action == "login" ) {
 		}
 
 
-		$safeuser = (strip_tags($user));
-		$safepass = (strip_tags($pass));
+		$safeuser = parseToDB($user);
+		$safepass = parseToDB($pass);
 
 		// Get information about given user
 		$query = "SELECT * FROM bcs_users WHERE name = '$safeuser'";
@@ -355,7 +378,7 @@ else if ( $action == "login" ) {
 //			die("You need to activate your account first!<br><br>Please check your e-mail for an activation link.");
 //		}
 
-		if ( mysql_num_rows($result) == 1 && $safepass == $row[pass] ) {
+		if ( mysql_num_rows($result) == 1 && $safepass === $row["pass"] ) {
 			$s_auth = TRUE;
 			$_SESSION['logged_in'] = TRUE;
 			$_SESSION['user_id'] = $row['id'];
@@ -372,11 +395,6 @@ else if ( $action == "login" ) {
 			}
 			else {
 				$redirect = "index.php";
-			}
-
-			if ( is_numeric($resolution) ) {
-				$query = "UPDATE bcs_users SET info_width = '$resolution' WHERE id = '$row[id]'";
-				$result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 			}
 
 			die("OK");
@@ -405,18 +423,18 @@ else if ( $action == "getchars" ) {
                         $result2 = mysql_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
                         for ($index2 = 0; $index2 < mysql_num_rows($result2); $index2++) {
                             $row2 = mysql_fetch_array($result2);
-                            array_push($itemlist, $row2[template]);
+                            array_push($itemlist, $row2["template"]);
                         }
 
 			$inv = implode(",", $itemlist);
 
 			$chars .= '
 			{
-				id: '.$row[id].',
-				name: "'.$row[name].'",
-                                skin: "'.$row[skin].'",
-                                eyes: "'.$row[eyes].'",
-                                hair: "'.$row[hair].'",
+				id: '.$row["id"].',
+				name: "'.$row["name"].'",
+                                skin: "'.$row["skin"].'",
+                                eyes: "'.$row["eyes"].'",
+                                hair: "'.$row["hair"].'",
                                 equipment: "'.$inv.'"
 			}'.($index<(mysql_num_rows($result)-1)?',':'').'
 			';
@@ -425,15 +443,15 @@ else if ( $action == "getchars" ) {
 		}
 
 		$chars = 'chars = ['.$chars.'];
-				startdata.user = '.$userdata[id].';
-                startdata.name = "'.$userdata[name].'";
-                startdata.pass = "'.$userdata[pass].'";
-                startdata.characterUsed = "'.$userdata[characterused].'";
+				startdata.user = '.$userdata["id"].';
+                startdata.name = "'.$userdata["name"].'";
+                startdata.pass = "'.$userdata["pass"].'";
+                startdata.characterUsed = "'.$userdata["characterused"].'";
 				charCount = chars.length;
 
 				if ( charCount > 0 && startdata.characterUsed == 0 ) startdata.characterUsed = chars[0].id;
 
-                                isEditor = '.$userdata[editor].';
+                                isEditor = '.$userdata["editor"].';
 
                                 hudHandler.MakeNewsPage();
 		';
@@ -468,8 +486,8 @@ else if ( $action == "getchars" ) {
 
     			$chars .= '
     			{
-    				id: '.$row[id].',
-    				name: "'.$row[name].'"
+    				id: '.$row["id"].',
+    				name: "'.$row["name"].'"
     			}
     			';
 

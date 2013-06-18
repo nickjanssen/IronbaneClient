@@ -1921,7 +1921,8 @@ var HUDHandler = Class.extend({
 
 
 
-        $.post('gamehandler.php?action=makechar&name='+ncname, {
+        $.post('gamehandler.php?action=makechar', {
+          name:ncname,
           skin:selectedSkin,
           eyes:selectedEyes,
           hair:selectedHair

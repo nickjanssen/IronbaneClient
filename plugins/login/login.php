@@ -17,16 +17,9 @@
 */
 
 
-
-
-// Plugin name:		Login
-// Plugin version:	0.0.2
-// Plugin author:		Beather (admin@ironbane.com)
-
 if ( !defined('BCS') ) {
 	die();
 }
-
 
 
 $validation_ok = 1;
@@ -52,7 +45,7 @@ if ( !isset($redirect) ) {
 if ( $action == "activate" ) {
     //if ( $s_auth ) bcs_die("You have already activated.");
 
-    $uid = parseToDB($uid);
+    $uid = (int)parseToDB($uid);
 
     $query = "SELECT * FROM bcs_users WHERE id = '$uid' ";
     $result = mysql_query($query) or bcs_error("Error on #" . __LINE__ . ": ".mysql_error());
@@ -63,7 +56,7 @@ if ( $action == "activate" ) {
 
     $row = mysql_fetch_array($result);
 
-    if ( $row[activationkey] != $_GET[key] ) {
+    if ( $row["activationkey"] != $_GET["key"] ) {
         bcs_die("Your activation key is not valid. Please contact Nikke (nikke@ironbane.com) or create a new account.");
     }
 
@@ -74,13 +67,13 @@ if ( $action == "activate" ) {
     // Log the player in
     $s_auth = TRUE;
     $_SESSION['logged_in'] = TRUE;
-    $_SESSION['user_id'] = $row[id];
+    $_SESSION['user_id'] = $row["id"];
 
 
     $cookietime = 31536000;
     // Set cookies
-    setcookie("bcs_username", $row[name], time()+$cookietime);
-    setcookie("bcs_password", $row[pass], time()+$cookietime);
+    setcookie("bcs_username", $row["name"], time()+$cookietime);
+    setcookie("bcs_password", $row["pass"], time()+$cookietime);
 
     bcs_die("Thanks, $row[name]!<br><br>Your account is now active!", "game.php");
 
@@ -90,7 +83,7 @@ else if ( $action == "forgotpassword" ) {
 
         $c_title = "Forgot password";
 
-        if ( $_POST[dosend] ) {
+        if ( $_POST["dosend"] ) {
 
 
 
@@ -101,7 +94,7 @@ else if ( $action == "forgotpassword" ) {
 
                 $_SESSION["vercode"] = "";
 
-                $email = parseToDB($_POST[email]);
+                $email = parseToDB($_POST["email"]);
 
                 $query = "SELECT * FROM bcs_users WHERE email = '$email' ";
                 $result = mysql_query($query) or bcs_error("Error on #" . __LINE__ . ": ".mysql_error());
@@ -115,18 +108,18 @@ else if ( $action == "forgotpassword" ) {
 
 
                 $bericht = "
-                Hey ".$userdata[name]."!<br><br>
+                Hey ".$userdata["name"]."!<br><br>
 
-                Here is the password of your Ironbane account that you requested on ".createDate(time(), $userdata[gmt]).".<br>
+                Here is the password of your Ironbane account that you requested on ".createDate(time(), $userdata["gmt"]).".<br>
                 If you think this message was sent by abuse, please send an e-mail to nikke@ironbane.com with as much details as possible.<br><br>
 
-                Password: ".$userdata[pass]."<br><br>
+                Password: ".$userdata["pass"]."<br><br>
 
                 Best of luck!<br>
                 GameBot
                 ";
 
-                mailto($userdata[email], "Password request", $bericht);
+                mailto($userdata["email"], "Password request", $bericht);
 
 
                 bcs_die("Your password has been sent to your e-mail address. This usually happens instantly, but it may take several minutes.<br /><br /><b>Attention:</b> Be sure to check your spam folder as well.", $filename);
@@ -191,19 +184,19 @@ else if ( $s_check ) {
 
 
 
-		$safeuser = (strip_tags($user));
-		$safepass = (strip_tags($pass));
+		$safeuser = (parseToDB($user));
+		$safepass = (parseToDB($pass));
 
 		// Get information about given user
 		$query = "SELECT * FROM bcs_users WHERE name = '$safeuser'";
 		$result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
 		$row = mysql_fetch_array($result);
 
-                if ( $row[activationkey] != '' ) {
+                if ( $row["activationkey"] != '' ) {
                     bcs_die("You need to activate your account first!<br><br>Please check your e-mail for an activation link.");
                 }
 
-		if ( mysql_num_rows($result) == 1 && $safepass == $row[pass] ) {
+		if ( mysql_num_rows($result) == 1 && $safepass == $row["pass"] ) {
 			$s_auth = TRUE;
 			$_SESSION['logged_in'] = TRUE;
 			$_SESSION['user_id'] = $row['id'];

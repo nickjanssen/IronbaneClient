@@ -17,13 +17,6 @@
 */
 
 
-
-
-//if ( $_SERVER["HTTP_HOST"] == "localhost" ) {
-//    setcookie("XDEBUG_SESSION", "netbeans-xdebug", time()+3600);
-//    $XDEBUG_SESSION_START="netbeans-xdebug";
-//}
-
 if ( !file_exists("config.php") ) die("Config file not found!");
 include("config.php");
 
@@ -57,7 +50,7 @@ function bcs_error($string) {
     // }
 
     // // Write $somecontent to our opened file.
-    // if (fwrite($handle, $string) === FALSE) {
+    // if (fwrite($handle, $string) === false) {
     //     print "Cannot write to file ($filename)";
     //     exit;
     // }
@@ -76,51 +69,46 @@ $time = time();
 
 
 // Check for cookies
-if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == FALSE) ) {
+if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == false) ) {
 
-	$c_user = htmlspecialchars(strip_tags($_COOKIE['bcs_username']));
-	$c_pass = htmlspecialchars(strip_tags($_COOKIE['bcs_password']));
+	$c_user = parseToDB($_COOKIE['bcs_username']);
+	$c_pass = parseToDB($_COOKIE['bcs_password']);
 
 	$query = "SELECT id, pass FROM bcs_users WHERE name = '$c_user'";
 	$result = bcs_query($query) or bcs_error("Error retrieving user: ".mysql_error());
 	if ( mysql_num_rows($result) > 0 ) {
 		$row = mysql_fetch_array($result);
-		if ( $row[pass] == $c_pass ) {
+		if ( $row["pass"] == $c_pass ) {
 			// Auth successful
 			//echo "Cookie check OK";
-			$_SESSION['logged_in'] = TRUE;
+			$_SESSION['logged_in'] = true;
 			$_SESSION['user_id'] = $row[id];
 		}
-		else {
-			//echo "Cookie password does not match";
-		}
-	}
-	else {
-		//echo "Cookie user not found";
 	}
 }
 
-if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == TRUE ) {
+if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == true ) {
 
-	$s_auth = TRUE;
+	$s_auth = true;
 
+    $sesid = parseToDB($_SESSION["user_id"]);
 	// Get information about given user
-	$query = "SELECT * FROM bcs_users WHERE id = '$_SESSION[user_id]'";
+	$query = "SELECT * FROM bcs_users WHERE id = '$sesid'";
 	$result = bcs_query($query) or bcs_error("Error retrieving user: ".mysql_error());
 
-        if ( mysql_num_rows($result) == 0 ) {
-            unset($_SESSION['logged_in']);
-            unset($_SESSION['user_id']);
-            setcookie("bcs_username", "", time() - 3600);
-            setcookie("bcs_password", "", time() - 3600);
-            header("Location: index.php");
-        }
+    if ( mysql_num_rows($result) == 0 ) {
+        unset($_SESSION['logged_in']);
+        unset($_SESSION['user_id']);
+        setcookie("bcs_username", "", time() - 3600);
+        setcookie("bcs_password", "", time() - 3600);
+        header("Location: index.php");
+    }
 
 	$userdata = mysql_fetch_array($result);
 
 	$s_admin = $userdata['admin'];
     $s_editor = $userdata['editor'];
-    if ( $userdata[pending_editor] ) $s_editor = 1;
+    if ( $userdata["pending_editor"] ) $s_editor = 1;
 
     $s_moderator = $userdata['moderator'];
 	$s_name = $userdata['name'];
@@ -129,13 +117,13 @@ if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == TRUE ) {
     $sqlextra = "";
     // Update previous session
     $justloggedin = false;
-    if ( $userdata[last_session] < $time - $onlinePeriod ) {
+    if ( $userdata["last_session"] < $time - $onlinePeriod ) {
         $justloggedin = true;
         $sqlextra = "previous_session = last_session, ";
-        $userdata[previous_session] = $userdata[last_session];
+        $userdata["previous_session"] = $userdata["last_session"];
     }
 
-    $sqlextra .= "last_page = '".  parseToDB($_SERVER[REQUEST_URI])."', ";
+    $sqlextra .= "last_page = '".  parseToDB($_SERVER["REQUEST_URI"])."', ";
 
 	// Update session
 	$sql = "UPDATE bcs_users SET ".$sqlextra."last_session = '$time' WHERE id = '$_SESSION[user_id]'";
@@ -143,7 +131,7 @@ if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == TRUE ) {
 
     // Update locally, as well!
     $userdata["last_session"] = $time;
-    $userdata["last_page"] = $_SERVER[REQUEST_URI];
+    $userdata["last_page"] = $_SERVER["REQUEST_URI"];
 
 } else {
 	// Get information about guest
@@ -154,7 +142,7 @@ if ( !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == TRUE ) {
 	// Make a temporarily guest
 	$_SESSION['user_id'] = 0;
 	$userdata["name"] = "Guest";
-	$s_auth = FALSE;
+	$s_auth = false;
 }
 
 if ( isset($userdata['banned']) && $userdata['banned'] ) {
@@ -165,16 +153,16 @@ if ( isset($userdata['banned']) && $userdata['banned'] ) {
 //    die("<h1>Fixing some stuff please check back later!</h1>");
 //}
 
-
-
-if ( isset($plugin) ) {
-	$temp_plugin = parseToDB($plugin);
+if ( !isset($plugin) ) {
+    if ( isset($_GET["plugin"]) ) {
+        $plugin = parseToDB($_GET["plugin"]);
+    }
+    else {
+        $plugin = "portal";
+    }
 }
-else {
-	$temp_plugin = "portal";
-}
 
-include("plugins/".$temp_plugin."/".$temp_plugin.".php");
+include("plugins/".$plugin."/".$plugin.".php");
 include("config/template.php");
 
 mysql_close();

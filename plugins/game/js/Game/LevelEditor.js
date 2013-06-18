@@ -543,23 +543,8 @@ var LevelEditor = Class.extend({
 
     this.cats = new Array();
 
-    //this.cats.push(new Cat("500,501,90104-90107", "Collision"));
-    // this.cats.push(new Cat("1-30", "Town", 10));
-    // this.cats.push(new Cat("1560-1589", "Snow", 10));
-    // this.cats.push(new Cat("31-45", "Forest"));
-    // this.cats.push(new Cat("46-81", "Castle", 9));
-    // this.cats.push(new Cat("82-417", "Cave", 16));
-    // this.cats.push(new Cat("600-951", "Sewer", 16));
-    // this.cats.push(new Cat("952-1447", "Worldmap", 16));
-    // this.cats.push(new Cat("1448-1559", "Indoor", 7));
-    // this.cats.push(new Cat("1590-1649", "8-bit test", 10));
-
     for(var c=0;c<preCatsTiles.length;c++) {
       this.cats.push(new Cat(preCatsTiles[c].range, preCatsTiles[c].name, preCatsTiles[c].limit_x, true));
-    }
-
-    for(var c=0;c<preCatsObjects.length;c++) {
-      this.cats.push(new Cat(preCatsObjects[c].range, preCatsObjects[c].name, preCatsObjects[c].limit_x, false));
     }
 
     this.ready = false;
