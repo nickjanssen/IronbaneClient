@@ -118,7 +118,7 @@ else if ( $action == "forgotpassword" ) {
                 Hey ".$userdata[name]."!<br><br>
 
                 Here is the password of your Ironbane account that you requested on ".createDate(time(), $userdata[gmt]).".<br>
-                If you think this message was sent by abuse, please send an e-mail to abuse@ironbane.com with as much details as possible.<br><br>
+                If you think this message was sent by abuse, please send an e-mail to nikke@ironbane.com with as much details as possible.<br><br>
 
                 Password: ".$userdata[pass]."<br><br>
 
