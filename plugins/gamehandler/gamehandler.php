@@ -440,7 +440,7 @@ else if ( $action == "makechar" ) {
 	}
 	else {
 		// Check if we already have a cookie assigned
-		if ( !isset($_COOKIE['guestCharacterId']) ) {
+				if ( !isset($_COOKIE['guestCharacterId']) ) {
 			do {
 				$name = getName(4, 8, "", "");
 			} while (getRowCount("ib_characters WHERE name = '$name'") > 0);
