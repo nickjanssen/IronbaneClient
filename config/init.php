@@ -65,6 +65,16 @@ class ChatTypes
     // etc.
 }
 
+$c_css = "";
+$c_header = "";
+$c_main = "";
+$c_footer = "";
+$c_head = "";
+$c_head_after = "";
+$c_jquery = "";
+$c_jquery_manual = "";
+$use_niftyplayer = false;
+$use_simple_rendering = false;
 
 
 ?>

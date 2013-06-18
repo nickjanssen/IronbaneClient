@@ -66,7 +66,7 @@ if (!$use_simple_rendering) {
         ';
     }
 
-   $nposts = getRowCount("forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC");
+   $nposts = getRowCount("forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC");
 
     $c_header = '
 <div id="topgradient"></div>
@@ -98,21 +98,18 @@ if (!$use_simple_rendering) {
     ' : '') . '
       <div align="center">
         <a href="index.php">About</a>
-        | <a href="forum.php">Forum</a>
         | <a href="game.php">Play Ironbane</a>
         | <a href="get-involved.php">Get Involved</a>
         | <a href="https://github.com/ironbane" target="_new">GitHub</a>
         | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a>
         | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a>
-            | <a href="logout.php">Log Out</a>').''.($s_editor?' | <a href="editor.php">Editor</a>
-            | <a href="uploads.php?action=viewuploads">Uploads</a>
-            | <a href="https://trello.com/ironbane" target="_new">Todo List</a>':'').'
+            | <a href="logout.php">Log Out</a>').''.($s_editor?'':'').'
       </div>
 ' . ($s_auth ? '
 <div class="ib-chatbox-wrapper">
     <div class="ib-welcome" id="chatBoxWelcome">
-  Hey, <b>'.  memberLink($userdata[id]).'!</b><br>
-  You last visited '.timeAgo($userdata[previous_session]).' ago.<br>
+  Hey, <b>'.  memberLink($userdata["id"]).'!</b><br>
+  You last visited '.timeAgo($userdata["previous_session"]).' ago.<br>
     '.($nposts>0?'There '.($nposts==1?'is':'are').' <a href="forum.php?action=board&amp;board=rt"><b>'.$nposts.'</b> new/updated topic'.SorNot($nposts).'</a>':'There\'ve been no new posts').'.
    <br>Also seen today: '.  getListOfLastDayVisitors().'
     </div>
