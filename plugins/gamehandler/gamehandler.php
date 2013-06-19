@@ -372,7 +372,9 @@ else if ( $action == "login" ) {
 	$result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
 	$row = mysql_fetch_array($result);
 
-	if ( mysql_num_rows($result) == 1 && passwordHash($safepass) === $row["pass"] ) {
+    $passHashed = passwordHash($safepass);
+
+    if ( mysql_num_rows($result) == 1 && $passHashed == $row["pass"] ) {
 
         // Check for the activation key
         if ( !empty($row["activationkey"]) ) {
@@ -406,7 +408,7 @@ else if ( $action == "login" ) {
 		$cookietime = 31536000;
 		// Set cookies
 		setcookie("bcs_username", $safeuser, time()+$cookietime);
-		setcookie("bcs_password", $safepass, time()+$cookietime);
+		setcookie("bcs_password", $passHashed, time()+$cookietime);
 
 		die("OK");
 	}
