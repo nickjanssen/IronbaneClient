@@ -26,12 +26,12 @@ $link = mysqli_connect($mysql_hostname, $mysql_user, $mysql_password, $mysql_db)
 
 $c_title = "Preferences";
 
-if (isset($submit)) {
+if (isset($_POST['submit'])) {
     
-    $pass_new = phash($_POST['password']);
+    $pass_new = $_POST['password'];
     $email = strip_tags($_POST['email']);
-    $pass_old = phash($_POST['password_old']);
-    $pass_confirm = phash($_POST['password_confirm']);
+    $pass_old = $_POST['password_old'];
+    $pass_confirm = $_POST['password_confirm'];
     $gmt = isset($_POST['gmt']) ? strip_tags($_POST['gmt']) : $userdata['gmt'];
     $sig = strip_tags($_POST['sig']);
 
@@ -84,7 +84,8 @@ if (isset($submit)) {
 
     if ($pass_old != "") {
     
-      if ($pass_old != $userdata['pass']) {
+      if (phash($pass_old) != $userdata['pass']) {
+        
         bcs_die('Your old password does not match your current one.', 'javascript:history.back()');
       }
       if (strlen($pass_new) < 4 || strlen($pass_new) > 20) {
@@ -166,11 +167,10 @@ if (isset($submit)) {
     if($stmt = mysqli_prepare($link, $prepared_query)) {
     
       $pass = (($pass_old != "") ? $pass_new : $userdata['pass']);
-      mysqli_stmt_bind_param($stmt, "iisssssssisssssi", $show_email, $receive_email, $email, $pass, $gmt, $avatar,
+      mysqli_stmt_bind_param($stmt, "iisssssssisssssi", $show_email, $receive_email, $email, phash($pass), $gmt, $avatar,
         $info['info_realname'], $info['info_country'], $info['info_location'], $info['info_gender'],
         $info['info_birthday'], $info['info_occupation'], $info['info_interests'], $info['info_website'],
         $sig, $userdata['id']);
-
       
       mysqli_stmt_execute($stmt) or bcs_error(mysqli_stmt_error($stmt));
       
