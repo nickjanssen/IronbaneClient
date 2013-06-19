@@ -70,9 +70,12 @@ include("config/init.php");
 
 $time = time();
 
+if ( !isset($_SESSION['logged_in']) ) {
+    $_SESSION['logged_in'] = false;
+}
 
 // Check for cookies
-if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (empty($_SESSION['logged_in']) && $_SESSION['logged_in'] == false) ) {
+if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && $_SESSION['logged_in'] == false) {
 
 	$c_user = parseToDB($_COOKIE['bcs_username']);
 	$c_pass = parseToDB($_COOKIE['bcs_password']);
@@ -81,7 +84,7 @@ if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (em
 	$result = bcs_query($query) or bcs_error("Error retrieving user: ".mysql_error());
 	if ( mysql_num_rows($result) > 0 ) {
 		$row = mysql_fetch_array($result);
-		if ( $row["pass"] == passwordHash($c_pass) ) {
+		if ( $row["pass"] == $c_pass ) {
 			// Auth successful
 			//echo "Cookie check OK";
 			$_SESSION['logged_in'] = true;
