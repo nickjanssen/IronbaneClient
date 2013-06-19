@@ -34,26 +34,6 @@ function errmsg($msg) {
 	die('{"errmsg":"'.$msg.'"}');
 }
 
-
-if ( $s_admin ) {
-    if ( $action === "hashem" ) {
-        //$hash =
-        // Generate random passwords and hash them
-
-        $sql = "SELECT id, pass FROM bcs_users";
-        $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $sql . "</b><br><br>" . mysql_error());
-        for ($x = 0; $x < mysql_num_rows($result); $x++) {
-            $row = mysql_fetch_array($result);
-
-            $newhash = passwordHash($row["pass"]);
-
-            $sql2 = "UPDATE bcs_users SET pass = '$newhash' WHERE id = '$row[id]'";
-            $result2 = bcs_query($sql2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $sql2 . "</b><br><br>" . mysql_error());
-        }
-
-    }
-}
-
 if ( $action == "delchar" ) {
 
 	if ( !$s_auth ) errmsg("Please login first!");
