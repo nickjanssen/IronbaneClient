@@ -51,7 +51,9 @@ if ( isset($_GET['action']) ) $action = $_GET['action'];
 if ( $action == "activate" ) {
     //if ( $s_auth ) bcs_die("You have already activated.");
 
-    $uid = (int)parseToDB($uid);
+    if ( !isset($_GET["uid"]) ) die("no ID given!");
+
+    $uid = (int)parseToDB($_GET["uid"]);
 
     $query = "SELECT * FROM bcs_users WHERE id = '$uid' ";
     $result = mysql_query($query) or bcs_error("Error on #" . __LINE__ . ": ".mysql_error());
@@ -81,7 +83,7 @@ if ( $action == "activate" ) {
     setcookie("bcs_username", $row["name"], time()+$cookietime);
     setcookie("bcs_password", $row["pass"], time()+$cookietime);
 
-    bcs_die("Thanks, ".$row["name"]."!<br><br>Your account is now active!", "game.php");
+    bcs_die("Thanks, ".$row["name"]."!<br><br>Your account is now activated!", "game.php");
 
     //header("Location: game.php?activated=1");
 }
