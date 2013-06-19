@@ -18,14 +18,13 @@
 
 
 
+if (!defined('BCS')) {
+    die("ERROR");
+}
 
 $link = mysqli_connect($mysql_hostname, $mysql_user, $mysql_password, $mysql_db) or bcs_error("Could not connect to MySQL.");
 
 $c_title = "Preferences";
-
-if (!defined('BCS')) {
-    die("ERROR");
-}
 
 if (isset($submit)) {
     
