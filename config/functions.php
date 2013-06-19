@@ -29,6 +29,18 @@ function createLink($title, $address, $extra="") {
     return "<a href=\"" . $address . "\"" . $extra . ">" . $title . "</a>";
 }
 
+// phash: password hash function
+// Created by abcd
+function phash($password) {
+  $iterations = 2; // Define your own number of iterations.
+  $salt = 'PUT_YOU_OWN_SALT_HERE'; // Define you own salt. Randomness is good.
+  $hash = crypt($password,$salt);
+  for ($i = 0; $i < $iterations; ++$i) {
+      $hash = crypt($hash . $password,$salt);
+  }
+  return $hash;
+}
+
 
 // The following function was created thanks to the help
 // of a contributed note at the gmdate() function. www.php.net

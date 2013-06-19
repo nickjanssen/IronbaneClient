@@ -165,10 +165,11 @@ else if ( $action == "forgotpassword" ) {
         ';
         }
 }
-else if ( $s_check ) {
+else if ( isset($_POST['user']) && isset($_POST['pass']) ) {
 
 		$user = $_POST['user'];
 		$pass = $_POST['pass'];
+		
 		$remember = $_POST['remember'];
 
 		$s_auth = FALSE;
@@ -185,7 +186,8 @@ else if ( $s_check ) {
 
 
 		$safeuser = (parseToDB($user));
-		$safepass = (parseToDB($pass));
+		$safepasshash = phash($pass);
+		
 
 		// Get information about given user
 		$query = "SELECT * FROM bcs_users WHERE name = '$safeuser'";
@@ -196,7 +198,7 @@ else if ( $s_check ) {
                     bcs_die("You need to activate your account first!<br><br>Please check your e-mail for an activation link.");
                 }
 
-		if ( mysql_num_rows($result) == 1 && $safepass == $row["pass"] ) {
+		if ( mysql_num_rows($result) == 1 && $safepasshash == $row["pass"] ) {
 			$s_auth = TRUE;
 			$_SESSION['logged_in'] = TRUE;
 			$_SESSION['user_id'] = $row['id'];
@@ -205,7 +207,7 @@ else if ( $s_check ) {
 				$cookietime = 31536000;
 				// Set cookies
 				setcookie("bcs_username", $safeuser, time()+$cookietime);
-				setcookie("bcs_password", $safepass, time()+$cookietime);
+				setcookie("bcs_password_hash", $safepasshash, time()+$cookietime);
 			//}
 
 			if ( !empty($_POST["redirect"]) ) {
@@ -226,7 +228,7 @@ else if ( $s_check ) {
 			//bcs_die("Hey, ".$safeuser."! You are now logged in.", $redirect);
 		}
 		else {
-			bcs_die("Sorry, you entered a wrong username or password! Please try again.", "index.php?plugin=login");
+			bcs_die("Sorry, you entered a wrong username or password! Please try again.", "index.php?plugin=login&p=$pass&sph=$safepasshash");
 		}
 }
 else {

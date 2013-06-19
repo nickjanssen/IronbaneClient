@@ -28,10 +28,10 @@ $c_title = "Preferences";
 
 if (isset($submit)) {
     
-    $pass_new = strip_tags($_POST['password']);
+    $pass_new = phash($_POST['password']);
     $email = strip_tags($_POST['email']);
-    $pass_old = strip_tags($_POST['password_old']);
-    $pass_confirm = strip_tags($_POST['password_confirm']);
+    $pass_old = phash($_POST['password_old']);
+    $pass_confirm = phash($_POST['password_confirm']);
     $gmt = isset($_POST['gmt']) ? strip_tags($_POST['gmt']) : $userdata['gmt'];
     $sig = strip_tags($_POST['sig']);
 
@@ -92,9 +92,6 @@ if (isset($submit)) {
       }
       if (strlen($email) < 8 || strlen($email) > 30) {
           bcs_die('Your new e-mail must contain at least 8, and maximum 30 characters.', 'javascript:history.back()');
-      }
-      if ($pass_new != $_POST['password']) {
-          bcs_die('Your new password contains invalid characters. Please try another password.', 'javascript:history.back()');
       }
       if ($pass_new != $pass_confirm) {
           bcs_die('The new passwords you entered do not match. Please try again.', 'javascript:history.back()');
