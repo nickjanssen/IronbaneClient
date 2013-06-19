@@ -162,9 +162,9 @@ $newsPosts = preg_replace("/<img[^>]+\>/i", "", $newsPosts);
 $newsPosts = str_replace("'", "\'", $newsPosts);
 $newsPosts = preg_replace('/\s+/', ' ', trim($newsPosts));
 
-
+$preCatsTilesLoad = "";
 if ($userdata["editor"]) {
-    $preCatsTilesLoad = "";
+
     // Preload cats
     // 1 = Terrain tile
     // 2 = Gameobjects
@@ -203,10 +203,9 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $preZonesLoad .= 'zones[' . $row["id"] . '] = {
             id: ' . $row["id"] . ',
             name: "' . $row["name"] . '",
-            tiles: "' . $row["tiles"] . '",
             type: "' . $row["type"] . '"
         };
-        zoneSelection["' . $row[name] . '"] = ' . $row[id] . ';
+        zoneSelection["' . $row["name"] . '"] = ' . $row["id"] . ';
         ';
 }
 
@@ -218,18 +217,17 @@ $preItemsLoad = "";
 for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $row = mysql_fetch_array($result);
 
-
-
-    $preItemsLoad .= 'items[' . $row[id] . '] = {
-            id: ' . $row[id] . ',
-            name: "' . $row[name] . '",
-            type: "' . $row[type] . '",
-            image: ' . $row[image] . ',
-            //charimage: ' . $row[charimage] . ',
-            delay: ' . $row[delay] . ',
-            attr1: ' . $row[attr1] . ',
-            particle: "' . $row[particle] . '",
-            subtype: "' . $row[subtype] . '"
+    $preItemsLoad .= 'items[' . $row["id"] . '] = {
+            id: ' . $row["id"] . ',
+            name: "' . $row["name"] . '",
+            type: "' . $row["type"] . '",
+            image: ' . $row["image"] . ',
+            //charimage: ' . $row["charimage"] . ',
+            delay: ' . $row["delay"] . ',
+            attr1: ' . $row["attr1"] . ',
+            particle: "' . $row["particle"] . '",
+            subtype: "' . $row["subtype"] . '",
+            baseValue: ' . $row["basevalue"] . '
         };
         ';
 }
@@ -315,8 +313,8 @@ $c_footer .= '
 
     var isEditor = '.($userdata["editor"] ? "true" : "false").';
 
-	var debugging = ' . (($userdata["admin"] || $debug) ? "true" : "false") . ';
-    debugging=false;
+	var debugging = ' . (($userdata["admin"] || isset($_GET["debug"])) ? "true" : "false") . ';
+    //debugging=false;
 
     var items = {};
     ' . ($preItemsLoad) . '
