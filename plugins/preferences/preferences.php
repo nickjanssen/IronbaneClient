@@ -75,10 +75,8 @@ if ( $submit )  {
         }
     }
 
-    $safe_pass_old = passwordHash($safe_pass_old);
-
     if ($safe_pass_old != "") {
-        if ($safe_pass_old != $userdata["pass"]) {
+        if ( passwordHash($safe_pass_old) != $userdata["pass"]) {
             bcs_die('Your old password does not match your current one.', 'javascript:history.back()');
         }
         if (strlen($safe_pass) < 4 || strlen($safe_pass) > 20) {
@@ -211,7 +209,14 @@ if ( $submit )  {
     $st_year = "1900"; //Starting Year
     $month_names = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
-    list($day, $month, $year) = explode("-", $userdata["info_birthday"]);
+    if ( $userdata["info_birthday"] ) {
+        list($day, $month, $year) = explode("-", $userdata["info_birthday"]);
+    }
+    else {
+        $day = 1;
+        $month = 1;
+        $year = 2000;
+    }
 
 
     $day_select = '<select name="bday" id="day">';
@@ -239,7 +244,7 @@ if ( $submit )  {
     $month_select .= ' </select>';
     $year_select = '<select name="byear" id="year">';
 
-    for ($i = 2011; $i >= $st_year; $i--) {
+    for ($i = 2013; $i >= $st_year; $i--) {
         $year_select .= '<option ';
         if ($i == $year) {
             $year_select .= ' selected="selected" ';
