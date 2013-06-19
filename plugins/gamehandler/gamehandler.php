@@ -476,9 +476,9 @@ else if ( $action == "makechar" ) {
 
 			//CreateFullCharacterImage($id, rand(0, 2), rand(0, 2));
 		}
-                else {
-                    die('{ "id": '.$guestCharacterId.', "equipment": ""}');
-                }
+        else {
+            die('{ "id": '.$_COOKIE['guestCharacterId'].', "equipment": ""}');
+        }
 	}
 
 
