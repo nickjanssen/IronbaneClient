@@ -30,7 +30,7 @@ if ( !defined('BCS') ) {
 	unset($_SESSION['logged_in']);
 	unset($_SESSION['user_id']);
 	setcookie("bcs_username", "", time() - 3600);
-	setcookie("bcs_password", "", time() - 3600);
+	setcookie("bcs_password_hash", "", time() - 3600);
 
         //writeChatMessage("<i>".  memberLink($userdata[id])." logged out.</i>");
 
