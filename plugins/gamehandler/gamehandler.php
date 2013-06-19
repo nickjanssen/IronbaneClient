@@ -39,6 +39,18 @@ if ( $s_admin ) {
     if ( $action === "hashem" ) {
         //$hash =
         // Generate random passwords and hash them
+
+        $sql = "SELECT id, pass FROM bcs_users";
+        $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $sql . "</b><br><br>" . mysql_error());
+        for ($x = 0; $x < mysql_num_rows($result); $x++) {
+            $row = mysql_fetch_array($result);
+
+            $newhash = passwordHash($row["pass"]);
+
+            $sql2 = "UPDATE bcs_users SET pass = '$newhash' WHERE id = '$row[id]'";
+            $result2 = bcs_query($sql2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $sql2 . "</b><br><br>" . mysql_error());
+        }
+
     }
 }
 
@@ -50,9 +62,9 @@ if ( $action == "delchar" ) {
 
     if ( !isset($_POST['id']) ) die('No id given!');
 
-	$id = parseToDB($_GET['id']);
+	$id = (int)parseToDB($_POST['id']);
 
-	if ( $userdata["pass"] != $_POST['pass'] ) errmsg("The password you entered was incorrect!");
+	if ( $userdata["pass"] != passwordHash($_POST['pass']) ) errmsg("The password you entered was incorrect!");
 
     if ( getRowCount("ib_characters WHERE id = '$id' AND user = '$userdata[id]'") == 0 ) errmsg("No character found!");
 
@@ -65,15 +77,14 @@ if ( $action == "delchar" ) {
 	$query = "UPDATE bcs_users SET characterused = 0 WHERE id = '$userdata[id]'";
 	$result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
-        $dir = "plugins/game/images/characters/$id/";
+    $dir = "plugins/game/images/characters/$id/";
 
-
-            // Delete folder
-        if (is_dir($dir)) {
-            unlink($dir."full.png");
-            unlink($dir."big.png");
-            rmdir($dir);
-        }
+        // Delete folder
+    if (is_dir($dir)) {
+        unlink($dir."full.png");
+        unlink($dir."big.png");
+        rmdir($dir);
+    }
 
 	die('{ "id": "'.$id.'"}');
 }
@@ -108,26 +119,19 @@ else if ( $action == "makechar" ) {
 
 		$name = parseToDB($_POST['name']);
 
-
-
         if ( !ctype_alnum($name) ) {
           errmsg('Your character name can only use letters and numbers!');
         }
 
-
 		if ( strlen($name) > 12 ) errmsg('Character name is too long! (Maximum 12 characters)');
 		if ( strlen($name) < 2 ) errmsg('Character name is too short! (Minimum 2 characters)');
-
-		if ( getRowCount("ib_characters WHERE name = '$name'") > 0 ) errmsg('Character name already exists!');
-		if ( getRowCount("ib_characters WHERE user = '$userdata[id]'") > 9 ) errmsg("You already have too many characters!");
-
-		//$id = mysql_insert_id();
-		//$id = 1;
 
         $skin = intval(parseToDB($_POST["skin"]));
         $eyes = intval(parseToDB($_POST["eyes"]));
         $hair = intval(parseToDB($_POST["hair"]));
 
+		if ( getRowCount("ib_characters WHERE name = '$name'") > 0 ) errmsg('Character name already exists!');
+		if ( getRowCount("ib_characters WHERE user = '$userdata[id]'") > 9 ) errmsg("You already have too many characters!");
 
         if ( !is_int($skin)
             ||
@@ -253,13 +257,6 @@ else if ( $action == "register" ) {
 
     $honeypot = $_POST['url'];
 
-
-    if ($read_tac) {
-        $tac_ok = 1;
-    } else {
-        $tac_ok = 0;
-    }
-
     if ( !empty($honeypot) ) {
         die("Sorry, I have detected you may be a computer bot! That's not cool.<br><br>If you believe this error to be my fault, please contact my administrator!");
     }
@@ -315,6 +312,9 @@ else if ( $action == "register" ) {
 
     $activationkey = mt_rand();
 
+    // Hash the password
+    $safe_pass = passwordHash($safe_pass);
+
     // Insert a row
     $query = "INSERT INTO bcs_users (id, name, email, show_email, pass, reg_date, last_session, previous_session, activationkey)
 	VALUES('$newid', '$safe_name', '$safe_email', 0, '$safe_pass', '$time', '$time', '$time', '$activationkey')";
@@ -327,9 +327,8 @@ else if ( $action == "register" ) {
     // Send a mail
         mailto($safe_email, "Welcome to Ironbane!", '
 
-<div id="mailbox">Hi ' . $safe_name . ', thanks for registering!<br><br>To really enjoy our game and use all features, please verify your e-mail by clicking on the following link:<br><br><a href="http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'">http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'</a><br><br>This way, we know you are a real player and we can treat you like one!<br><br>Here are your account details, it\'s probably handy should you ever forget.<br><br><b>Username: ' . $safe_name . '<br>Password: ' . $safe_pass . '</b><br><br>Have fun!<br><br>The Ironbane Team<br><br>') ? "true" : "false" . "</div>
+<div id="mailbox">Hi ' . $safe_name . ', thanks for registering!<br><br>To really enjoy our game and use all features, please verify your e-mail by clicking on the following link:<br><br><a href="http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'">http://www.ironbane.com/login.php?action=activate&uid='.$newid.'&key='.$activationkey.'</a><br><br>This way, we know you are a real player and we can treat you like one!<br><br>Have fun!<br><br>IronBot<br><br>') ? "true" : "false" . "</div>
 ";
-        //mailto($safe_email, "Welcome to Ironbane!", 'Hi ' . $safe_name . ', thanks for registering!<br><br>Here are your account details, I thought it would come in handy should you ever forget.<br><br><b>Username: ' . $safe_name . '<br>Password: ' . $safe_pass . '</b><br><br>I hope you\'ll have a great time!<br>And kick some butt while you\'re at it!<br><br>Sincerely,<br>GameBot<br><br>') ? "true" : "false" . "<br>";
 
 
 
@@ -344,66 +343,78 @@ else if ( $action == "register" ) {
     setcookie("bcs_username", $safe_name, time()+$cookietime);
     setcookie("bcs_password", $safe_pass, time()+$cookietime);
 
-    die("OK;Registration successful!");
+    die("OK;Registration successful! Please check your e-mail and click the activation link inside so we know you are a real human!");
 
 }
 else if ( $action == "login" ) {
 
-	    if ( $s_auth ) errmsg("Already logged in!");
+    if ( $s_auth ) errmsg("Already logged in!");
 
-        if ( !isset($_POST['user']) ) die("No user given!");
-        if ( !isset($_POST['pass']) ) die("No pass given!");
+    if ( !isset($_POST['user']) ) die("No user given!");
+    if ( !isset($_POST['pass']) ) die("No pass given!");
 
-		$user = parseToDB($_POST['user']);
-		$pass = parseToDB($_POST['pass']);
+	$user = parseToDB($_POST['user']);
+	$pass = parseToDB($_POST['pass']);
 
-		$s_auth = FALSE;
+	$s_auth = FALSE;
 
-		if ( empty($user) ) {
-			die("Please enter a username.");
-		}
-		if ( empty($pass) ) {
-			die("Please enter a password.");
-		}
+	if ( empty($user) ) {
+		die("Please enter a username.");
+	}
+	if ( empty($pass) ) {
+		die("Please enter a password.");
+	}
+
+	$safeuser = parseToDB($user);
+	$safepass = parseToDB($pass);
+
+	// Get information about given user
+	$query = "SELECT * FROM bcs_users WHERE name = '$safeuser'";
+	$result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
+	$row = mysql_fetch_array($result);
+
+	if ( mysql_num_rows($result) == 1 && passwordHash($safepass) === $row["pass"] ) {
+
+        // Check for the activation key
+        if ( !empty($row["activationkey"]) ) {
+            if ( $row["activationkey"] === "NEWPASS" ) {
+                // Send an e-mail with a new activation key
+                $newpass = randomPassword();
+
+                $newpasshashed = passwordHash($newpass);
+
+                mailto($row["email"], "Password reset", '
+
+                <div id="mailbox">Hi ' . $row["name"] . ',<br><br>
+                Due to a recent security breach, a new password was generated for your account.<br>From now on, all passwords are saved encrypted in the database and cannot be restored.<br><br>
+                Your new password is: '.$newpass.'<br><br>
+                Please login with your newly generated password, and then change it on the Preferences page.<br><br>
+                <a href="http://www.ironbane.com/login.php">http://www.ironbane.com/login.php</a><br><br>I\'m very sorry for the inconvience this has caused. <br><br>Sincerely,<br>IronBot<br><br>') ? "true" : "false" . "</div>
+                ";
+
+                $query = "UPDATE bcs_users SET pass = '$newpasshashed', activationkey = '' WHERE id = '$row[id]'";
+                $result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
+
+                die("Due to a recent security breach, a new password was generated for your account. Please check your e-mail for further information.");
+            }
+        }
+
+		$s_auth = TRUE;
+		$_SESSION['logged_in'] = TRUE;
+		$_SESSION['user_id'] = $row['id'];
 
 
-		$safeuser = parseToDB($user);
-		$safepass = parseToDB($pass);
+		$cookietime = 31536000;
+		// Set cookies
+		setcookie("bcs_username", $safeuser, time()+$cookietime);
+		setcookie("bcs_password", $safepass, time()+$cookietime);
 
-		// Get information about given user
-		$query = "SELECT * FROM bcs_users WHERE name = '$safeuser'";
-		$result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
-		$row = mysql_fetch_array($result);
+		die("OK");
+	}
+	else {
+		die("Sorry, you entered a wrong username or password!");
+	}
 
-//		if ( $row[activationkey] != '' ) {
-//			die("You need to activate your account first!<br><br>Please check your e-mail for an activation link.");
-//		}
-
-		if ( mysql_num_rows($result) == 1 && $safepass === $row["pass"] ) {
-			$s_auth = TRUE;
-			$_SESSION['logged_in'] = TRUE;
-			$_SESSION['user_id'] = $row['id'];
-
-			//if ( $remember ) {
-				$cookietime = 31536000;
-				// Set cookies
-				setcookie("bcs_username", $safeuser, time()+$cookietime);
-				setcookie("bcs_password", $safepass, time()+$cookietime);
-			//}
-
-			if ( !empty($_POST["redirect"]) ) {
-				$redirect = $_POST["redirect"];
-			}
-			else {
-				$redirect = "index.php";
-			}
-
-			die("OK");
-			//bcs_die("Hey, ".$safeuser."! You are now logged in.", $redirect);
-		}
-		else {
-			die("Sorry, you entered a wrong username or password!");
-		}
 }
 else if ( $action == "getchars" ) {
 	if ( $s_auth ) {

@@ -64,6 +64,8 @@ class ChatTypes
     const Announcement = 1;
     // etc.
 }
+$s_editor = false;
+$s_admin = false;
 
 $c_css = "";
 $c_header = "";

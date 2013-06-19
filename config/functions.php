@@ -208,6 +208,7 @@ function mailToAll($subject, $content, $shownote) {
 }
 
 function mailto($to, $subject, $content, $shownote=0) {
+    global $mandrill_api_key;
 
     if ( empty($to) ) return;
 
@@ -232,7 +233,7 @@ function mailto($to, $subject, $content, $shownote=0) {
     $mail->Host = 'smtp.mandrillapp.com';  // Specify main and backup server
     $mail->SMTPAuth = true;                               // Enable SMTP authentication
     $mail->Username = 'nikke@ironbane.com';                            // SMTP username
-    $mail->Password = 'ohwYZUlVlKx4nttSHX_f-g';                           // SMTP password
+    $mail->Password = $mandrill_api_key;                           // SMTP password
     //$mail->SMTPSecure = 'ssl';                            // Enable encryption, 'ssl' also accepted
 
     $mail->From = 'ironbot@ironbane.com';
@@ -253,12 +254,12 @@ function mailto($to, $subject, $content, $shownote=0) {
     $mail->AltBody = $content;
 
     if(!$mail->Send()) {
-       echo 'Message could not be sent.';
+       // echo 'Message could not be sent.';
        echo 'Mailer Error: ' . $mail->ErrorInfo;
-       exit;
+       // exit;
     }
 
-    echo 'Message has been sent';
+    // echo 'Message has been sent';
 }
 
 
@@ -1073,6 +1074,11 @@ function randomPassword() {
         $pass[] = $alphabet[$n];
     }
     return implode($pass); //turn the array into a string
+}
+
+function passwordHash($password) {
+    global $crypt_salt;
+    return md5($crypt_salt.$password);
 }
 
 ?>

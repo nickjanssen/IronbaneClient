@@ -21,6 +21,9 @@ if ( !file_exists("config.php") ) die("Config file not found!");
 include("config.php");
 
 
+if ( empty($crypt_salt) ) die("No password hash salt set!");
+
+
 mysql_connect($mysql_hostname, $mysql_user, $mysql_password) or bcs_error("Could not connect to MySQL: ".mysql_error());
 mysql_select_db($mysql_db) or bcs_error("Could not select database: ".mysql_error());
 
@@ -78,7 +81,7 @@ if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && (em
 	$result = bcs_query($query) or bcs_error("Error retrieving user: ".mysql_error());
 	if ( mysql_num_rows($result) > 0 ) {
 		$row = mysql_fetch_array($result);
-		if ( $row["pass"] == $c_pass ) {
+		if ( $row["pass"] == passwordHash($c_pass) ) {
 			// Auth successful
 			//echo "Cookie check OK";
 			$_SESSION['logged_in'] = true;
@@ -161,6 +164,8 @@ if ( !isset($plugin) ) {
         $plugin = "portal";
     }
 }
+
+if ( !file_exists("plugins/".$plugin."/".$plugin.".php") ) die("plugin not found!");
 
 include("plugins/".$plugin."/".$plugin.".php");
 include("config/template.php");

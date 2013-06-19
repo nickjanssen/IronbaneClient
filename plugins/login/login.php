@@ -28,6 +28,12 @@ if ( !isset($redirect) ) {
 	$redirect = "portal";
 }
 
+$action = null;
+
+$s_check = isset($_POST["s_check"]) ? $_POST["s_check"] : false;
+
+if ( isset($_GET['action']) ) $action = $_GET['action'];
+
 //if ( $action == "resend" ) {
 //
 //    $query = "SELECT * FROM bcs_users WHERE name = '$uid' ";
@@ -75,105 +81,109 @@ if ( $action == "activate" ) {
     setcookie("bcs_username", $row["name"], time()+$cookietime);
     setcookie("bcs_password", $row["pass"], time()+$cookietime);
 
-    bcs_die("Thanks, $row[name]!<br><br>Your account is now active!", "game.php");
+    bcs_die("Thanks, ".$row["name"]."!<br><br>Your account is now active!", "game.php");
 
     //header("Location: game.php?activated=1");
 }
 else if ( $action == "forgotpassword" ) {
+        // Too lazy, we'll do it in the new angular version
+        bcs_die("Please send an e-mail to nikke@ironbane.com with the e-mail you are using for your account to reset your password.", "none");
 
-        $c_title = "Forgot password";
+//         $c_title = "Forgot password";
 
-        if ( $_POST["dosend"] ) {
-
-
-
-				if ( $_POST["verification"] != $_SESSION["vercode"] || empty($_SESSION["vercode"]) )  {
-                                        $_SESSION["vercode"] = "";
-					 bcs_die("Sorry, the image code you entered was incorrect. Please try again.", "index.php?plugin=login&action=forgotpassword");
-				}
-
-                $_SESSION["vercode"] = "";
-
-                $email = parseToDB($_POST["email"]);
-
-                $query = "SELECT * FROM bcs_users WHERE email = '$email' ";
-                $result = mysql_query($query) or bcs_error("Error on #" . __LINE__ . ": ".mysql_error());
-
-                if ( mysql_num_rows($result) == 0 ) {
-                        bcs_die("Your e-mail address was not found. Please try again.", "index.php?plugin=login&action=forgotpassword");
-                }
-
-                $userdata = mysql_fetch_array($result);
+//         if ( $_POST["dosend"] ) {
 
 
 
-                $bericht = "
-                Hey ".$userdata["name"]."!<br><br>
+// 				if ( $_POST["verification"] != $_SESSION["vercode"] || empty($_SESSION["vercode"]) )  {
+//                                         $_SESSION["vercode"] = "";
+// 					 bcs_die("Sorry, the image code you entered was incorrect. Please try again.", "index.php?plugin=login&action=forgotpassword");
+// 				}
 
-                Here is the password of your Ironbane account that you requested on ".createDate(time(), $userdata["gmt"]).".<br>
-                If you think this message was sent by abuse, please send an e-mail to nikke@ironbane.com with as much details as possible.<br><br>
+//                 $_SESSION["vercode"] = "";
 
-                Password: ".$userdata["pass"]."<br><br>
+//                 $email = parseToDB($_POST["email"]);
 
-                Best of luck!<br>
-                GameBot
-                ";
+//                 $query = "SELECT * FROM bcs_users WHERE email = '$email' ";
+//                 $result = mysql_query($query) or bcs_error("Error on #" . __LINE__ . ": ".mysql_error());
 
-                mailto($userdata["email"], "Password request", $bericht);
+//                 if ( mysql_num_rows($result) == 0 ) {
+//                         bcs_die("Your e-mail address was not found. Please try again.", "index.php?plugin=login&action=forgotpassword");
+//                 }
 
-
-                bcs_die("Your password has been sent to your e-mail address. This usually happens instantly, but it may take several minutes.<br /><br /><b>Attention:</b> Be sure to check your spam folder as well.", $filename);
-        }
-        else {
-                $c_main = "
-
-
-                If you have forgotten your password, we can retrieve it by sending it to your e-mail address.<br /><br />
-
-
-				<form action=\"index.php?plugin=login&action=forgotpassword\" method=POST>
-				<table width=\"100%\" border=\"0\">
-				<tr>
-				<td align=\"left\"><span class=\"gen\">Your e-mail address:</span></td>
-				<td align=\"left\"><span class=\"gen\"><input type=text name=email size=25 maxlength=100></span></td>
-				</tr>
-				<tr>
-				<td align=\"left\"><span class=\"gen\">Please enter the number shown in the image:</span><br /><span class=\"gensmall\">".$ts." This image verification is used to prevent spam-bots.</span></td>
-				<td align=\"left\"><span class=\"gen\"><table width=200 border=0><tr><td align=left width=50%><input type=text name=verification size=10 maxlength=10></td><td align=left width=50%><img src=\"captcha.php\"></td></tr></table></span></td>
-				</tr>
-				<tr>
-				<td></td>
-				<td align=\"left\"><input type=submit name=dosend value=\"Submit password request\"></td>
-				</tr>
-				</table>
-				</form>
-				";
-
-	$c_main = '
-
-<div align="center"><h1>Forgot password</h1></div>
-	  <table width="600" cellpadding="5" cellspacing="0" border="0" class="forumline" align="center">
-	   <tr>
-		<td class="row1"><span class="gen">
-'.$c_main.'
-                </span></td>
-	   </tr>
-	  </table>
+//                 $userdata = mysql_fetch_array($result);
 
 
 
-        ';
-        }
+//                 $bericht = "
+//                 Hey ".$userdata["name"]."!<br><br>
+
+//                 Here is the password of your Ironbane account that you requested on ".createDate(time(), $userdata["gmt"]).".<br>
+//                 If you think this message was sent by abuse, please send an e-mail to nikke@ironbane.com with as much details as possible.<br><br>
+
+//                 Password: ".$userdata["pass"]."<br><br>
+
+//                 Best of luck!<br>
+//                 GameBot
+//                 ";
+
+//                 mailto($userdata["email"], "Password request", $bericht);
+
+
+//                 bcs_die("Your password has been sent to your e-mail address. This usually happens instantly, but it may take several minutes.<br /><br /><b>Attention:</b> Be sure to check your spam folder as well.", $filename);
+//         }
+//         else {
+//                 $c_main = "
+
+
+//                 If you have forgotten your password, we can retrieve it by sending it to your e-mail address.<br /><br />
+
+
+// 				<form action=\"index.php?plugin=login&action=forgotpassword\" method=POST>
+// 				<table width=\"100%\" border=\"0\">
+// 				<tr>
+// 				<td align=\"left\"><span class=\"gen\">Your e-mail address:</span></td>
+// 				<td align=\"left\"><span class=\"gen\"><input type=text name=email size=25 maxlength=100></span></td>
+// 				</tr>
+// 				<tr>
+// 				<td align=\"left\"><span class=\"gen\">Please enter the number shown in the image:</span><br /><span class=\"gensmall\">".$ts." This image verification is used to prevent spam-bots.</span></td>
+// 				<td align=\"left\"><span class=\"gen\"><table width=200 border=0><tr><td align=left width=50%><input type=text name=verification size=10 maxlength=10></td><td align=left width=50%><img src=\"captcha.php\"></td></tr></table></span></td>
+// 				</tr>
+// 				<tr>
+// 				<td></td>
+// 				<td align=\"left\"><input type=submit name=dosend value=\"Submit password request\"></td>
+// 				</tr>
+// 				</table>
+// 				</form>
+// 				";
+
+// 	$c_main = '
+
+// <div align="center"><h1>Forgot password</h1></div>
+// 	  <table width="600" cellpadding="5" cellspacing="0" border="0" class="forumline" align="center">
+// 	   <tr>
+// 		<td class="row1"><span class="gen">
+// '.$c_main.'
+//                 </span></td>
+// 	   </tr>
+// 	  </table>
+
+
+
+//         ';
+//         }
 }
 else if ( $s_check ) {
 
-		$user = $_POST['user'];
-		$pass = $_POST['pass'];
-		$remember = $_POST['remember'];
+        if ( $s_auth ) errmsg("Already logged in!");
+
+        if ( !isset($_POST['user']) ) die("No user given!");
+        if ( !isset($_POST['pass']) ) die("No pass given!");
+
+        $user = parseToDB($_POST['user']);
+        $pass = parseToDB($_POST['pass']);
 
 		$s_auth = FALSE;
-
-                $resolution = $_POST['fieldresolution'];
 
 		if ( empty($user) ) {
 			bcs_die("Please enter a username.");
@@ -181,8 +191,6 @@ else if ( $s_check ) {
 		if ( empty($pass) ) {
 			bcs_die("Please enter a password.");
 		}
-
-
 
 		$safeuser = (parseToDB($user));
 		$safepass = (parseToDB($pass));
@@ -192,21 +200,40 @@ else if ( $s_check ) {
 		$result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
 		$row = mysql_fetch_array($result);
 
-                if ( $row["activationkey"] != '' ) {
-                    bcs_die("You need to activate your account first!<br><br>Please check your e-mail for an activation link.");
-                }
+		if ( mysql_num_rows($result) == 1 && passwordHash($safepass) == $row["pass"] ) {
 
-		if ( mysql_num_rows($result) == 1 && $safepass == $row["pass"] ) {
+            // Check for the activation key
+            if ( !empty($row["activationkey"]) ) {
+                if ( $row["activationkey"] === "NEWPASS" ) {
+                    // Send an e-mail with a new activation key
+                    $newpass = randomPassword();
+
+                    $newpasshashed = passwordHash($newpass);
+
+                    mailto($row["email"], "Password reset", '
+
+                    <div id="mailbox">Hi ' . $row["name"] . ',<br><br>
+                    Due to a recent security breach, a new password was generated for your account.<br>From now on, all passwords are saved encrypted in the database and cannot be restored.<br><br>
+                    Your new password is: '.$newpass.'<br><br>
+                    Please login with your newly generated password, and then change it on the Preferences page.<br><br>
+                    <a href="http://www.ironbane.com/login.php">http://www.ironbane.com/login.php</a><br><br>I\'m very sorry for the inconvience this has caused. <br><br>Sincerely,<br>IronBot<br><br>') ? "true" : "false" . "</div>
+                    ";
+
+                    $query = "UPDATE bcs_users SET pass = '$newpasshashed', activationkey = '' WHERE id = '$row[id]'";
+                    $result = mysql_query($query) or bcs_error("Error retrieving user: ".mysql_error()."");
+
+                    bcs_die("Due to a recent security breach, a new password was generated for your account.<br><br>Please check your e-mail for further information.");
+                }
+            }
+
 			$s_auth = TRUE;
 			$_SESSION['logged_in'] = TRUE;
 			$_SESSION['user_id'] = $row['id'];
 
-			//if ( $remember ) {
-				$cookietime = 31536000;
-				// Set cookies
-				setcookie("bcs_username", $safeuser, time()+$cookietime);
-				setcookie("bcs_password", $safepass, time()+$cookietime);
-			//}
+			$cookietime = 31536000;
+			// Set cookies
+			setcookie("bcs_username", $safeuser, time()+$cookietime);
+			setcookie("bcs_password", $safepass, time()+$cookietime);
 
 			if ( !empty($_POST["redirect"]) ) {
 				$redirect = $_POST["redirect"];
@@ -215,14 +242,9 @@ else if ( $s_check ) {
 				$redirect = "index.php";
 			}
 
-                        if ( is_numeric($resolution) ) {
-                            $query = "UPDATE bcs_users SET info_width = '$resolution' WHERE id = '$row[id]'";
-                            $result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-                        }
+            //writeChatMessage("<i>".  memberLink($_SESSION['user_id'])." logged in.</i>");
 
-                        //writeChatMessage("<i>".  memberLink($_SESSION['user_id'])." logged in.</i>");
-
-			header("Location: forum.php");
+			header("Location: index.php");
 			//bcs_die("Hey, ".$safeuser."! You are now logged in.", $redirect);
 		}
 		else {
@@ -237,6 +259,8 @@ else {
 
 	$c_title = "Log in";
 
+    $redirect = isset($_SESSION["nm_redirect"]) ? $_SESSION["nm_redirect"] : "";
+
 	$c_main = '
 
 
@@ -245,7 +269,7 @@ else {
 
 <div align="center">
 <span class="genbig">Simply use your game account to log-in to the forums.<div style="height:20px"></div></span>
-<input type="hidden" name="redirect" value="'.$_SESSION["nm_redirect"].'" />
+<input type="hidden" name="redirect" value="'.$redirect.'" />
 
 <script type="text/javascript">
 document.write(\'<input type="hidden" name="fieldresolution" value="\'+screen.width+\'" />\');

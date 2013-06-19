@@ -162,9 +162,9 @@ $newsPosts = preg_replace("/<img[^>]+\>/i", "", $newsPosts);
 $newsPosts = str_replace("'", "\'", $newsPosts);
 $newsPosts = preg_replace('/\s+/', ' ', trim($newsPosts));
 
-
+$preCatsTilesLoad = "";
 if ($userdata["editor"]) {
-    $preCatsTilesLoad = "";
+
     // Preload cats
     // 1 = Terrain tile
     // 2 = Gameobjects
@@ -313,7 +313,7 @@ $c_footer .= '
 
     var isEditor = '.($userdata["editor"] ? "true" : "false").';
 
-	var debugging = ' . (($userdata["admin"] || $debug) ? "true" : "false") . ';
+	var debugging = ' . (($userdata["admin"] || isset($_GET["debug"])) ? "true" : "false") . ';
     //debugging=false;
 
     var items = {};

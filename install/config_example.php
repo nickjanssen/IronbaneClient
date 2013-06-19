@@ -15,6 +15,9 @@ $ironbane_port = 8080;
 $ironbane_root_directory = "/ironbane/";
 
 // A salt used for password hashing
-$crypt_hash = "CHANGEME";
+$crypt_salt = "";
+
+// Used for sending e-mails using PHPMailer
+$mandrill_api_key = "";
 
 ?>

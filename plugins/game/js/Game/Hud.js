@@ -1522,8 +1522,9 @@ var HUDHandler = Class.extend({
 
         var password = $('#password').val();
 
-        $.post('gamehandler.php?action=delchar&id='+startdata.characterUsed, {
-          pass:password
+        $.post('gamehandler.php?action=delchar', {
+          id: startdata.characterUsed,
+          pass: password
         }, function(string) {
 
           data = JSON.parse(string);

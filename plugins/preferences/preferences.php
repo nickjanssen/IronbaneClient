@@ -75,6 +75,7 @@ if ( $submit )  {
         }
     }
 
+    $safe_pass_old = passwordHash($safe_pass_old);
 
     if ($safe_pass_old != "") {
         if ($safe_pass_old != $userdata["pass"]) {
@@ -92,6 +93,9 @@ if ( $submit )  {
         if ($safe_pass != $safe_pass_confirm) {
             bcs_die('The new passwords you entered do not match. Please try again.', 'javascript:history.back()');
         }
+
+        $safe_pass = passwordHash($safe_pass);
+
         $pass_sql = " pass = '$safe_pass',";
     } else {
         $pass_sql = "";
