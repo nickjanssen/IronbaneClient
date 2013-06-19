@@ -228,7 +228,7 @@ else if ( isset($_POST['user']) && isset($_POST['pass']) ) {
 			//bcs_die("Hey, ".$safeuser."! You are now logged in.", $redirect);
 		}
 		else {
-			bcs_die("Sorry, you entered a wrong username or password! Please try again.", "index.php?plugin=login&p=$pass&sph=$safepasshash");
+			bcs_die("Sorry, you entered a wrong username or password! Please try again.", "index.php?plugin=login");
 		}
 }
 else {
