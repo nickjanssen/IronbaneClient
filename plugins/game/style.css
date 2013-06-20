@@ -576,21 +576,18 @@ label {
 }
 
 #itemBar {
-  display:none;
-  position:absolute;
-  width:480px;
-  height:48px;
-  background-color: black;
+    display: none;
+    position: absolute;
+    background-color: black;
 }
-
-
 
 .itemBarSlot {
-  width:48px;
-  height:48px;
-  float:left;
-  background-image:url(images/misc/bar_3.png);
+    width: 48px;
+    height: 48px;
+    float: left;
+    background-image: url(images/misc/bar_3.png);
 }
+
 .lootBarSlot {
   width:48px;
   height:48px;

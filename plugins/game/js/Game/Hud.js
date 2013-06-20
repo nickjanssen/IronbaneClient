@@ -15,6 +15,17 @@
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+function TeleportElement(id, to) {
+    //Get
+    var p = $("#" + to);
+    var offset = p.offset();
+
+    //set
+    $("#" + id).offset({
+        top: offset.top,
+        left: offset.left
+    });
+}
 
 var props = ['skin', 'eyes', 'hair', 'feet', 'body', 'head', 'big'];
 
@@ -28,206 +39,152 @@ var selectedHair = 1;
 var messageFadeTime = 0.2;
 
 var BigMessage = Class.extend({
-  Init: function(message, duration) {
-    this.message = message;
-    this.duration = duration;
-    this.timeLeft = duration;
-    this.opacity = 1;
-  },
-  Tick: function(dTime) {
-    this.timeLeft -= dTime;
+    Init: function(message, duration) {
+        this.message = message;
+        this.duration = duration;
+        this.timeLeft = duration;
+        this.opacity = 1;
+    },
+    Tick: function(dTime) {
+        this.timeLeft -= dTime;
 
-    var opac = 0;
+        var opac = 0;
 
-    if ( this.timeLeft > this.duration-messageFadeTime ) {
-      //      4.7 - 4.5 = 0.2
-      opac = 1-((this.timeLeft - (this.duration-messageFadeTime))/messageFadeTime);
-    }
-    else if ( this.timeLeft < messageFadeTime ) {
-      opac = this.timeLeft/messageFadeTime;
-    }
-    else {
-      opac = 1;
-    }
+        if (this.timeLeft > this.duration - messageFadeTime) {
+          //      4.7 - 4.5 = 0.2
+          opac = 1 - ((this.timeLeft - (this.duration - messageFadeTime)) / messageFadeTime);
+        } else if (this.timeLeft < messageFadeTime) {
+          opac = this.timeLeft / messageFadeTime;
+        } else {
+          opac = 1;
+        }
 
-    this.opacity = opac;
-  }
+        this.opacity = opac;
+    }
 });
 
 var HUDHandler = Class.extend({
-    chatBuffer: [],
-  Init: function() {
+    bigMessages: [],
+    alertBoxActive: false,
+    Init: function() {
+        this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
 
-    this.currentBookPage = 0;
+        if (Detector.webgl) {
+            if (socketHandler.serverOnline) {
+                $('#loginContent').show();
+            } else {
+                setTimeout(function() {
+                    hudHandler.MessageAlert('The server is currently offline. Please try again later.', 'nobutton');
+                }, 1000);
+            }
+        } else {
+            ironbane.showingGame = true;
+            $('#noWebGL').show();
 
-    this.bigMessages = [];
+            $('#hquote').html('<h2>' + hquote + '</h2>');
+            // Add a solution
+            if (startdata.using_ie) {
+                $('#webglsolution').html('You seem to be using <b>Internet Explorer</b>.<br>Don\'t worry, there is a solution for you!<div class="spacer"></div><button id="getiewebgl" class="ibutton" style="width:304px">Get IEWebGL</button>');
 
-    this.alertBoxActive = false;
+                $('#getiewebgl').click(function() {
+                    window.open('http://iewebgl.com/', 'iewebgl');
+                    //window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs')
+                });
+            } else if ( startdata.using_safari ) {
 
-    this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
+                var sol = '';
 
-    //$("#gameFrame").css('opacity', '');
+                sol += 'In Safari, open the <b>Safari menu</b> and select <b>Preferences</b>.<br><br>';
+                sol += 'Then, click the <b>Advanced</b> tab in the Preferences window.<br><br>';
+                sol += 'Then, at the bottom of the window, check the <b>Show Develop menu in menu bar</b> checkbox.<br><br>';
+                sol += 'Then, open the <b>Develop</b> menu in the menu bar and select <b>Enable WebGL</b>.';
 
-    if ( Detector.webgl ) {
-      if ( socketHandler.serverOnline ) {
-        $('#loginContent').show();
-      }
-      else {
-        setTimeout(function(){
-          hudHandler.MessageAlert('The server is currently offline. Please try again later.', 'nobutton');
+                $('#webglsolution').html('You seem to be using <b>Safari</b>.<br>Don\'t worry, there is a solution for you!<div class="spacersmall"></div><div class="insideInfo" style="width:280px;">' + sol + '</div>');
+
+                $('#getiewebgl').click(function() {
+                    window.open('http://iewebgl.com/', 'iewebgl');
+                    //window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs')
+                });
+            } else {
+                $('#webglsolution').html('<h2>What you can do</h2><div class="spacersmall"></div>Please make sure your <b>browser is up-to-date</b>.<br>Also check if you have the <b>latest video card drivers</b> installed.<div class="spacersmall"></div><button id="moreinfowebgl" class="ibutton" style="width:304px">More information</button>');
+
+                $('#moreinfowebgl').click(function() {
+                    //window.open('http://iewebgl.com/','iewebgl');
+                    window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation', 'bs');
+                });
+            }
+
+            $('#webglsolution').append('<div class="spacersmall"></div>If you think this error is false or you are sure your system is able to run WebGL, please contact <a href="mailto:support@ironbane.com">support@ironbane.com</a> with your computer and browser specifications.');
+        }
+
+        this.oldButtonClasses = {};
+
+        this.devNewsScrollPane = $('#devNews').jScrollPane().data('jsp');
+
+        setTimeout(function() {
+          hudHandler.MakeSlotSpace(false);
+          hudHandler.MakeSlotSpace(true);
+
+          $('#gameFrame').droppable({
+              drop: hudHandler.ItemSwitchEvent
+          });
+
+          hudHandler.MakeNewsPage();
+          hudHandler.ShowMainMenuHUD();
+        }, 0);
+
+        var clickAction = function() {
+            soundHandler.Play("click");
+        };
+
+        var handleClick = function(noSound) {
+            $("button").unbind('click.sound');
+
+            if (!noSound) {
+              clickAction();
+            }
+
+            setTimeout(function() {
+                $("button").bind('click.sound', function() {
+                    handleClick();
+                });
+            }, 50);
+        };
+
+        setTimeout(function() {
+            handleClick(true);
         }, 1000);
-      }
-
-    }
-    else {
-
-      ironbane.showingGame = true;
-
-
-      // $("#loadingBar").hide();
-
-
-      $('#noWebGL').show();
-
-//      $('#devNews').hide();
-//      $('#sideMenu').hide();
-      //<button onclick="window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs')" class="ibutton" style="width:304px">More information</button>
-
-      $('#hquote').html('<h2>'+hquote+'</h2>');
-      // Add a solution
-      if ( startdata.using_ie ) {
-        $('#webglsolution').html('You seem to be using <b>Internet Explorer</b>.<br>Don\'t worry, there is a solution for you!<div class="spacer"></div><button id="getiewebgl" class="ibutton" style="width:304px">Get IEWebGL</button>');
-
-        $('#getiewebgl').click(function(){
-          window.open('http://iewebgl.com/','iewebgl');
-        //window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs')
-        });
-      }
-      else if ( startdata.using_safari ) {
-
-        var sol = '';
-
-        sol += 'In Safari, open the <b>Safari menu</b> and select <b>Preferences</b>.<br><br>';
-        sol += 'Then, click the <b>Advanced</b> tab in the Preferences window.<br><br>';
-        sol += 'Then, at the bottom of the window, check the <b>Show Develop menu in menu bar</b> checkbox.<br><br>';
-        sol += 'Then, open the <b>Develop</b> menu in the menu bar and select <b>Enable WebGL</b>.';
-
-        $('#webglsolution').html('You seem to be using <b>Safari</b>.<br>Don\'t worry, there is a solution for you!<div class="spacersmall"></div><div class="insideInfo" style="width:280px;">'+sol+'</div>');
-
-        $('#getiewebgl').click(function(){
-          window.open('http://iewebgl.com/','iewebgl');
-        //window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs')
-        });
-      }
-      else {
-
-        $('#webglsolution').html('<h2>What you can do</h2><div class="spacersmall"></div>Please make sure your <b>browser is up-to-date</b>.<br>Also check if you have the <b>latest video card drivers</b> installed.<div class="spacersmall"></div><button id="moreinfowebgl" class="ibutton" style="width:304px">More information</button>');
-
-        $('#moreinfowebgl').click(function(){
-          //window.open('http://iewebgl.com/','iewebgl');
-          window.open('http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation','bs');
-        });
-      }
-
-      $('#webglsolution').append('<div class="spacersmall"></div>If you think this error is false or you are sure your system is able to run WebGL, please contact <a href="mailto:support@ironbane.com">support@ironbane.com</a> with your computer and browser specifications.');
-    }
-
-
-    this.oldButtonClasses = {};
-
-    this.devNewsScrollPane = $('#devNews').jScrollPane().data('jsp');
-    /*
-    this.chatContentScroller = $('#chatContent').jScrollPane({
-      // showArrows: true,
-      // arrowScrollOnHover: true
-      animateScroll: true
-    }).data('jsp');*/
-
-
-
-    setTimeout(function(){
-      hudHandler.MakeSlotSpace(false);
-      hudHandler.MakeSlotSpace(true);
-
-      $('#gameFrame').droppable({
-        drop: hudHandler.ItemSwitchEvent
-      });
-
-
-
-      hudHandler.MakeNewsPage();
-      hudHandler.ShowMainMenuHUD();
-
-
-
-
-    },0);
-
-    var clickAction = function () {
-      soundHandler.Play("click");
-    };
-
-    var handleClick = function(noSound) {
-      $("button").unbind('click.sound');
-
-      if ( !noSound ) clickAction();
-
-      setTimeout(function(){
-        $("button").bind('click.sound', function(){
-          handleClick();
-        });
-      }, 50);
-    };
-
-
-    setTimeout(function(){
-      handleClick(true);
-    }, 1000);
-
-
-
-  //        setTimeout(function(){
-  //            hudHandler.MakeSlotSpace(false);
-  //            hudHandler.MakeSlotSpace(true);
-  //
-  //
-  //        },5000);
-
-  //this.MakeSlotSpace(false);
-
-  },
-  MakeSoundButton: function() {
-          var checkSoundToggle = function(value) {
-
-        // We can only change the toggle in the main menu, so always stop/play
-        // the theme music
-          hudHandler.allowSound = value;
-
-
-          if ( value ) {
-            $("#btnToggleSound").html("&#9834;");
-            $("#btnToggleSound").css("color", "");
-
-            soundHandler.Play("theme");
-          }
-          else {
-            $("#btnToggleSound").html("<del>&#9834;</del>");
-            $("#btnToggleSound").css("color", "red");
-
-            soundHandler.StopAll();
-          }
-
-          localStorage.allowSound = value;
-      };
-      checkSoundToggle(hudHandler.allowSound);
-      $("#btnToggleSound").unbind('click');
-      $("#btnToggleSound").click(function(){
-        checkSoundToggle(!hudHandler.allowSound);
-      });
     },
-  ShowMainMenuHUD: function() {
-    $("#versionNumber, #devNews, #logo, #loadingBar").show();
-  },
+    MakeSoundButton: function() {
+        var checkSoundToggle = function(value) {
+
+            // We can only change the toggle in the main menu, so always stop/play
+            // the theme music
+            hudHandler.allowSound = value;
+
+            if (value) {
+                $("#btnToggleSound").html("&#9834;");
+                $("#btnToggleSound").css("color", "");
+
+                soundHandler.Play("theme");
+            } else {
+                $("#btnToggleSound").html("<del>&#9834;</del>");
+                $("#btnToggleSound").css("color", "red");
+
+                soundHandler.StopAll();
+            }
+
+            localStorage.allowSound = value;
+        };
+        checkSoundToggle(hudHandler.allowSound);
+        $("#btnToggleSound").unbind('click');
+        $("#btnToggleSound").click(function() {
+            checkSoundToggle(!hudHandler.allowSound);
+        });
+    },
+    ShowMainMenuHUD: function() {
+        $("#versionNumber, #devNews, #logo, #loadingBar").show();
+    },
   MakeNewsPage: function() {
       // Fill the side menu
 
@@ -289,277 +246,291 @@ var HUDHandler = Class.extend({
 //        //window.location = 'https://twitter.com/IronbaneMMO';
 //      });
   },
-  MakeSlotSpace: function(isLoot) {
+    MakeSlotSpace: function(isLoot) {
+        var HUD = this;
+        var div = isLoot ? '#lootBag' : '#itemBar';
+        var spaces = isLoot ? 10 : 10;
 
+        $(div).empty();
 
-    var div = isLoot ? '#lootBag' : '#itemBar';
+        for (var x = 0; x < spaces; x++) {
+            var name = isLoot ? 'ls' + x : 'is' + x;
 
-    var spaces = isLoot ? 10 : 10;
+            $('#' + name).remove();
 
-
-
-    $(div).empty();
-
-    for(var x=0;x<spaces;x++){
-      var name = isLoot ? 'ls'+x : 'is'+x;
-
-      $('#'+name).remove();
-
-      var classname = isLoot ? 'lootBarSlot' : 'itemBarSlot';
-      $(div).append('<div id="'+name+'" class="'+classname+'"></div>');
-      var n = x + 1;
-      if ( n == 10 ) n = 0;
-      //n = 9;
-      if ( !isLoot ) {
-        $('#'+name).append('<div id="'+name+'_equip" class="unequipped"></div>');
-        $('#'+name).append('<div style="width:48px;height:48px;background-image:url(plugins/game/images/misc/key_'+n+'.png);position:absolute"></div>');
-      }
-      //if ( !isLoot ) $("#"+name).append('<div style="margin-top:18px;margin-left:5px;width:40px;height:40px;color:white;font-size:10px">'+n+'</div>');
-      $('#'+name).droppable({
-        drop: hudHandler.ItemSwitchEvent,
-        greedy: true
-      });
-    }
-
-  },
-  UpdateEquippedItems: function() {
-    for(var x=0;x<10;x++){
-      var item = hudHandler.FindItemBySlot(x, false);
-
-      if( item ) {
-
-        var template = items[item.template];
-
-
-        if ( item.equipped ) {
-          if ( template.type == "consumable" ) {
-            this.SetUsed(x);
-          }
-          else {
-            this.SetEquipped(x);
-          }
-        }
-        else {
-          this.SetUnequipped(x);
-        }
-      }
-      else {
-        this.SetUnoccupied(x);
-      }
-    }
-  },
-  SetEquipped: function(slot) {
-    var name = 'is'+slot;
-    $('#'+name+'_equip').attr('class', 'equipped');
-  },
-  SetUsed: function(slot) {
-    var name = 'is'+slot;
-    $('#'+name+'_equip').attr('class', 'used');
-  },
-  SetUnequipped: function(slot) {
-    var name = 'is'+slot;
-    $('#'+name+'_equip').attr('class', 'unequipped');
-  },
-  SetUnoccupied: function(slot) {
-    var name = 'is'+slot;
-    $('#'+name+'_equip').attr('class', 'unoccupied');
-  },
-  ItemSwitchEvent: function(event, ui ) {
-    var draggable = ui.draggable;
-    //alert( 'The square with ID '' + draggable.attr('id') + '' was dropped onto '' + $(this).attr('id') + ''!' );
-
-    // Are we dragging an inventory item?
-    var itemID = draggable.attr('id');
-    var itemPrefix = draggable.attr('id').substr(0, 2);
-    var itemNumber = parseInt(draggable.attr('id').substr(2));
-    var slotID = $(this).attr('id');
-    var slotPrefix = $(this).attr('id').substr(0, 2);
-    var slotNumber = parseInt($(this).attr('id').substr(2));
-
-    if ( hudHandler.alertBoxActive ) {
-      var startItem = hudHandler.FindItemByID(itemNumber, false);
-      TeleportElement(itemID, 'is'+startItem.slot);
-      return;
-    }
-
-    if ( itemPrefix == 'ii') {
-      var startItem = hudHandler.FindItemByID(itemNumber, false);
-      if ( slotPrefix == 'is' ) {
-        // Inventory to inventory
-        // First check if the target slot is taken, and switch it first
-
-
-        hudHandler.SwitchItem(slotNumber, startItem, itemID, slotID, false);
-
-      }
-      else if ( slotPrefix == 'ls' ) {
-        // Inventory to loot
-        var switchItem = hudHandler.FindItemBySlot(slotNumber, true);
-
-        var data = null;
-
-        //                // It's the same as a normal lootItem, but inverted
-        //                if ( switchItem ) {
-        //                    data = {
-        //                        "npcID":ironbane.player.lootUnit.id,
-        //                        "switchID":startItem.id,
-        //                        "slotNumber":slotNumber,
-        //                        "itemID":switchItem.id
-        //                    }
-        //                }
-        //                else {
-        //                    data = {
-        //                        "npcID":ironbane.player.lootUnit.id,
-        //                        "slotNumber":slotNumber,
-        //                        "itemID":startItem.id
-        //                    }
-        //                }
-
-        if ( switchItem ) {
-
-          TeleportElement(itemID, 'is'+startItem.slot);
-
-          hudHandler.LootItem(startItem, switchItem, startItem.slot, 'is'+startItem.slot);
-
-        }
-        else {
-          hudHandler.PutItem(startItem, slotNumber, slotID);
+            var classname = isLoot ? 'lootBarSlot' : 'itemBarSlot';
+            $(div).append('<div id="' + name + '" class="' + classname + '"></div>');
+            var n = x + 1;
+            if (n === 10) {
+              n = 0;
+            }
+            //n = 9;
+            if (!isLoot) {
+                $('#' + name).append('<div id="' + name + '_equip" class="unequipped"></div>');
+                $('#' + name).append('<div style="width:48px;height:48px;background-image:url(plugins/game/images/misc/key_' + n + '.png);position:absolute"></div>');
+            }
+            //if ( !isLoot ) $("#"+name).append('<div style="margin-top:18px;margin-left:5px;width:40px;height:40px;color:white;font-size:10px">'+n+'</div>');
+            $('#' + name).droppable({
+                drop: HUD.ItemSwitchEvent,
+                greedy: true
+            });
         }
 
-      }
-      else if ( !ironbane.player.canLoot && slotID == 'gameFrame' ) {
-        // Send a request
-        hudHandler.DropItem(startItem, itemID, itemNumber);
-      }
-      else {
-        // Revert
-        TeleportElement(itemID, 'is'+startItem.slot);
-      }
-    }
-    else if ( itemPrefix == 'li') {
-      var startItem = hudHandler.FindItemByID(itemNumber, true);
+        // add special coin slot
+        if(!isLoot) {
+            var coinSlot = $('<div id="cashbox" class="itemBarSlot" style="width:48px;height:48px;background-image: url(plugins/game/images/hud/lootslot.png);background-size:48px;"></div>');
+            coinSlot.appendTo(div);
 
-      if ( slotPrefix == 'ls' ) {
-        // loot to loot
-        // First check if the target slot is taken, and switch it first
+            coinSlot.droppable({
+                drop: this.ItemSwitchEvent,
+                greedy: true
+            });
 
-        hudHandler.SwitchItem(slotNumber, startItem, itemID, slotID, true);
-      }
-      else if ( slotPrefix == 'is' ) {
-        // Loot to inventory
-        // Delete the item from the loot array, and add it to the player items
-        // If there is an item present at the slot, switch it
+            coinSlot.dblclick(function(e) {
+                // todo: add a popup asking how many coins to drop
+                var poppa = [
+                    '<h3>Drop how many?</h3>',
+                    '<input id="cashbox-drop-amount" class="iinput" type="text" value="1" />'
+                ].join('');
+                HUD.MessageAlert(poppa, 'question', function() {
+                    var amount = parseInt($('#cashbox-drop-amount').val(), 10);
+                    if(amount <= 0) {
+                        console.error('cant drop that low');
+                        return;
+                    }
+                    socketHandler.socket.emit('dropCash', {amount: amount}, function(err, response) {
+                        if(err) {
+                            console.error('error dropping cash', err);
+                            return;
+                        }
 
-        var switchItem = hudHandler.FindItemBySlot(slotNumber, false);
+                        console.log('drop cash success', response);
+                    });
+                });
+            });
+        }
+    },
+    UpdateEquippedItems: function() {
+        for (var x = 0; x < 10; x++) {
+            var item = hudHandler.FindItemBySlot(x, false);
+            if (item) {
+                var template = items[item.template];
+                if (item.equipped) {
+                    if (template.type === "consumable") {
+                        this.SetUsed(x);
+                    } else {
+                        this.SetEquipped(x);
+                    }
+                } else {
+                    this.SetUnequipped(x);
+                }
+            } else {
+                this.SetUnoccupied(x);
+            }
+        }
+    },
+    SetEquipped: function(slot) {
+        var name = 'is' + slot;
+        $('#' + name + '_equip').attr('class', 'equipped');
+    },
+    SetUsed: function(slot) {
+        var name = 'is' + slot;
+        $('#' + name + '_equip').attr('class', 'used');
+    },
+    SetUnequipped: function(slot) {
+        var name = 'is' + slot;
+        $('#' + name + '_equip').attr('class', 'unequipped');
+    },
+    SetUnoccupied: function(slot) {
+        var name = 'is' + slot;
+        $('#' + name + '_equip').attr('class', 'unoccupied');
+    },
+    ItemSwitchEvent: function(event, ui) {
+        var draggable = ui.draggable;
 
-        hudHandler.LootItem(switchItem, startItem, slotNumber, slotID);
-      }
-      else {
-        // Revert
-        TeleportElement(itemID, 'ls'+startItem.slot);
-      }
-    }
+        // Are we dragging an inventory item?
+        var itemID = draggable.attr('id');
+        var itemPrefix = itemID.substr(0, 2);
+        var itemNumber = parseInt(itemID.substr(2), 10);
+        var slotID = $(this).attr('id');
+        var slotPrefix = slotID.substr(0, 2);
+        var slotNumber = parseInt(slotID.substr(2), 10);
+        var startItem;
 
-  //ui.draggable.position( { of: $(this), my: 'left top', at: 'left top' } );
-  //ui.draggable.draggable( 'option', 'revert', false );
-  },
-  PutItem: function(startItem, slotNumber, slotID, acceptOffer) {
+        if (hudHandler.alertBoxActive) {
+            startItem = hudHandler.FindItemByID(itemNumber, false);
+            TeleportElement(itemID, 'is' + startItem.slot);
+            return;
+        }
 
-    // We put something from the inventory to the loot
+        if (itemPrefix === 'ii') {
+            startItem = hudHandler.FindItemByID(itemNumber, false);
+            if (slotPrefix === 'is') {
+                // Inventory to inventory
+                // First check if the target slot is taken, and switch it first
+                hudHandler.SwitchItem(slotNumber, startItem, itemID, slotID, false);
+            } else if (slotPrefix === 'ls') {
+              // Inventory to loot
+              var switchItem = hudHandler.FindItemBySlot(slotNumber, true);
+              var data = null;
+              if (switchItem) {
+                  TeleportElement(itemID, 'is' + startItem.slot);
+                  hudHandler.LootItem(startItem, switchItem, startItem.slot, 'is' + startItem.slot);
+              } else {
+                  hudHandler.PutItem(startItem, slotNumber, slotID);
+              }
+            } else if (!ironbane.player.canLoot && slotID === 'gameFrame') {
+                // Send a request
+                hudHandler.DropItem(startItem, itemID, itemNumber);
+            } else if(slotID === 'cashbox') {
+                //console.log('droppin on the cash box', itemID, startItem, items[startItem.template]);
+                if(items[startItem.template].type !== 'cash') {
+                    // Revert
+                    TeleportElement(itemID, 'is' + startItem.slot);
+                } else {
+                    //console.log('dropped some coin on the box!', items[startItem.template], startItem);
+                    socketHandler.socket.emit('putCash', {itemId: startItem.id, slotNumber: slotNumber}, function(err, response) {
+                        if(err) {
+                            console.error('error dropping cash', err, startItem);
+                            // Revert
+                            TeleportElement(itemID, 'is' + startItem.slot);
+                            return;
+                        }
 
-    var data = {
-      "npcID":ironbane.player.lootUnit.id,
-      "slotNumber":slotNumber,
-      "itemID":startItem.id
-    }
-    if ( ISDEF(acceptOffer) ) data['acceptOffer'] = true;
-    socketHandler.socket.emit('putItem', data, function(reply) {
+                        // for success we remove this from the DOM
+                        $('#' + itemID).remove();
+                        // hide tooltip
+                        $("#tooltip").hide();
+                        // remove from items array
+                        socketHandler.playerData.items = _.filter(socketHandler.playerData.items, function(item) {
+                            return item.id !== startItem.id;
+                        });
+                        // update hud
+                        hudHandler.UpdateEquippedItems();
+                    });
+                }
+            } else {
+                // Revert
+                TeleportElement(itemID, 'is' + startItem.slot);
+            }
+        } else if (itemPrefix === 'li') {
+            startItem = hudHandler.FindItemByID(itemNumber, true);
 
-      if ( ISDEF(reply.errmsg) ) {
-        hudHandler.MessageAlert(reply.errmsg);
+            if (slotPrefix === 'ls') {
+                // loot to loot
+                // First check if the target slot is taken, and switch it first
 
-        // Teleport back!
-        TeleportElement('ii'+startItem.id, 'is'+startItem.slot);
-        //if ( switchItem ) TeleportElement('li'+switchItem.id, 'ls'+switchItem.slot);
-        return;
-      }
+                hudHandler.SwitchItem(slotNumber, startItem, itemID, slotID, true);
+            } else if (slotPrefix === 'is') {
+                // Loot to inventory
+                // Delete the item from the loot array, and add it to the player items
+                // If there is an item present at the slot, switch it
 
-      if ( ISDEF(reply.offeredPrice) ) {
+                var switchItem = hudHandler.FindItemBySlot(slotNumber, false);
 
-        var goldPieces = hudHandler.GetStatContent(reply.offeredPrice, 'misc/coin_medium', reply.offeredPrice, true, true);
+                hudHandler.LootItem(switchItem, startItem, slotNumber, slotID);
+            } else {
+                // Revert
+                TeleportElement(itemID, 'ls' + startItem.slot);
+            }
+        }
+    },
+    PutItem: function(startItem, slotNumber, slotID, acceptOffer) {
 
-        var doReturn = false;
+      // We put something from the inventory to the loot
 
-        hudHandler.MessageAlert("I'd offer "+goldPieces+" for yer "+items[startItem.template].name+". What do ye think?", 'question',
-          function() {
+      var data = {
+        "npcID": ironbane.player.lootUnit.id,
+        "slotNumber": slotNumber,
+        "itemID": startItem.id
+      };
+
+      if (ISDEF(acceptOffer)) data['acceptOffer'] = true;
+      socketHandler.socket.emit('putItem', data, function(reply) {
+
+        if (ISDEF(reply.errmsg)) {
+          hudHandler.MessageAlert(reply.errmsg);
+
+          // Teleport back!
+          TeleportElement('ii' + startItem.id, 'is' + startItem.slot);
+          //if ( switchItem ) TeleportElement('li'+switchItem.id, 'ls'+switchItem.slot);
+          return;
+        }
+
+        if (ISDEF(reply.offeredPrice)) {
+
+          var goldPieces = hudHandler.GetStatContent(reply.offeredPrice, 'misc/coin_medium', reply.offeredPrice, true, true);
+
+          var doReturn = false;
+
+          hudHandler.MessageAlert("I'd offer " + goldPieces + " for yer " + items[startItem.template].name + ". What do ye think?", 'question', function() {
             hudHandler.PutItem(startItem, slotNumber, slotID, true)
-          },
-          function() {                            // Teleport back!
-            TeleportElement('ii'+startItem.id, 'is'+startItem.slot);
+          }, function() { // Teleport back!
+            TeleportElement('ii' + startItem.id, 'is' + startItem.slot);
             ironbane.unitList.push(new ChatBubble(ironbane.player.lootUnit, "Then take yer stuff with ye!"));
           });
 
 
-        return;
-      }
-
-      if ( ISDEF(reply.newCoins) ) {
-        ironbane.player.coins = reply.newCoins;
-        hudHandler.MakeCoinBar(true);
-
-        // Remove the loot bag
-        $('#lootBag').hide();
-
-        // Todo: remove the items via UI
-        for(var i=0;i<ironbane.player.lootItems.length;i++){
-          var lootItem = ironbane.player.lootItems[i];
-
-          $('#li'+lootItem.id).remove();
-
-          if ( currentHoverDiv == 'li'+lootItem.id ) $('#tooltip').hide();
+          return;
         }
 
-        ironbane.player.lootItems = [];
-        ironbane.player.canLoot = false;
-        ironbane.player.lootUnit = null;
-      }
+        if (ISDEF(reply.newCoins)) {
+          ironbane.player.coins = reply.newCoins;
+          hudHandler.MakeCoinBar(true);
 
-      // Delete from playerData
-      socketHandler.playerData.items = _.without(socketHandler.playerData.items, startItem);
+          // Remove the loot bag
+          $('#lootBag').hide();
 
-      //            // Remove the pricetag if present
-      //            if ( ISDEF(startItem.price) ) {
-      //                delete startItem.price;
-      //            }
+          // Todo: remove the items via UI
+          for (var i = 0; i < ironbane.player.lootItems.length; i++) {
+            var lootItem = ironbane.player.lootItems[i];
 
-      ironbane.player.lootItems.push(startItem);
+            $('#li' + lootItem.id).remove();
 
-      // If it was armor, update our appearance
-      if ( startItem.equipped ) {
-        if ( items[startItem.template].type == 'armor' ) {
-          ironbane.player.UpdateAppearance();
+            if (currentHoverDiv == 'li' + lootItem.id) $('#tooltip').hide();
+          }
+
+          ironbane.player.lootItems = [];
+          ironbane.player.canLoot = false;
+          ironbane.player.lootUnit = null;
         }
-        if ( items[startItem.template].type == 'weapon' ) {
-          ironbane.player.UpdateWeapon(0);
+
+        // Delete from playerData
+        socketHandler.playerData.items = _.without(socketHandler.playerData.items, startItem);
+
+        //            // Remove the pricetag if present
+        //            if ( ISDEF(startItem.price) ) {
+        //                delete startItem.price;
+        //            }
+
+        ironbane.player.lootItems.push(startItem);
+
+        // If it was armor, update our appearance
+        if (startItem.equipped) {
+          if (items[startItem.template].type == 'armor') {
+            ironbane.player.UpdateAppearance();
+          }
+          if (items[startItem.template].type == 'weapon') {
+            ironbane.player.UpdateWeapon(0);
+          }
         }
-      }
 
-      startItem.equipped = 0;
+        startItem.equipped = 0;
 
-      startItem.slot = slotNumber;
+        startItem.slot = slotNumber;
 
-      // Adjust the DOM element's name from ii to li
-      $('#ii'+startItem.id).attr('id', 'li'+startItem.id);
+        // Adjust the DOM element's name from ii to li
+        $('#ii' + startItem.id).attr('id', 'li' + startItem.id);
 
-      // Do the UI actions
-      TeleportElement('li'+startItem.id, slotID);
+        // Do the UI actions
+        TeleportElement('li' + startItem.id, slotID);
 
-      hudHandler.UpdateEquippedItems();
+        hudHandler.UpdateEquippedItems();
 
-      soundHandler.Play(ChooseRandom(["bag1"]));
+        soundHandler.Play(ChooseRandom(["bag1"]));
 
-    })
-  },
+      })
+    },
   DropItem: function(startItem, itemID, itemNumber){
     socketHandler.socket.emit('dropItem', {
       'itemID': itemNumber
@@ -796,7 +767,7 @@ var HUDHandler = Class.extend({
               break;
           case 'consumable':
               if(template.subtype === 'restorative') {
-                  iteminfo += infoRow('Restores', this.GetStatContent(item.attr1, "misc/heart", 0, false, true));
+                  itemInfo += infoRow('Restores', this.GetStatContent(item.attr1, "misc/heart", 0, false, true));
               }
               break;
           case 'cash': // todo: show this for all? merchant skill?
@@ -804,7 +775,7 @@ var HUDHandler = Class.extend({
                   '<span class="amount" style="color:gold;padding-left: 16px;',
                   'background-image:url(/plugins/game/images/misc/coin_full.png);',
                   'background-repeat:no-repeat;">',
-                      'x ', template.basevalue,
+                      'x ', item.value,
                   '</span>'
               ].join('');
               itemInfo += infoRow('Value', valueHTML);
@@ -921,157 +892,160 @@ var HUDHandler = Class.extend({
     hudHandler.UpdateEquippedItems();
 
   },
-  ReloadInventory: function() {
-    if ( ironbane.player ) {
-      this.MakeSlotItems(false);
-      if ( ironbane.player.canLoot ) {
-        this.MakeSlotItems(true);
-      }
-    }
-  },
-  ResizeFrame: function() {
-    frameWidth = $(window).width();
-    frameHeight = $(window).height();
-    $('#gameFrame').css('width', frameWidth);
-    $('#gameFrame').css('height', frameHeight);
+    ReloadInventory: function() {
+        if (ironbane.player) {
+            this.MakeSlotItems(false);
+            if (ironbane.player.canLoot) {
+                this.MakeSlotItems(true);
+            }
+        }
+    },
+    ResizeFrame: function() {
+        frameWidth = $(window).width();
+        frameHeight = $(window).height();
+        $('#gameFrame').css('width', frameWidth);
+        $('#gameFrame').css('height', frameHeight);
 
-    this.PositionHud();
+        this.PositionHud();
 
-    this.ReloadInventory();
-    //this.MakeSlotItems(true);
+        this.ReloadInventory();
+        //this.MakeSlotItems(true);
 
-    if ( ironbane.stats && ironbane.stats.domElement ) {
-      ironbane.stats.domElement.style.top = ($(window).height()-55)+'px';
-    }
-  },
-  PositionHud: function() {
-    $('#chatBox').css('width', (frameWidth-10)+'px');
-    $('#chatBox').css('left', '5px');
-    $('#chatBox').css('top', (0)+'px');
+        if (ironbane.stats && ironbane.stats.domElement) {
+            ironbane.stats.domElement.style.top = ($(window).height() - 55) + 'px';
+        }
+    },
+    PositionHud: function() {
+        var halfWidth = frameWidth * 0.5,
+            halfHeight = frameHeight * 0.5;
 
-    $('#loginBox').css('left', ((frameWidth/2)-300)+'px');
-    $('#loginBox').css('top', ((frameHeight/2)-300)+'px');
+        $('#chatBox').css({
+          width: Math.floor(halfWidth) + 'px',
+          left: (Math.floor(halfWidth) - 5) + 'px',
+          top: '5px'
+        });
 
-    $('#soundToggleBox').css('left', (frameWidth-50)+'px');
-    $('#soundToggleBox').css('top', 0+'px');
+        $('#loginBox').css({
+            left: (halfWidth - 300) + 'px',
+            top: (halfHeight - 300) + 'px'
+        });
 
+        $('#soundToggleBox').css({
+            left: (frameWidth - 50) + 'px',
+            top: '0px'
+        });
 
-    $('#debugBox').css('left', (frameWidth-310)+'px');
-    $('#debugBox').css('top', stealth?20:(frameHeight - 310)+'px');
+        $('#debugBox').css('left', (frameWidth - 310) + 'px');
+        $('#debugBox').css('top', stealth ? 20 : (frameHeight - 310) + 'px');
 
+        $('#bigMessagesBox').css('width', (frameWidth) + 'px');
+        $('#bigMessagesBox').css('left', '0px');
+        $('#bigMessagesBox').css('top', (frameHeight / 3) + 'px');
 
-    $('#bigMessagesBox').css('width', (frameWidth)+'px');
-    $('#bigMessagesBox').css('left', '0px');
-    $('#bigMessagesBox').css('top', (frameHeight/3)+'px');
+        $('#statBar').css('width', (frameWidth) + 'px');
+        $('#statBar').css('left', '20px');
+        $('#statBar').css('top', (20) + 'px');
 
+        $('#itemBar').css('left', (halfWidth - 240) + 'px');
+        $('#itemBar').css('top', ((frameHeight) - 52) + 'px');
 
-    $('#statBar').css('width', (frameWidth)+'px');
-    $('#statBar').css('left', '20px');
-    $('#statBar').css('top', (20)+'px');
+        $('#coinBar').css('left', (halfWidth - 240) + 'px');
+        $('#coinBar').css('top', ((frameHeight) - 80) + 'px');
 
-    $('#itemBar').css('left', ((frameWidth/2)-240)+'px');
-    $('#itemBar').css('top', ((frameHeight)-48)+'px');
+        $('#lootBag').css('left', (halfWidth - 240) + 'px');
+        $('#lootBag').css('top', ((frameHeight) - 120) + 'px');
 
-    $('#coinBar').css('left', ((frameWidth/2)-240)+'px');
-    $('#coinBar').css('top', ((frameHeight)-72)+'px');
+        $('#book').css('left', (halfWidth - 230) + 'px');
+        $('#book').css('top', (halfHeight - 210) + 'px');
 
-    $('#lootBag').css('left', ((frameWidth/2)-240)+'px');
-    $('#lootBag').css('top', ((frameHeight)-120)+'px');
+        $('#map').css('left', (halfWidth - 250) + 'px');
+        $('#map').css('top', (halfHeight - 250) + 'px');
 
-    $('#book').css('left', ((frameWidth/2)-230)+'px');
-    $('#book').css('top', ((frameHeight/2)-210)+'px');
+        $('#loadingBar').css('left', (halfWidth - 100) + 'px');
+        $('#loadingBar').css('top', (halfHeight - 50) + 'px');
 
-    $('#map').css('left', ((frameWidth/2)-250)+'px');
-    $('#map').css('top', ((frameHeight/2)-250)+'px');
+        $('#alertBox').css('left', (halfWidth - 250) + 'px');
+        $('#alertBox').css('top', (halfHeight - 75) + 'px');
+        $('#alertBox').hide();
 
-    $('#loadingBar').css('left', ((frameWidth/2)-100)+'px');
-    $('#loadingBar').css('top', ((frameHeight/2)-50)+'px');
+        $('#chatInputBox').hide();
 
-    $('#alertBox').css('left', ((frameWidth/2)-250)+'px');
-    $('#alertBox').css('top', ((frameHeight/2)-75)+'px');
-    $('#alertBox').hide();
+        $('#devNews').css('left', (halfWidth + 200) + 'px');
+        $('#devNews').css('top', (halfHeight - 57) + 'px');
+    },
+    GetStatContent: function(amount, prefix, fullStat, onlyFull, noMarginSpace) {
+        var content = '',
+            x = 0;
 
-    $('#chatInputBox').hide();
+        fullStat = fullStat || 0;
+        onlyFull = onlyFull || false;
+        noMarginSpace = noMarginSpace || false;
 
-    $('#devNews').css('left', ((frameWidth/2)+200)+'px');
-    $('#devNews').css('top', ((frameHeight/2)-57)+'px');
+        if (onlyFull) {
+            amount *= 2;
+            fullStat *= 2;
+        }
 
+        var fullHearts = Math.floor(amount);
+        var halfHeart = false;
+        if (fullHearts % 2 === 1) {
+            fullHearts--;
+            halfHeart = true;
+        }
+        for (x = 0; x < fullHearts / 2; x++) {
+            if (fullStat) {
+              fullStat -= 2;
+            }
+            content += '<img src="plugins/game/images/' + prefix + '_full.png" style="' + (!noMarginSpace ? 'margin-right:1px;' : '') + '">';
+        }
+        // Spawn all the half hearts
+        if (halfHeart) {
+            if (fullStat) {
+              fullStat -= 2;
+            }
+            content += '<img src="plugins/game/images/' + prefix + '_half.png" style="' + (!noMarginSpace ? 'margin-right:1px;' : '') + '">';
+        }
 
+        if (fullStat) {
+            for (x = 0; x < fullStat / 2; x++) {
+                content += '<img src="plugins/game/images/' + prefix + '_empty.png" style="' + (!noMarginSpace ? 'margin-right:1px;' : '') + '">';
+            }
+        }
 
-  //        $('#dropItemsBox').css('left', '0px');
-  //        $('#dropItemsBox').css('top', '0px');
-  //        $('#dropItemsBox').css('width', frameWidth);
-  //        $('#dropItemsBox').css('height', frameHeight);
+        return content;
+    },
+    MakeCoinBar: function(flash) {
+        var self = this,
+            el = $('#coinBar'),
+            coins = ironbane.player.coins,
+            img = 'misc/coin_medium',
+            imgFlash = 'misc/coin_medium_flash',
+            src = 'plugins/game/images/' + (flash ? imgFlash : img) + '_full.png';
 
-  },
-  GetStatContent: function(amount, prefix, fullStat, onlyFull, noMarginSpace) {
-    var content = '';
+        // if the element is already been rendered before just use it
+        if(el.html() !== '') {
+            el.find('.amount').text('x ' + coins).css('background-image', 'url(' + src + ')');
+        } else {
+            // todo: some of this can be done in the css file instead
+            $('<span class="amount" style="color:gold;padding-left: 25px;background-image:url(' + src + ');background-repeat:no-repeat;">x ' + coins + '</span>').appendTo(el);
+        }
 
-
-
-    fullStat = fullStat || 0;
-    onlyFull = onlyFull || false;
-    noMarginSpace = noMarginSpace || false;
-
-    if ( onlyFull ) {
-      amount *= 2;
-      fullStat *= 2;
-    }
-
-    var fullHearts = Math.floor(amount);
-    var halfHeart = false;
-    if ( fullHearts % 2 == 1 ) {
-      fullHearts--;
-      halfHeart = true;
-    }
-    for(var x=0;x<fullHearts/2;x++){
-      if ( fullStat ) fullStat -= 2;
-      content += '<img src="plugins/game/images/'+prefix+'_full.png" style="'+(!noMarginSpace?'margin-right:1px;':'')+'">';
-    }
-    // Spawn all the half hearts
-    if (halfHeart ) {
-      if ( fullStat ) fullStat -= 2;
-      content += '<img src="plugins/game/images/'+prefix+'_half.png" style="'+(!noMarginSpace?'margin-right:1px;':'')+'">';
-    }
-
-    if ( fullStat ) {
-      for(var x=0;x<fullStat/2;x++){
-        content += '<img src="plugins/game/images/'+prefix+'_empty.png" style="'+(!noMarginSpace?'margin-right:1px;':'')+'">';
-      }
-    }
-
-    return content;
-  },
-  MakeCoinBar: function(flash) {
-      var self = this,
-          el = $('#coinBar'),
-          coins = ironbane.player.coins,
-          img = 'misc/coin_medium',
-          imgFlash = 'misc/coin_medium_flash',
-          src = 'plugins/game/images/' + (flash ? imgFlash : img) + '_full.png';
-
-      // if the element is already been rendered before just use it
-      if(el.html() !== '') {
-          el.find('.amount').text('x ' + coins).css('background-image', 'url(' + src + ')');
-      } else {
-          // todo: some of this can be done in the css file instead
-          $('<span class="amount" style="color:gold;padding-left: 25px;background-image:url(' + src + ');background-repeat:no-repeat;">x ' + coins + '</span>').appendTo(el);
-      }
-
-      // if this was a "flash" run again without flash
-      if(flash) {
-        setTimeout(function() { self.MakeCoinBar(false); }, 50);
-      }
-  },
-  MakeHealthBar: function(doFlash) {
-    doFlash = doFlash || false;
-    var content = this.GetStatContent(ironbane.player.health, doFlash ? 'misc/heart_medium_flash' : 'misc/heart_medium', ironbane.player.healthMax);
-    //var content = this.GetStatContent(1, 'misc/heart_medium', 6);
-    $('#healthBar').html(content);
-    if ( doFlash ) setTimeout(function(){
-      hudHandler.MakeHealthBar()
-    },50);
-  },
+        // if this was a "flash" run again without flash
+        if(flash) {
+          setTimeout(function() { self.MakeCoinBar(false); }, 50);
+        }
+    },
+    MakeHealthBar: function(doFlash) {
+        doFlash = doFlash || false;
+        var content = this.GetStatContent(ironbane.player.health, doFlash ? 'misc/heart_medium_flash' : 'misc/heart_medium', ironbane.player.healthMax);
+        //var content = this.GetStatContent(1, 'misc/heart_medium', 6);
+        $('#healthBar').html(content);
+        if (doFlash) {
+            setTimeout(function() {
+                hudHandler.MakeHealthBar()
+            }, 50);
+        }
+    },
   MakeArmorBar: function(doFlash) {
     doFlash = doFlash || false;
     var content = this.GetStatContent(ironbane.player.armor, doFlash ?  'misc/armor_medium_flash' :  'misc/armor_medium', ironbane.player.armorMax);
@@ -1088,155 +1062,104 @@ var HUDHandler = Class.extend({
     if ( ISDEF(hudHandler.doNo) ) hudHandler.doNo = undefined;
 
   },
-  MessageAlert: function(message, options, doYes, doNo) {
+    MessageAlert: function(message, options, doYes, doNo) {
 
-    var options = options || null;
+        var options = options || null;
 
-    this.doYes = doYes;
-    this.doNo = doNo;
+        this.doYes = doYes;
+        this.doNo = doNo;
 
-    this.alertBoxActive = true;
+        this.alertBoxActive = true;
 
-    // Store all document
+        // Store all document
 
-    $('#btnOK').hide();
-    $('#btnNo').hide();
+        $('#btnOK').hide();
+        $('#btnNo').hide();
 
-    switch(options){
-      case 'nobutton':
-        break;
-      case 'question':
-        $('#btnOK').show();
-        $('#btnNo').show();
-        break;
-      default:
-        $('#btnOK').show();
-        break;
-    }
+        switch (options) {
+            case 'nobutton':
+                break;
+            case 'question':
+                $('#btnOK').show();
+                $('#btnNo').show();
+                break;
+            default:
+                $('#btnOK').show();
+                break;
+        }
 
-
-    $(document).keydown(function(event) {
-      if ( event.keyCode == 13 ) {
-        $('#alertBox').hide();
-        hudHandler.alertBoxActive = false;
-      }
-    });
-
-
-    $('#alertBox').show();
-    $('#alertMessage').html(message);
-    $('#alertImage').css('height', $('#alertBox').css('height'));
-    $('#btnOK').click(function(){
-      $('#alertBox').hide();
-      hudHandler.alertBoxActive = false;
-
-      if ( ISDEF(hudHandler.doYes) ) hudHandler.doYes();
-
-      hudHandler.doYes = undefined;
-    });
-
-    $('#btnNo').click(function(){
-      $('#alertBox').hide();
-      hudHandler.alertBoxActive = false;
-
-      if ( ISDEF(hudHandler.doNo) ) hudHandler.doNo();
-
-      hudHandler.doNo = undefined;
-    });
-  },
-  DisableButtons: function(buttons) {
-    for(var b=0;b<buttons.length;b++) {
-      this.oldButtonClasses[buttons[b]] = $('#'+buttons[b]).attr('class');
-      $('#'+buttons[b]).attr('class', 'ibutton_disabled');
-    }
-  },
-  EnableButtons: function(buttons) {
-    for(var b=0;b<buttons.length;b++) {
-      if ( ISDEF(this.oldButtonClasses[buttons[b]]) ) {
-        $('#'+buttons[b]).attr('class', this.oldButtonClasses[buttons[b]]);
-      }
-      else {
-        $('#'+buttons[b]).attr('class', 'ibutton');
-      }
-    }
-  },
-  UpdateChatBoxScroll: function() {
-    /*$('#chatContent').prop({
-      scrollTop: $('#chatContent').prop('scrollHeight')
-    });*/
-  },
-  //    MakeCharSelectionScreen: function() {
-  //        var text = '';
-  //        text += '<button id='btnPlay' class='ibutton_fixed'>Play</button>';
-  //        text += '<div class='spacer'>';
-  //        text += '<button id='btnPlay' class='ibutton_fixed'>Forum</button>';
-  //        text += '<div class='spacer'>';
-  //        text += '<button id='btnPlay' class='ibutton_fixed'>Play</button>';
-  //        text += '<div class='spacer'>';
-  //
-  //$('#loginContent').html(text);
-  //
-  //    },
-  HideHUD: function() {
-      $('#itemBar').hide();
-      $('#lootBag').hide();
-      $("#coinBar").hide();
-      $("#statBar").hide();
-      $('div[id^="li"]').hide();
-      $('div[id^="ii"]').hide();
-      // $('#chatBox').hide();
-  },
-  ShowHUD: function() {
-      $('#itemBar').show();
-      // $('#lootBag').show();
-      $("#coinBar").show();
-      $("#statBar").show();
-      $('div[id^="li"]').show();
-      $('div[id^="ii"]').show();
-      // $('#chatBox').show();
-  },
-  HideMenuScreen: function() {
-
-    $('#loginBox').hide();
-    $('#devNews').hide();
-    $('#sideMenu').hide();
-    $("#soundToggleBox").hide();
-
-//    $('canvas').show();
-    $('#chatBox').show();
-    // $('#debugBox').show();
-    // $('#loadingBar').show();
-    $('#itemBar').show();
-    $("#coinBar").show();
-    $("#statBar").show();
+        $(document).keydown(function(event) {
+            if (event.keyCode == 13) {
+                $('#alertBox').hide();
+                hudHandler.alertBoxActive = false;
+            }
+        });
 
 
-    // Stop music
+        $('#alertBox').show();
+        $('#alertMessage').html(message);
+        $('#alertImage').css('height', $('#alertBox').css('height'));
+        $('#btnOK').click(function() {
+            $('#alertBox').hide();
+            hudHandler.alertBoxActive = false;
 
+            if (ISDEF(hudHandler.doYes)) hudHandler.doYes();
 
-    soundHandler.FadeOut("theme", 5000);
+            hudHandler.doYes = undefined;
+        });
 
-  },
-  ShowMenuScreen: function() {
+        $('#btnNo').click(function() {
+            $('#alertBox').hide();
+            hudHandler.alertBoxActive = false;
 
-    $('#sideMenu').show();
-    $('#loginBox').show();
-    $('#devNews').show();
-    $("#soundToggleBox").show();
+            if (ISDEF(hudHandler.doNo)) hudHandler.doNo();
 
-//    $('canvas').hide();
-    $('#chatBox').hide();
-    // $('#debugBox').hide();
-    // $('#loadingBar').hide();
-    $('#itemBar').hide();
-    $('#lootBag').hide();
-    $("#coinBar").hide();
-    $("#statBar").hide();
-
-
-    soundHandler.FadeIn("theme", 5000);
-
-  },
+            hudHandler.doNo = undefined;
+        });
+    },
+    DisableButtons: function(buttons) {
+        for (var b = 0; b < buttons.length; b++) {
+            this.oldButtonClasses[buttons[b]] = $('#' + buttons[b]).attr('class');
+            $('#' + buttons[b]).attr('class', 'ibutton_disabled');
+        }
+    },
+    EnableButtons: function(buttons) {
+        for (var b = 0; b < buttons.length; b++) {
+            if (ISDEF(this.oldButtonClasses[buttons[b]])) {
+                $('#' + buttons[b]).attr('class', this.oldButtonClasses[buttons[b]]);
+            } else {
+                $('#' + buttons[b]).attr('class', 'ibutton');
+            }
+        }
+    },
+    HideHUD: function() {
+        $('#itemBar').hide();
+        $('#lootBag').hide();
+        $("#coinBar").hide();
+        $("#statBar").hide();
+        $('div[id^="li"]').hide();
+        $('div[id^="ii"]').hide();
+        // $('#chatBox').hide();
+    },
+    ShowHUD: function() {
+        $('#itemBar').show();
+        // $('#lootBag').show();
+        $("#coinBar").show();
+        $("#statBar").show();
+        $('div[id^="li"]').show();
+        $('div[id^="ii"]').show();
+        // $('#chatBox').show();
+    },
+    HideMenuScreen: function() {
+        $('#loginBox, #devNews, #sideMenu, #soundToggleBox').hide();
+        $('#chatBox, #itemBar, #coinBar, #statBar').show();
+        soundHandler.FadeOut("theme", 5000);
+    },
+    ShowMenuScreen: function() {
+        $('#sideMenu, #loginBox, #devNews, #soundToggleBox').show();
+        $('#chatBox, #itemBar, #lootBag, #coinBar, #statBar').hide();
+        soundHandler.FadeIn("theme", 5000);
+    },
   MakeCharSelectionScreen: function() {
 
     var slotsLeft = slotsAvailable - charCount;
@@ -1996,57 +1919,53 @@ var HUDHandler = Class.extend({
 
   },
   HideMap: function() {
-    $("#map").hide();
+      $("#map").hide();
   },
   ShowBook: function(text, page) {
 
-    //<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>
-    //<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>
+      //<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>
+      //<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>
 
-    $("#book").show();
+      $("#book").show();
 
-    page = page || 0;
+      page = page || 0;
 
-    textArray = text.split("|");
+      textArray = text.split("|");
 
-    if ( ISDEF(textArray[page]) ) {
-      $("#bookPageLeft").html(textArray[page]);
-    }
-    else {
-      $("#bookPageLeft").empty();
-    }
-    if ( ISDEF(textArray[page+1]) ) {
-      $("#bookPageRight").html(textArray[page+1]);
-    }
-    else {
-      $("#bookPageRight").empty();
-    }
+      if (ISDEF(textArray[page])) {
+        $("#bookPageLeft").html(textArray[page]);
+      } else {
+        $("#bookPageLeft").empty();
+      }
+      if (ISDEF(textArray[page + 1])) {
+        $("#bookPageRight").html(textArray[page + 1]);
+      } else {
+        $("#bookPageRight").empty();
+      }
 
 
-    if ( ISDEF(textArray[page-2]) ) {
-      $("#bookFooterLeft").html('<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>');
-      $("#bookPrevPage").click(function(){
-        hudHandler.ShowBook(text, page-2)
-      });
-    }
-    else {
-      $("#bookFooterLeft").empty();
-    }
-    if ( ISDEF(textArray[page+2]) ) {
-      $("#bookFooterRight").html('<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>');
-      $("#bookNextPage").click(function(){
-        hudHandler.ShowBook(text, page+2)
-      });
-    }
-    else {
-      $("#bookFooterRight").empty();
-    }
+      if (ISDEF(textArray[page - 2])) {
+        $("#bookFooterLeft").html('<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>');
+        $("#bookPrevPage").click(function() {
+          hudHandler.ShowBook(text, page - 2)
+        });
+      } else {
+        $("#bookFooterLeft").empty();
+      }
+      if (ISDEF(textArray[page + 2])) {
+        $("#bookFooterRight").html('<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>');
+        $("#bookNextPage").click(function() {
+          hudHandler.ShowBook(text, page + 2)
+        });
+      } else {
+        $("#bookFooterRight").empty();
+      }
   },
   HideBook: function() {
-    $("#book").hide();
+      $("#book").hide();
   },
   AddChatMessage: function(msg) {
-    $('#chatContent').trigger('onMessage', msg);
+      $('#chatContent').trigger('onMessage', msg);
   }
 });
 
