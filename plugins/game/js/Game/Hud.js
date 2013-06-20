@@ -1455,8 +1455,9 @@ var HUDHandler = Class.extend({
 
         var password = $('#password').val();
 
-        $.post('gamehandler.php?action=delchar&id='+startdata.characterUsed, {
-          pass:password
+        $.post('gamehandler.php?action=delchar', {
+          id: startdata.characterUsed,
+          pass: password
         }, function(string) {
 
           data = JSON.parse(string);
@@ -1840,7 +1841,8 @@ var HUDHandler = Class.extend({
 
 
 
-        $.post('gamehandler.php?action=makechar&name='+ncname, {
+        $.post('gamehandler.php?action=makechar', {
+          name:ncname,
           skin:selectedSkin,
           eyes:selectedEyes,
           hair:selectedHair

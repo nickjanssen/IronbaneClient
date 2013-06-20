@@ -17,7 +17,7 @@
 */
 
 
-
+require 'PHPMailer/class.phpmailer.php';
 
 // Smilies
 
@@ -53,7 +53,7 @@ function createDate($time, $timezone, $special=0) {
 
 function createDateSelf($time, $special=0) {
     global $userdata;
-    return createDate($time, $userdata[gmt], $special);
+    return createDate($time, $userdata["gmt"], $special);
 }
 
 function parseToSurface($text) {
@@ -77,15 +77,15 @@ function parseToDB($text, $allow_html=false) {
 
 
 function getPosterLink($row, $user) {
-    if (!empty($row[guestname])) {
-        if (!strstr($row[guestcontact], '@')) {
-            if (substr($row[guestcontact], 0, 3) == "www") {
-                $row[guestcontact] = "http://" . $row[guestcontact];
+    if (!empty($row["guestname"])) {
+        if (!strstr($row["guestcontact"], '@')) {
+            if (substr($row["guestcontact"], 0, 3) == "www") {
+                $row["guestcontact"] = "http://" . $row["guestcontact"];
             }
 
-            $who = empty($row[guestcontact]) ? $row[guestname] : "<a href='" . $row[guestcontact] . "'>" . $row[guestname] . "</a>";
+            $who = empty($row["guestcontact"]) ? $row["guestname"] : "<a href='" . $row["guestcontact"] . "'>" . $row["guestname"] . "</a>";
         } else {
-            $who = empty($row[guestcontact]) ? $row[guestname] : "<a href=mailto:'" . $row[guestcontact] . "'>" . $row[guestname] . "</a>";
+            $who = empty($row["guestcontact"]) ? $row["guestname"] : "<a href=mailto:'" . $row["guestcontact"] . "'>" . $row["guestname"] . "</a>";
         }
     } else {
         $who = memberLink($user);
@@ -97,7 +97,11 @@ function getPosterLink($row, $user) {
 
 
 function bcs_die($msg, $url="index.php") {
-    global $language, $o_css, $o_body, $c_theme, $userdata, $s_auth, $version, $use_simple_rendering, $spacer, $hspacer, $c_jquery, $use_jquery, $c_extra, $plugin;
+    global $language, $o_css, $o_body, $c_theme, $userdata, $s_auth, $version,
+        $use_simple_rendering, $spacer, $hspacer, $c_jquery, $use_jquery,
+        $c_extra, $plugin, $noTitlePostFix, $use_nicedit, $use_jscrollpane,
+        $s_editor, $use_niftyplayer, $s_editor, $c_footer, $c_jquery_manual,
+        $use_niftyplayer, $no_site_css, $c_head_after;
 
 
     $bcs_died = true;
@@ -187,6 +191,9 @@ function requireLogin($this="") {
 
 }
 
+
+
+
 function mailToAll($subject, $content, $shownote) {
 
     set_time_limit(1000);
@@ -195,24 +202,16 @@ function mailToAll($subject, $content, $shownote) {
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     for ($x = 0; $x < mysql_num_rows($result); $x++) {
         $row = mysql_fetch_array($result);
-        mailto($row[email], $subject, $content, $shownote);
-        echo "Mail sent to: ".$row[email]."<br>";
+        mailto($row["email"], $subject, $content, $shownote);
+        echo "Mail sent to: ".$row["email"]."<br>";
     }
 }
 
 function mailto($to, $subject, $content, $shownote=0) {
+    global $mandrill_api_key;
 
     if ( empty($to) ) return;
 
-    $email_ontvanger = $to;
-
-    $naam_verzender = "Ironbane";
-    $email_verzender = "noreply@ironbane.com";
-
-    $headers .= "From: " . $naam_verzender . " <" . $email_verzender . ">\r\n";
-    $headers .= "Reply-To: " . $naam_verzender . " <" . $email_verzender . ">\r\n";
-
-      $headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
 
     $content = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -228,7 +227,39 @@ function mailto($to, $subject, $content, $shownote=0) {
 </body>
 </html>';
 
-    mail($email_ontvanger, $subject, $content, $headers);
+    $mail = new PHPMailer;
+
+    $mail->IsSMTP();                                      // Set mailer to use SMTP
+    $mail->Host = 'smtp.mandrillapp.com';  // Specify main and backup server
+    $mail->SMTPAuth = true;                               // Enable SMTP authentication
+    $mail->Username = 'nikke@ironbane.com';                            // SMTP username
+    $mail->Password = $mandrill_api_key;                           // SMTP password
+    //$mail->SMTPSecure = 'ssl';                            // Enable encryption, 'ssl' also accepted
+
+    $mail->From = 'ironbot@ironbane.com';
+    $mail->FromName = 'Ironbane';
+    //$mail->AddAddress('jinfo', 'Josh Adams');  // Add a recipient
+    $mail->AddAddress($to);               // Name is optional
+    //$mail->AddReplyTo('info@example.com', 'Information');
+    // $mail->AddCC('cc@example.com');
+    // $mail->AddBCC('bcc@example.com');
+
+    $mail->WordWrap = 50;                                 // Set word wrap to 50 characters
+    // $mail->AddAttachment('/var/tmp/file.tar.gz');         // Add attachments
+    // $mail->AddAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+    $mail->IsHTML(true);                                  // Set email format to HTML
+
+    $mail->Subject = $subject;
+    $mail->Body    = $content;
+    $mail->AltBody = $content;
+
+    if(!$mail->Send()) {
+       // echo 'Message could not be sent.';
+       echo 'Mailer Error: ' . $mail->ErrorInfo;
+       // exit;
+    }
+
+    // echo 'Message has been sent';
 }
 
 
@@ -238,6 +269,7 @@ function getRank($user) {
     if ($user == 0)
         return 0;
 
+    $user = parseToDB($user);
 
     $sql = "SELECT rep FROM bcs_users WHERE id = '$user'";
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -252,8 +284,10 @@ function getRank($user) {
 function memberLink($user, $special="") {
     global $language;
 
+    $user = parseToDB($user);
+
     if (is_numeric($user)) {
-        $sql = "SELECT name, rep FROM bcs_users WHERE id = '$user'";
+        $sql = "SELECT name FROM bcs_users WHERE id = '$user'";
     } else {
         $sql = "SELECT name, rep FROM bcs_users WHERE name = '$user'";
     }
@@ -264,25 +298,16 @@ function memberLink($user, $special="") {
     if ($user == -1) {
         return "Guest";
     } else {
-
-        $factor = round(intval($row[rep]) / 4);
-
-        $factor = min($factor, 255);
-        $factor = max($factor, 0);
-
-        $color = fromRGB($factor,255-$factor,255);
-
-        $special .= ' style="color:'.$color.'"';
-
-        return '<a href="user.php?n=' . $row[name] . '"' . $special . '>' . $row[name] . '</a>';
+        return $row["name"];
     }
 }
 
 function memberName($user) {
+    $user = parseToDB($user);
     $sql = "SELECT name FROM bcs_users WHERE id = '$user'";
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
-    return $row[name];
+    return $row["name"];
 }
 
 function getRow($query) {
@@ -399,21 +424,21 @@ function post_parse($text, $parse_smilies=1) {
 
     // Automatic links
 
-    $text = eregi_replace("(^|[\n\r\t])((http(s?)://)(www\.)?([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])((http(s?)://)(www\.)?([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])((http(s?)://)(www\.)?([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])((http(s?)://)(www\.)?([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])([a-z_-][a-z0-9\._-]*@[a-z0-9_-]+(\.[a-z0-9_-]+)+)", "<a href=\"mailto:\\2\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])([a-z_-][a-z0-9\._-]*@[a-z0-9_-]+(\.[a-z0-9_-]+)+)", "<a href=\"mailto:\\2\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])(www\.([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"http://\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])(www\.([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"http://\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])(www\.([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"http://\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])(www\.([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"http://\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])(ftp://([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])(ftp://([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])(ftp://([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])(ftp://([a-z0-9_-]+([a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
 
-    $text = eregi_replace("(^|[\n\r\t])(ftp\.([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
+    // $text = eregi_replace("(^|[\n\r\t])(ftp\.([a-z0-9_-]+(\.[a-z0-9_-]+)+)(/[^/ \n\r]*)*)", "<a href=\"\\2\" target=\"_blank\">\\2</a>", $text);
 
 
 
@@ -541,6 +566,7 @@ function getListOfLastDayVisitors() {
 
     global $time;
 
+    $list = "";
 
     $query = "SELECT id from bcs_users WHERE last_session > " . ($time - 86400) . "";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -550,7 +576,7 @@ function getListOfLastDayVisitors() {
         $row = mysql_fetch_array($result);
 
 
-        $list .= memberLink($row[id]);
+        $list .= memberLink($row["id"]);
 
         if ($y < mysql_num_rows($result) - 1)
             $list .= ", ";
@@ -569,10 +595,10 @@ function getArrayOfOnlineMembers($criteria="") {
         $row = mysql_fetch_array($result);
 
         if ($criteria != "") {
-            if (!strpos($row[last_page], $criteria))
+            if (!strpos($row["last_page"], $criteria))
                 continue;
         }
-        array_push($list, $row[id]);
+        array_push($list, $row["id"]);
     }
     return $list;
 }
@@ -610,6 +636,7 @@ function getListOfOnlineMembers($glue, $criteria="") {
 
 
 function getTotalUserPosts($user) {
+    $user = parseToDB($user);
     $query2 = "SELECT count(*) FROM forum_posts WHERE user = '$user'";
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $total = mysql_fetch_array($result2);
@@ -657,7 +684,7 @@ function getNumberOfNewMessages() {
 
     $count = 0;
 
-    $query = 'SELECT * FROM forum_topics WHERE (private_from = ' . $userdata[id] . ' OR private_chatters LIKE \'' . $userdata[name] . '\') AND private = 1';
+    $query = 'SELECT * FROM forum_topics WHERE (private_from = ' . $userdata["id"] . ' OR private_chatters LIKE \'' . $userdata[name] . '\') AND private = 1';
 
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
@@ -667,7 +694,7 @@ function getNumberOfNewMessages() {
 
 
 
-        $query2 = 'SELECT * FROM forum_posts WHERE time > ' . $userdata[previous_session] . ' AND user != ' . $userdata[id] . ' AND topic_id = ' . $row[id] . '';
+        $query2 = 'SELECT * FROM forum_posts WHERE time > ' . $userdata["previous_session"] . ' AND user != ' . $userdata[id] . ' AND topic_id = ' . $row[id] . '';
 
         $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
@@ -855,16 +882,6 @@ function wrapColor($text, $color) {
 
 
 
-function HisOrHer($user) {
-    $sql = "SELECT info_gender FROM bcs_users WHERE id = 'user'";
-    $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-    $row = mysql_fetch_array($result);
-
-    return $row[info_gender] == 2 ? "her" : "his";
-
-}
-
-
 
 function debugCompare($a, $b) {
 
@@ -952,30 +969,11 @@ function getBrowser()
 //        // we have no matching number just continue
 //    }
 
-    // see how many we have
-    $i = count($matches['browser']);
-    if ($i != 1) {
-        //we will have two since we are not using 'other' argument yet
-        //see if version is before or after the name
-        if (strripos($u_agent,"Version") < strripos($u_agent,$ub)){
-            $version= $matches['version'][0];
-        }
-        else {
-            $version= $matches['version'][1];
-        }
-    }
-    else {
-        $version= $matches['version'][0];
-    }
-
-    // check if we have a number
-    if ($version==null || $version=="") {$version="?";}
 
     return array(
         'userAgent' => $u_agent,
         'name_long'      => $bname,
         'name'      => $ub,
-        'version'   => $version,
         'platform'  => $platform,
         'pattern'    => $pattern
     );
@@ -983,7 +981,7 @@ function getBrowser()
 
 function AddTeamActionSelf($action, $link, $previous_data) {
     global $userdata;
-    AddTeamAction($userdata[id], $action, $link, $previous_data);
+    AddTeamAction($userdata["id"], $action, $link, $previous_data);
 }
 
 function AddTeamAction($user, $action, $link, $previous_data) {
@@ -1058,8 +1056,6 @@ function fromRGB($R, $G, $B){
      $B='0'.$B;
 
      return '#' . $R . $G . $B;
-
-
 }
 
 function writeChatMessage($author, $text, $type) {
@@ -1069,5 +1065,20 @@ function writeChatMessage($author, $text, $type) {
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 }
 
+function randomPassword() {
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < 8; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
+
+function passwordHash($password) {
+    global $crypt_salt;
+    return md5($crypt_salt.$password);
+}
 
 ?>

@@ -65,7 +65,7 @@ var zoneTypeConfig = {};
 
 zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   'enableWater': true,
-  'waterLevel': 1.5,
+  'waterLevel': -1.5,
   'waterTexture': 1650,
   'waterTextureGlow': 1651,
   'enableClouds': true,
@@ -89,7 +89,7 @@ zoneTypeConfig[ZoneTypeEnum.DUNGEON] = {
 
 zoneTypeConfig[ZoneTypeEnum.TUTORIAL] = {
   'enableWater': true,
-  'waterLevel': 75,
+  'waterLevel': 0.5,
   'waterTexture': 1650,
   'waterTextureGlow': 1651,
   'enableClouds': false,

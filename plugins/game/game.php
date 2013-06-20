@@ -34,7 +34,7 @@ $c_title = "Ironbane";
 $no_site_css = true;
 $use_jscrollpane = true;
 
-if ($guest) {
+if ( isset($_GET["guest"]) ) {
     $s_admin = false;
     $s_auth = false;
 }
@@ -148,22 +148,23 @@ $internals = array(
 
 $c_head .= '<script src="http://'.$ironbane_hostname.':'.$ironbane_port.'/socket.io/socket.io.js"></script>
 ';
-
+$newsPosts = "";
 // Load news posts for in-game
 $query = "SELECT a.* from (SELECT * FROM forum_posts ORDER BY time ASC) as a, (SELECT * FROM forum_topics where board_id = 7) as b WHERE a.topic_id = b.id GROUP BY topic_id ORDER BY time DESC LIMIT 10";
 $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file ".__FILE__." on line ".__LINE__."<br><br><b>".$query."</b><br><br>".mysql_error());
 for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $row = mysql_fetch_array($result);
 
-    $newsPosts .= '<b><a href="forum.php?action=topic&amp;topic='.$row[topic_id].'">'.$row[title].'</a></b><br>'.(timeAgo($row[time])).' ago<div class="spacersmall"></div>'.post_parse($row[content]).'<hr>';
+    $newsPosts .= '<b><a href="forum.php?action=topic&amp;topic='.$row["topic_id"].'">'.$row["title"].'</a></b><br>'.(timeAgo($row["time"])).' ago<div class="spacersmall"></div>'.post_parse($row["content"]).'<hr>';
 }
 
 $newsPosts = preg_replace("/<img[^>]+\>/i", "", $newsPosts);
 $newsPosts = str_replace("'", "\'", $newsPosts);
 $newsPosts = preg_replace('/\s+/', ' ', trim($newsPosts));
 
+$preCatsTilesLoad = "";
+if ($userdata["editor"]) {
 
-if ($userdata[editor]) {
     // Preload cats
     // 1 = Terrain tile
     // 2 = Gameobjects
@@ -174,7 +175,7 @@ if ($userdata[editor]) {
         $row = mysql_fetch_array($result);
 
 //        if ($row[terrain_only] == 1) {
-            $preCatsTilesLoad .= 'preCatsTiles.push({name: "' . $row[name] . '", range: "' . $row[range] . '", limit_x: ' . $row[limit_x] . '});';
+            $preCatsTilesLoad .= 'preCatsTiles.push({name: "' . $row["name"] . '", range: "' . $row["range"] . '", limit_x: ' . $row["limit_x"] . '});';
 //        } else {
 //            $preCatsObjectsLoad .= 'preCatsObjects.push({name: "' . $row[name] . '", range: "' . $row[range] . '", limit_x: ' . $row[limit_x] . '});';
 //        }
@@ -194,13 +195,14 @@ if ($userdata[editor]) {
 $query = "SELECT * FROM ib_zones";
 $result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
+$preZonesLoad = "";
+
 for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $row = mysql_fetch_array($result);
 
     $preZonesLoad .= 'zones[' . $row["id"] . '] = {
             id: ' . $row["id"] . ',
             name: "' . $row["name"] . '",
-            tiles: "' . $row["tiles"] . '",
             type: "' . $row["type"] . '"
         };
         zoneSelection["' . $row["name"] . '"] = ' . $row["id"] . ';
@@ -209,6 +211,8 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
 
 $query = "SELECT * FROM ib_item_templates";
 $result = mysql_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
+
+$preItemsLoad = "";
 
 for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $row = mysql_fetch_array($result);
@@ -233,13 +237,13 @@ $sth = mysql_query("SELECT id,name,type,health,armor,param,size,special,weaponof
 $rows = array();
 while ($r = mysql_fetch_assoc($sth)) {
 
-    if ( $r[special] != 1 ) {
-        array_push($unitTypeEnum, '"' . $r[name] . '":' . $r[id] . '');
+    if ( $r["special"] != 1 ) {
+        array_push($unitTypeEnum, '"' . $r["name"] . '":' . $r["id"] . '');
     }
 
-    unset($r[special]);
+    unset($r["special"]);
 
-    $rows[$r[id]] = $r;
+    $rows[$r["id"]] = $r;
 
 
 }
@@ -256,19 +260,19 @@ $rows = array();
 while ($r = mysql_fetch_assoc($sth)) {
 
     for($x=1;$x<=10;$x++){
-        if ( $r["t".$x] == 1 ) {
+        if ( isset($r["t".$x]) && $r["t".$x] == 1 ) {
             unset($r["t".$x]);
         }
-        if ( $r["ts".$x] == 1.00 ) {
+        if ( isset($r["ts".$x]) && $r["ts".$x] == 1.00 ) {
             unset($r["ts".$x]);
         }
     }
 
-    $rows[$r[id]] = $r;
+    $rows[$r["id"]] = $r;
 
 
 
-    array_push($modelEnum, '"' . $r[category] . ': ' . $r[name] . '":' . $r[id] . '');
+    array_push($modelEnum, '"' . $r["category"] . ': ' . $r["name"] . '":' . $r["id"] . '');
 }
 $modelEnum = implode(",", $modelEnum);
 $preMeshes = json_encode($rows, JSON_NUMERIC_CHECK );
@@ -279,8 +283,8 @@ $preMeshes = json_encode($rows, JSON_NUMERIC_CHECK );
 
 $browser = getBrowser();
 
-$using_ie = $browser[name] == "MSIE" ? "true" : "false";
-$using_safari = $browser[name] == "Safari" ? "true" : "false";
+$using_ie = $browser["name"] == "MSIE" ? "true" : "false";
+$using_safari = $browser["name"] == "Safari" ? "true" : "false";
 
 $c_head .= '<link rel="stylesheet" href="plugins/game/style.css" type="text/css">
 ';
@@ -307,9 +311,9 @@ $c_footer .= '
 
 	var hquote = "' . $hermesquote . '";
 
-    var isEditor = '.($userdata[editor] ? "true" : "false").';
+    var isEditor = '.($userdata["editor"] ? "true" : "false").';
 
-	var debugging = ' . (($userdata[admin] || $debug) ? "true" : "false") . ';
+	var debugging = ' . (($userdata["admin"] || isset($_GET["debug"])) ? "true" : "false") . ';
     //debugging=false;
 
     var items = {};
@@ -325,12 +329,6 @@ $c_footer .= '
 
 	var preCatsTiles = [];
 	' . ($preCatsTilesLoad) . '
-
-	var preCatsObjects = [];
-	' . ($preCatsObjectsLoad) . '
-
-	var preGameObjects = {};
-	' . ($preGameObjectsLoad) . '
 
 	var zones = {};
     var zoneSelection = {};
@@ -359,8 +357,6 @@ foreach ($internals as $value) {
     $c_footer .= '
 	<script src="plugins/game/js/' . $value . '.js" type="text/javascript"></script>';
 }
-
-
 
 $use_simple_rendering = 1;
 

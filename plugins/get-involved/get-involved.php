@@ -21,7 +21,7 @@ if ( !defined('BCS') ) {
     die("ERROR");
 }
 
-$interest = $_GET['i'];
+$interest = isset($_GET['i']) ? $_GET['i'] : null;
 
 
 switch ($interest) {

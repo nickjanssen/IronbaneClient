@@ -106,8 +106,6 @@ var Skybox = PhysicsObject.extend({
     // Only push materials that are actually inside the materials
     var textures = [];
 
-    var tilesUsed = zones[terrainHandler.zone].tiles.split(",");
-
     // Only push materials that are actually inside the materials
     for (var i=0; i<geometry.jsonMaterials.length; i++) {
 
@@ -144,6 +142,9 @@ var Skybox = PhysicsObject.extend({
     this.terrainOctree.add( this.terrainMesh, true );
 
     if ( this.onReady ) this.onReady();
+
+
+    terrainHandler.RebuildOctree();
 
   },
   Destroy: function() {

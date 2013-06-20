@@ -11,7 +11,7 @@ if (!$s_auth){
 if ( $_GET['action'] === "getlines" ) {
 
 
-    $last = intval($_GET['last']);
+    $last = intval(parseToDB($_GET['last']));
 
     if ( !$last ) $last = 0;
 

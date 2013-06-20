@@ -23,6 +23,8 @@ if ( !defined('BCS') ) {
 }
 
 $show_chat = true;
+$fetchpost_row_content = "";
+$recent_topic_row_content = "";
 
 $query = "SELECT a.* from (SELECT * FROM forum_posts ORDER BY time ASC) as a, (SELECT * FROM forum_topics where board_id = 7) as b WHERE a.topic_id = b.id GROUP BY topic_id ORDER BY time DESC LIMIT 10";
 $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file ".__FILE__." on line ".__LINE__."<br><br><b>".$query."</b><br><br>".mysql_error());
@@ -47,10 +49,10 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
 //
 //		<br>';
     $fetchpost_row_content .= '
-<h2 style="display:inline"><a href="forum.php?action=topic&amp;topic='.$row[topic_id].'">'.$row[title].'</a></h2>
-    <div class="gensmall">by <b>'.  memberLink($row[user]).'</b> on '.createDate($row[time], $userdata[gmt]).'</div>
+<h2 style="display:inline"><a href="forum.php?action=topic&amp;topic='.$row["topic_id"].'">'.$row["title"].'</a></h2>
+    <div class="gensmall">by <b>'.  memberLink($row["user"]).'</b> on '.createDate($row["time"], $userdata["gmt"]).'</div>
         '.$spacer.'
-        '.post_parse($row[content]).'
+        '.post_parse($row["content"]).'
             <hr>
 ';
 }
@@ -64,13 +66,13 @@ for ($x = 0; $x < mysql_num_rows($result); $x++) {
     $query2 = "SELECT id, title FROM forum_posts WHERE topic_id = '$row[topic_id]' ORDER BY time ASC LIMIT 1";
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file ".__FILE__." on line ".__LINE__."<br><br><b>".$query2."</b><br><br>".mysql_error());
     $row2 = mysql_fetch_array($result2);
-    $title = $row2[title];
-    if ( $row2[id]!=$row[id] ) {
+    $title = $row2["title"];
+    if ( $row2["id"]!=$row["id"] ) {
         // We didnt make a new topic
         $title = "Reply to '".$title."'";
     }
 
-	$recent_topic_row_content .= '&raquo; <a href="forum.php?action=topic&amp;topic='.$row[topic_id].'#'.$row[id].'" onMouseOver="document.all.recent_topics.stop()" onMouseOut="document.all.recent_topics.start()">'.$title.'</a><br>by '.  memberLink($row[user], ' onMouseOver="document.all.recent_topics.stop()" onMouseOut="document.all.recent_topics.start()"').' on '.  createDateSelf($row[time]).'<br><br>';
+	$recent_topic_row_content .= '&raquo; <a href="forum.php?action=topic&amp;topic='.$row["topic_id"].'#'.$row["id"].'" onMouseOver="document.all.recent_topics.stop()" onMouseOut="document.all.recent_topics.start()">'.$title.'</a><br>by '.  memberLink($row["user"], ' onMouseOver="document.all.recent_topics.stop()" onMouseOut="document.all.recent_topics.start()"').' on '.  createDateSelf($row["time"]).'<br><br>';
 }
 
 $noTitlePostFix = 1;
