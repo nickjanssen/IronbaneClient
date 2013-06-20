@@ -316,11 +316,6 @@ if ( !SERVER ) {
     return null;
   }
 
-  function ConsoleMessage(msg) {
-    $("#chatContent").append(msg+"<br>");
-    hudHandler.UpdateChatBoxScroll();
-  }
-
   function preload(arrayOfImages) {
     $(arrayOfImages).each(function(){
       $('<img/>')[0].src = this;
@@ -335,18 +330,6 @@ if ( !SERVER ) {
     http.open('HEAD', url, false);
     http.send();
     return http.status!=404;
-  }
-
-  function TeleportElement(id, to) {
-    //Get
-    var p = $("#"+to);
-    var offset = p.offset();
-
-    //set
-    $("#"+id).offset({
-      top: offset.top,
-      left: offset.left
-      });
   }
 
   function GetZoneConfig(string) {
