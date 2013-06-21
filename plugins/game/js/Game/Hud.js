@@ -55,6 +55,7 @@ var BigMessage = Class.extend({
 });
 
 var HUDHandler = Class.extend({
+    chatBuffer: [],
   Init: function() {
 
     this.currentBookPage = 0;
@@ -62,8 +63,6 @@ var HUDHandler = Class.extend({
     this.bigMessages = [];
 
     this.alertBoxActive = false;
-
-    this.chatBuffer = "";
 
     this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
 
@@ -137,11 +136,12 @@ var HUDHandler = Class.extend({
     this.oldButtonClasses = {};
 
     this.devNewsScrollPane = $('#devNews').jScrollPane().data('jsp');
+    /*
     this.chatContentScroller = $('#chatContent').jScrollPane({
       // showArrows: true,
       // arrowScrollOnHover: true
       animateScroll: true
-    }).data('jsp');
+    }).data('jsp');*/
 
 
 
@@ -799,6 +799,16 @@ var HUDHandler = Class.extend({
                   iteminfo += infoRow('Restores', this.GetStatContent(item.attr1, "misc/heart", 0, false, true));
               }
               break;
+          case 'cash': // todo: show this for all? merchant skill?
+              var valueHTML = [
+                  '<span class="amount" style="color:gold;padding-left: 16px;',
+                  'background-image:url(/plugins/game/images/misc/coin_full.png);',
+                  'background-repeat:no-repeat;">',
+                      'x ', template.basevalue,
+                  '</span>'
+              ].join('');
+              itemInfo += infoRow('Value', valueHTML);
+              break;
       }
 
       // if selling vendor sets price on server...
@@ -1151,9 +1161,9 @@ var HUDHandler = Class.extend({
     }
   },
   UpdateChatBoxScroll: function() {
-    $('#chatContent').prop({
+    /*$('#chatContent').prop({
       scrollTop: $('#chatContent').prop('scrollHeight')
-    });
+    });*/
   },
   //    MakeCharSelectionScreen: function() {
   //        var text = '';
@@ -2036,21 +2046,7 @@ var HUDHandler = Class.extend({
     $("#book").hide();
   },
   AddChatMessage: function(msg) {
-    //$('#chatContent').append(msg+'<br>');
-    this.chatBuffer += msg+'<br>';
-
-
-    this.chatContentScroller.getContentPane().html(this.chatBuffer);
-    this.chatContentScroller.reinitialise();
-    this.chatContentScroller.scrollToBottom();
-
-    // $('#chatBox, #chatContent').click(function(e) {
-    //   e.stopPropagation();
-    //   e.preventDefault();
-    //   return false;
-    // });
-
-    // hudHandler.UpdateChatBoxScroll();
+    $('#chatContent').trigger('onMessage', msg);
   }
 });
 

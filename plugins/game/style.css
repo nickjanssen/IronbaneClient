@@ -325,54 +325,40 @@ a:hover {
 }
 
 #chatBox {
-
-
-
   position:absolute;
-
-
   display:none;
-
   width:400px;
   height:200px;
-
   pointer-events:none;
-
   font-size:12px;
-
 }
 
 #chatContent {
   pointer-events:none;
-
-
   width:100%;
   height:160px;
-
   color:white;
   text-shadow:1px 1px black;
   font-size: 15px;
-
   text-align:right;
-
   overflow:auto;
   padding-bottom:20px;
 }
 
-#chatContent h1 {
-  margin:0;
-}
-
-#chatContent h2 {
-  margin:0;
-}
-
-#chatContent h3 {
-  margin:0;
-}
-
 #chatContent .jspVerticalBar {
   pointer-events:auto;
+}
+
+#chatContent .messages {
+    list-style-type: none;
+}
+
+#chatContent .messages .name.gm {
+    color: #e21bee;
+}
+
+#chatContent .messages .name.user {
+    color: #1beee7;
 }
 
 #chatInputBox {
