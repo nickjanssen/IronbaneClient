@@ -58,7 +58,7 @@ var UnitTypeEnum = {
 var ZoneTypeEnum = {
   WORLD: 1,
   DUNGEON : 2,
-  TUTORIAL : 3,
+  TUTORIAL : 3
 };
 
 var zoneTypeConfig = {};
@@ -70,7 +70,7 @@ zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   'waterTextureGlow': 1651,
   'enableClouds': true,
   'cloudDensity':0.80,
-  'cloudLevel': 15,
+  'cloudLevel': 45,
   'skyboxShader': "world",
   "music": ["ib2"]
 };

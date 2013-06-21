@@ -77,7 +77,7 @@ var SoundHandler = Class.extend({
       // "arrowHit1": "battle/arrowHit01.wav",
       // "arrowHit2": "battle/arrowHit02.wav",
       // "arrowHit3": "battle/arrowHit03.wav",
-      
+
       "swing1": "battle/swing1.wav",
       "swing2": "battle/swing2.wav",
       "swing3": "battle/swing3.wav",
@@ -87,53 +87,53 @@ var SoundHandler = Class.extend({
       "die1": "battle/die1.wav",
       "die2": "battle/die2.wav",
       "die3": "battle/die3.wav",
-      
+
       "fireStaff": "battle/fireStaff.wav",
       "fireArrow": "battle/fireArrow.wav",
-      
+
       "jump1": "player/jump/Player_Jump_01.wav",
       "getItem": "player/GetItem/PLAYER_GET_ITEM_01.wav",
       "regenHealth": "player/RegenHealth/PLAYER_REGEN_HEALTH_03.wav",
       "getCoin": "player/GetCoins/PLAYER_GET_COINS_01.wav",
       "takeDamage": "player/TakeDamage/PLAYER_TAKE_DAMAGE_03.wav",
-      
+
       "greenSlime1": "NPCs/GreenSlime/01.wav",
       "greenSlime2": "NPCs/GreenSlime/02.wav",
       "greenSlime3": "NPCs/GreenSlime/03.wav",
-      
-      
+
+
       "fireLongbow": "Weapons/WEAPON_LONG_BOW_01.wav",
       "fireAcidstaff": "Weapons/WEAPON_ACID_STAFF_02.wav",
-      
+
       "atmosDay": "Atmos/ATMOS_WORLD_DAY.wav",
       "atmosNight": "Atmos/ATMOS_WORLD_NIGHT.wav",
-      
-      
-      "dirtftstp1": "player/Footsteps/Dirt/01.wav",
-      "dirtftstp2": "player/Footsteps/Dirt/02.wav",
-      "dirtftstp3": "player/Footsteps/Dirt/03.wav",
-      "dirtftstp4": "player/Footsteps/Dirt/04.wav",
-      "dirtftstp5": "player/Footsteps/Dirt/05.wav",
-      "dirtftstp6": "player/Footsteps/Dirt/06.wav",
-      "grassftstp1": "player/Footsteps/Grass/01.wav",
-      "grassftstp2": "player/Footsteps/Grass/02.wav",
-      "grassftstp3": "player/Footsteps/Grass/03.wav",
-      "grassftstp4": "player/Footsteps/Grass/04.wav",
-      "grassftstp5": "player/Footsteps/Grass/05.wav",
-      "grassftstp6": "player/Footsteps/Grass/06.wav",
-      "woodftstp1": "player/Footsteps/Wood/01.wav",
-      "woodftstp2": "player/Footsteps/Wood/02.wav",
-      "woodftstp3": "player/Footsteps/Wood/03.wav",
-      "woodftstp4": "player/Footsteps/Wood/04.wav",
-      "woodftstp5": "player/Footsteps/Wood/05.wav",
-      "woodftstp6": "player/Footsteps/Wood/06.wav",
-      "stoneftstp1": "player/Footsteps/Stone/01.wav",
-      "stoneftstp2": "player/Footsteps/Stone/02.wav",
-      "stoneftstp3": "player/Footsteps/Stone/03.wav",
-      "stoneftstp4": "player/Footsteps/Stone/04.wav",
-      "stoneftstp5": "player/Footsteps/Stone/05.wav",
-      "stoneftstp6": "player/Footsteps/Stone/06.wav",
-      
+
+
+      "dirtFootStep1": "player/Footsteps/Dirt/01.wav",
+      "dirtFootStep2": "player/Footsteps/Dirt/02.wav",
+      "dirtFootStep3": "player/Footsteps/Dirt/03.wav",
+      "dirtFootStep4": "player/Footsteps/Dirt/04.wav",
+      "dirtFootStep5": "player/Footsteps/Dirt/05.wav",
+      "dirtFootStep6": "player/Footsteps/Dirt/06.wav",
+      "grassFootStep1": "player/Footsteps/Grass/01.wav",
+      "grassFootStep2": "player/Footsteps/Grass/02.wav",
+      "grassFootStep3": "player/Footsteps/Grass/03.wav",
+      "grassFootStep4": "player/Footsteps/Grass/04.wav",
+      "grassFootStep5": "player/Footsteps/Grass/05.wav",
+      "grassFootStep6": "player/Footsteps/Grass/06.wav",
+      "woodFootStep1": "player/Footsteps/Wood/01.wav",
+      "woodFootStep2": "player/Footsteps/Wood/02.wav",
+      "woodFootStep3": "player/Footsteps/Wood/03.wav",
+      "woodFootStep4": "player/Footsteps/Wood/04.wav",
+      "woodFootStep5": "player/Footsteps/Wood/05.wav",
+      "woodFootStep6": "player/Footsteps/Wood/06.wav",
+      "stoneFootStep1": "player/Footsteps/Stone/01.wav",
+      "stoneFootStep2": "player/Footsteps/Stone/02.wav",
+      "stoneFootStep3": "player/Footsteps/Stone/03.wav",
+      "stoneFootStep4": "player/Footsteps/Stone/04.wav",
+      "stoneFootStep5": "player/Footsteps/Stone/05.wav",
+      "stoneFootStep6": "player/Footsteps/Stone/06.wav",
+
 
       "bubble1": "inventory/bubble1.wav",
       "bubble2": "inventory/bubble2.wav",

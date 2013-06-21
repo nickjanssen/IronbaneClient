@@ -19,7 +19,7 @@
 // Must be dividable by 2
 var cellLoadRange = cellSize+16;
 
-var previewLocation = new THREE.Vector3(0, 10, 0);
+var previewLocation = new THREE.Vector3(15, 13, 54);
 
 var previewDistance = 15;
 var previewHeight = 5;
@@ -421,7 +421,7 @@ var TerrainHandler = Class.extend({
   },
   IsLoadingCells: function() {
     return _.every(this.cells, function(cell) {
-      return cell.status === cellStatusEnum.LOADED;
+      return cell.status === cellStatusEnum.LOADING;
     });
   }
 });
