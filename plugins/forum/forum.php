@@ -17,24 +17,48 @@
 */
 
 
-
 if (!defined('BCS')) {
     die("ERROR");
 }
 
-bcs_die("For security reasons, the forum is currently unavailable.");
+$nav_extra = "";
 
-if ( $userdata[pending_editor] ) $s_editor = false;
+if ( $userdata["pending_editor"] ) $s_editor = false;
 
-$o_head .= "<script type=\"text/javascript\" src=\"bbeditor/ed.js\"></script>";
-//if ( $s_editor ) {
-//    $special_message = "There is now a private forum for the team! Check it our under 'Ironbane Team' category!";
-//}
+if ( isset($_GET['action']) ) {
+    $action = parseToDB($_GET['action']);
+}
+else {
+    $action = null;
+}
 
-//$validation_ok = 1;
-$action = parseToDB($_GET['action']);
-$board = parseToDB($_GET['board']);
-$topic = parseToDB($_GET['topic']);
+if ( isset($_GET['board']) ) {
+    $board = parseToDB($_GET['board']);
+
+    // View all topics from a board_id
+    if (!is_numeric($board) && $board !== "pt" && $board !== "rt" && $board !== "ut" && $board !== "mt" && $board !== "up") {
+        die();
+    }
+}
+
+if ( isset($_GET['topic']) ) {
+    $topic = (int)parseToDB($_GET['topic']);
+}
+
+if ( isset($_GET['post']) ) {
+    $post = (int)parseToDB($_GET['post']);
+}
+
+if ( isset($_GET['quote_p'])) {
+    $quote_p = (int)parseToDB($_GET['quote_p']);
+}
+
+if ( isset($_POST['submit'])) {
+    $submit = true;
+}
+else {
+    $submit = false;
+}
 
 $changemain = 0;
 $nposts = 0;
@@ -62,15 +86,18 @@ $smilies_tot = count($smilies_explo1);
 
 
 
-if ($action == "deletetopic") {
+if ($action === "deletetopic") {
     if (!$s_editor) {
         die();
     }
+
+    $confirm_del = isset($_POST["confirm_del"]) ? true : false;
+
     if ($confirm_del) {
         $query = "SELECT board_id FROM forum_topics WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row = mysql_fetch_array($result);
-        $board = $row[board_id];
+        $board = $row["board_id"];
 
         $query = "DELETE FROM forum_topics WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -79,17 +106,18 @@ if ($action == "deletetopic") {
 
         bcs_die("Topic was succesfully deleted.", "index.php?plugin=forum&amp;action=board&amp;board=" . $board);
     } else {
-        bcs_die("Are you sure you wish to delete this topic ?<br /><br /><form action=\"index.php?plugin=forum&amp;action=deletetopic&amp;topic=" . $topic . "\" method=\"POST\"><input type=\"submit\" name=\"confirm_del\" value=\"Delete\" /></form>", "none");
+        bcs_die("Are you sure you wish to delete this topic ?<br /><br /><form action=\"index.php?plugin=forum&amp;action=deletetopic&amp;topic=" . $topic . "\" method=\"POST\"><input type=\"submit\" name=\"confirm_del\" value=\"Delete\" class=\"mainoption\"/></form>", "none");
     }
-}elseif ($action == "stickytopic") {
+}elseif ($action === "stickytopic") {
     if (!$s_editor) {
         die();
     }
+    $confirm_sticky = isset($_POST["confirm_sticky"]) ? true : false;
     if ($confirm_sticky) {
         $query = "SELECT board_id FROM forum_topics WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row = mysql_fetch_array($result);
-        $board = $row[board_id];
+        $board = $row["board_id"];
 
         $query = "UPDATE forum_topics SET sticky = 1 WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -98,15 +126,16 @@ if ($action == "deletetopic") {
     } else {
         bcs_die("Are you sure you wish to sticky this topic ?<br /><br /><form action=\"index.php?plugin=forum&amp;action=stickytopic&amp;topic=" . $topic . "\" method=\"POST\"><input class=\"mainoption\" type=\"submit\" name=\"confirm_sticky\" value=\"Make sticky\" /></form>", "none");
     }
-}elseif ($action == "unstickytopic") {
+}elseif ($action === "unstickytopic") {
     if (!$s_editor) {
         die();
     }
+    $confirm_unsticky = isset($_POST["confirm_unsticky"]) ? true : false;
     if ($confirm_unsticky) {
         $query = "SELECT board_id FROM forum_topics WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row = mysql_fetch_array($result);
-        $board = $row[board_id];
+        $board = $row["board_id"];
 
         $query = "UPDATE forum_topics SET sticky = 0 WHERE id = '$topic'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -115,91 +144,56 @@ if ($action == "deletetopic") {
     } else {
         bcs_die("Are you sure you wish to unsticky this topic ?<br /><br /><form action=\"index.php?plugin=forum&amp;action=unstickytopic&amp;topic=" . $topic . "\" method=\"POST\"><input class=\"mainoption\" type=\"submit\" name=\"confirm_unsticky\" value=\"Make unsticky\" /></form>", "none");
     }
-} elseif ($action == "ratepost") {
+} elseif ($action === "reply" || $action === "editpost") {
 
 
-    //bcs_die('Sorry, only registered members may rate posts on the forums. Please register.');
+
+
+
     requireLogin("forum");
 
-
-    // Rate a post, with smilies like dumb and smart 27/12/06
-    // Stolen from gmod forums for revenge !
-
-    if (!isset($post) || !isset($rating)) {
-        die();
-    }
-
-    // Check if the rating exists
-    $check_ok = 0;
-    for ($x = 0; $x < count($listc); $x++) {
-        if ($rating == $listc[$x]) {
-            $check_ok = 1;
-        }
-    }
-    if (!$check_ok) {
-        die();
-    }
-
-    $query = "SELECT user FROM forum_posts WHERE id = '$post'";
-    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-    $row = mysql_fetch_array($result);
-
-    if ($row[user] == $userdata[id]) {
-        bcs_die("You cannot rate your own posts.", "javascript:history.back()");
-    }
-
-    $query = "SELECT * FROM forum_ratings WHERE to_post = '$post' AND `from` = '$userdata[id]'";
-    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-    if (mysql_num_rows($result) > 0) {
-        bcs_die("You have already rated this post.", "javascript:history.back()");
-    }
-
-
-
-    $query = "INSERT INTO forum_ratings (`from`, to_post, rating) VALUES('$userdata[id]','$post','$rating')";
-    $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-    bcs_die("Your rating was sent succesfully.", "javascript:history.back()");
-} elseif ($action == "reply" || $action == "editpost") {
-
-
-    //bcs_die('Sorry, only registered members may post on the forums. Please register.');
-    requireLogin("forum");
     // Reply a post to a topic
     $is_first_post = false;
-    if ($action == "editpost") {
-        // Get more info on the post
-        if (!is_numeric($post))
-            die("no post given!");
+    $postdata = null;
+    if ($action === "editpost") {
 
-        $query = 'SELECT * FROM forum_posts WHERE id = ' . $post;
+        // Get more info on the post
+        if ( !isset($post) ) die("No post given!");
+
+        $query = "SELECT * FROM forum_posts WHERE id = '$post'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $postdata = mysql_fetch_array($result);
-        $topic = $postdata[topic_id];
+        $topic = $postdata["topic_id"];
 
-        if ($postdata['private'] == 1)
+
+        $query2 = "SELECT private FROM forum_topics WHERE id = '$topic'";
+        $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
+        $row2 = mysql_fetch_array($result2);
+
+        if ((int)$row2['private'] === 1)
             $board = "pt";
 
-        if ($postdata[user] != $userdata[id] && !$s_editor)
+        if ($postdata["user"] !== $userdata["id"] && !$s_editor)
             die('not authorised');
 
-        $query = 'SELECT id FROM forum_posts WHERE topic_id = ' . $topic . ' ORDER BY time ASC LIMIT 1';
+        $query = "SELECT id FROM forum_posts WHERE topic_id = '$topic' ORDER BY time ASC LIMIT 1";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row = mysql_fetch_array($result);
 
-        if ($row[id] == $postdata[id]) {
+        if ($row["id"] === $postdata["id"]) {
             $is_first_post = true;
         }
     }
 
-    if ($board != "pt") {
+    if ( isset($board) && $board !== "pt") {
         $query3 = "SELECT * FROM forum_boards WHERE id = '$board'";
         $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row3 = mysql_fetch_array($result3);
 
-        if ( $row3[modonly] == 1 && $s_editor == 0 ) die("no access");
+        if ( $row3["modonly"] === 1 && $s_editor === 0 ) die("no access");
 
 
-        $boardname = $row3[name];
+        $boardname = $row3["name"];
     } else {
         $boardname = "Private Topics";
     }
@@ -208,7 +202,7 @@ if ($action == "deletetopic") {
     if (empty($topic)) {
         // Yes
         $newtopic = 1;
-        if (!is_numeric($board) && $board != "pt") {
+        if (!is_numeric($board) && $board !== "pt") {
             die('error 1');
         }
         $is_first_post = true;
@@ -227,45 +221,45 @@ if ($action == "deletetopic") {
         $query4 = "SELECT title FROM forum_posts WHERE topic_id = '$topic' ORDER BY time ASC LIMIT 1";
         $result4 = bcs_query($query4) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row4 = mysql_fetch_array($result4);
-        $posttitle = $row4[title];
+        $posttitle = $row4["title"];
 
 
         $formtarget = "index.php?plugin=forum&amp;action=" . $action . "&topic=" . $topic;
 
-        if ($action == "editpost") {
+        if ($action === "editpost") {
             $formtarget .= "&post=" . $post;
         }
 
         $query2 = "SELECT * FROM forum_topics WHERE id = '$topic'";
         $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row2 = mysql_fetch_array($result2);
-        $board = $row2[board_id];
-        $participants = $row2[private_chatters];
+        $board = $row2["board_id"];
+        $participants = $row2["private_chatters"];
         $query3 = "SELECT name FROM forum_boards WHERE id = '$board'";
         $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row3 = mysql_fetch_array($result3);
-        $boardname = $row3[name];
+        $boardname = $row3["name"];
 
-        if ($row2['private'] == 1) {
+        if ((int)$row2['private'] === 1) {
 
             $board = "pt";
             $boardname = "Private Topics";
 
             // Check if we are allowed to view this topic
             $check_ok = 0;
-            $par_list = explode(',', $row2[private_chatters]);
+            $par_list = explode(',', $row2["private_chatters"]);
             for ($x = 0; $x < count($par_list); $x++) {
-                if ($userdata[name] == $par_list[$x]) {
+                if ($userdata["name"] === $par_list[$x]) {
                     $check_ok = 1;
                 }
             }
             // Check if we are the starter
-            if ($row2[private_from] == $userdata[id]) {
+            if ($row2["private_from"] === $userdata["id"]) {
                 $check_ok = 1;
             }
 
             if (!$check_ok) {
-                bcs_die('Sorry, you are not allowed to reply in this private topic.', 'javascript:history.back()');
+                bcs_die('Sorry, you are not allowed to reply in this private topic.', 'back');
             }
         }
 
@@ -275,13 +269,8 @@ if ($action == "deletetopic") {
 	  <td>
 
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" style="border-collapse:collapse;">
-
-
-
-
-
-
 ';
+
         $query = "SELECT * FROM forum_posts WHERE topic_id = '$topic' ORDER BY time DESC LIMIT 50";
         $tr_result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         for ($z = 0; $z < mysql_num_rows($tr_result); $z++) {
@@ -290,8 +279,8 @@ if ($action == "deletetopic") {
             $topicreview .=     '
 
 			<tr>
-				<td class="row'.($z%2?1:2).'" width="200" valign="top"><span class="genmed">'.(timeAgo($tr_row[time])).' ago by <b>'.memberLink($tr_row[user]).'</b></span></td>
-				<td class="row'.($z%2?1:2).'"><span class="genmed">'.post_parse($tr_row[content]).'</span></td>
+				<td class="row'.($z%2?1:2).'" width="200" valign="top"><span class="genmed">'.(timeAgo($tr_row["time"])).' ago by <b>'.memberLink($tr_row["user"]).'</b></span></td>
+				<td class="row'.($z%2?1:2).'"><span class="genmed">'.post_parse($tr_row["content"]).'</span></td>
 			</tr>
     ';
         }
@@ -306,66 +295,59 @@ if ($action == "deletetopic") {
 
 
 
-        if ($row2['private'] == 1) {
+        if ((int)$row2['private'] === 1) {
             //$indexlink = createLink("ironbane Forum", "index.php?plugin=forum") . " " . $ts . " " . createLink("Private Messages", "index.php?plugin=forum&amp;action=board&amp;board=pt") . " " . $ts . " " . createLink($row4[title], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $topic) . " " . $ts . " " . $posttext;
         } else {
             //$indexlink = createLink("ironbane Forum", "index.php?plugin=forum") . " " . $ts . " " . createLink($row3[name], "index.php?plugin=forum&amp;action=board&amp;board=" . $row2[board_id]) . " " . $ts . " " . createLink($row4[title], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $topic) . " " . $ts . " " . $posttext;
         }
     }
 
-
-
-    if ($s_editor != 1 && $board == 7 && $newtopic == 1) {
+    if ($s_editor !== 1 && $board === 7 && $newtopic === 1) {
         die('error 4');
     }
 
-
-
-
-
     if ($submit) {
 
-        $safe_content = parseToDB($_POST['message']);
-        $safe_title = parseToDB($_POST['subject']);
-        $safe_par = parseToDB($_POST['participants']);
-        $safe_par = str_replace(" ", " ", $safe_par);
+        $safe_content = isset($_POST['message']) ? parseToDB($_POST['message']) : null;
+        $safe_title = isset($_POST['subject']) ? parseToDB($_POST['subject']) : null;
+        $safe_par = isset($_POST['participants']) ? parseToDB($_POST['participants']) : null;
 
-
-
-        if ($board == "pt" && !$safe_par && $is_first_post) {
-            bcs_die('Please enter participant names.', 'javascript:history.back()');
+        if ($board === "pt" && !$safe_par && $is_first_post) {
+            bcs_die('Please enter participant names.', 'back');
         }
-        if ($board == "pt") {
+
+        if ($board === "pt") {
             // Check names
             $list = explode(',', $safe_par);
             if (count($list) > 10) {
-                bcs_die('You can only invite max 10 participants.', 'javascript:history.back()');
+                bcs_die('You can only invite max 10 participants.', 'back');
             }
             for ($x = 0; $x < count($list); $x++) {
                 $query3 = "SELECT id FROM bcs_users WHERE name = '$list[$x]'";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-                if (mysql_num_rows($result3) == 0) {
-                    bcs_die("The participant you entered named '" . $list[$x] . "' does not exist.", 'javascript:history.back()');
+                if (mysql_num_rows($result3) === 0) {
+                    bcs_die("The participant you entered named '" . $list[$x] . "' does not exist.", 'back');
                 }
             }
         }
-        //if (!$s_admin) {
-            if (!$safe_title && $newtopic) {
-                bcs_die('Please make sure you enter a title.', 'javascript:history.back()');
-            }
-            if (!$safe_content) {
-                bcs_die('Please make sure you enter a message.', 'javascript:history.back()');
-            }
-        //}
 
-        if ($newtopic == 1) {
+        if (!$safe_title && $newtopic) {
+            bcs_die('Please make sure you enter a title.', 'back');
+        }
+        if (!$safe_content) {
+            bcs_die('Please make sure you enter a message.', 'back');
+        }
 
+
+        if ($newtopic === 1) {
 
             // First insert a topic
-            if ($board == "pt") {
+            if ($board === "pt") {
                 $query = "INSERT INTO forum_topics (board_id, private, private_chatters, private_from) VALUES('$board', 1, '$safe_par', '$userdata[id]')";
                 $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             } else {
+                if ( !isset($board) || !is_numeric($board) ) die("bad board id");
+
                 $query = "INSERT INTO forum_topics (board_id) VALUES('$board')";
                 $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             }
@@ -373,44 +355,33 @@ if ($action == "deletetopic") {
             $query3 = "SELECT id FROM forum_topics ORDER BY id DESC LIMIT 1";
             $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $row3 = mysql_fetch_array($result3);
-            $topic = $row3[id];
+            $topic = $row3["id"];
 
-
-            // Send a newsletter
-//            if ($board == 7 && $s_admin) {
-//
-//
-//
-//                $safe_content_mail = stripslashes(post_parse($_POST["message"]));
-//
-//                //mailto("info@nickjanssen.com", $safe_title, $safe_content_mail);
-//                //die($safe_content_mail);
-//                mailToAll($safe_title, $safe_content_mail, true);
-//
-//
-//
-//            }
         } else {
             // Get board id
             $query3 = "SELECT board_id FROM forum_topics WHERE id = '$topic'";
             $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $row3 = mysql_fetch_array($result3);
             if (empty($board))
-                $board = $row3[board_id];
+                $board = $row3["board_id"];
         }
 
 
 
 
-        if ($action == "editpost") {
+        if ($action === "editpost") {
+
+            // Get more info on the post
+            if ( !isset($post) ) die("No post given!");
+
             $query = "UPDATE forum_posts SET title = '$safe_title', content = '$safe_content', lastedit_time = '$time', lastedit_count = lastedit_count + 1, lastedit_author = '$userdata[id]' WHERE id = '$post'";
             $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
-
-            if ($board == "pt" && $newtopic == 1) {
+            if ($board === "pt" && $newtopic === 1) {
                 $query = "UPDATE forum_topics SET private_chatters = '$safe_par' WHERE id = '$topic'";
                 $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             }
+
         } else {
             $query = "INSERT INTO forum_posts (title, content, user, time, topic_id) VALUES('$safe_title', '$safe_content', '$userdata[id]', '$time', '$topic')";
             $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -419,59 +390,51 @@ if ($action == "deletetopic") {
 
 
         // Don't update order for news comments
-        if ($newtopic == 1 || $board != 7) {
-            $query = "UPDATE forum_topics SET time = '" . time() . "' WHERE id = '$topic'";
+        if ($newtopic === 1 || $board !== 7) {
+            $query = "UPDATE forum_topics SET time = '$time' WHERE id = '$topic'";
             $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         }
 
-        $reward = 1;
-
-        if ( $newtopic == 1 && $board == 5 ) $reward = 5;
-
-        $query = "UPDATE bcs_users SET forum_posts = forum_posts + 1, rep = rep + $reward WHERE id = '$userdata[id]'";
-        $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-        if ($board == "pt") {
+        if ($board === "pt") {
             // Notify other person
             for ($x = 0; $x < count($list); $x++) {
-                $query3 = "SELECT id, email FROM bcs_users WHERE name = '$list[$x]'";
+                $query3 = "SELECT id, name, email, receive_email FROM bcs_users WHERE name = '$list[$x]'";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
                 $row3 = mysql_fetch_array($result3);
 
-                if ($row3[receive_email]) {
+                if ($row3["receive_email"]) {
 
-                    mailto($row3[email], $userdata[name] . " has sent you a message", "
-					Hiya " . $row3[name] . "!<br><br>
+                    mailto($row3["email"], $userdata["name"] . " has sent you a message", "
+					Hey " . $row3["name"] . "!<br><br>
 
-					" . $userdata[name] . " has just sent you a message on Ironbane!<br>
-					Please login and visit your Private Topics page to view the message.<br><br>
+					" . $userdata["name"] . " has just sent you a message on Ironbane!<br>
+					Please login and check your Private Topics to view the message.<br><br>
 
 					You may also click on the following link to view your message:<br>
 					http://www.ironbane.com/forum.php?action=topic&topic=" . $topic . "<br><br>
 
 					See you soon!<br>
-					GameBot");
+					IronBot");
                 }
             }
         }
 
-        bcs_die("Your post was " . ($action == "editpost" ? "edited" : "made") . " succesfully.<br><br>You've earned $reward reputation!", "forum.php?action=topic&topic=" . $topic);
+        bcs_die("Your post was " . ($action === "editpost" ? "edited" : "made") . " succesfully.", "forum.php?action=topic&topic=" . $topic);
     } else {
+        $quote_c = "";
         if (isset($quote_p)) {
-            if (!is_numeric($quote_p)) {
-                die();
-            }
             $query = "SELECT user, content FROM forum_posts WHERE id = '$quote_p'";
             $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $row = mysql_fetch_array($result);
+
             $query2 = "SELECT name FROM bcs_users WHERE id = '$row[user]'";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $row2 = mysql_fetch_array($result2);
-            $quote_c = "[quote=" . $row2[name] . "]" . $row[content] . "[/quote]\n\n";
+            $quote_c = "[quote=" . $row2["name"] . "]" . $row["content"] . "[/quote]\n\n";
         }
 
-
+        $linktotopic = "";
         if (!$newtopic) {
             $linktotopic = '&nbsp;&raquo;&nbsp;<a href="forum.php?action=topic&topic=' . $topic . '" class="nav">' . $posttitle . '</a>';
         }
@@ -486,24 +449,28 @@ if ($action == "deletetopic") {
 
         $add = array();
 
+        $smilies_col_content = "";
+
         for ($x = 0; $x < $smilies_tot; $x++) {
 
             if ( in_array($smilies_explo2[$x], $add) ) continue;
 
             $add[] = $smilies_explo2[$x];
 
-            if ($b == 0) {
+            if ($b === 0) {
                 $smilies_col_content .= '';
             }
 
             $smilies_col_content .= '<a href="javascript:emoticon(\'' . $smilies_explo1[$x] . '\')"><img src="plugins/forum/smilies/' . $smilies_explo2[$x] . '" border="0" alt="' . $smilies_explo1[$x] . '" title="' . $smilies_explo1[$x] . '" /></a>';
 
-            if ($b == $smilie_columns - 1) {
+            if ($b === $smilie_columns - 1) {
                 $smilies_col_content .= '';
                 $b = -1;
             }
             $b++;
         }
+
+        $startp = isset($_GET["startp"]) ? $_GET["startp"] : "";
 
 
         $c_head .= '
@@ -528,14 +495,14 @@ var theSelection = false;
 var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion); // Get browser version
 
-var is_ie = ((clientPC.indexOf("msie") != -1) && (clientPC.indexOf("opera") == -1));
-var is_nav = ((clientPC.indexOf(\'mozilla\')!=-1) && (clientPC.indexOf(\'spoofer\')==-1)
-                && (clientPC.indexOf(\'compatible\') == -1) && (clientPC.indexOf(\'opera\')==-1)
-                && (clientPC.indexOf(\'webtv\')==-1) && (clientPC.indexOf(\'hotjava\')==-1));
+var is_ie = ((clientPC.indexOf("msie") !== -1) && (clientPC.indexOf("opera") === -1));
+var is_nav = ((clientPC.indexOf(\'mozilla\')!==-1) && (clientPC.indexOf(\'spoofer\')===-1)
+                && (clientPC.indexOf(\'compatible\') === -1) && (clientPC.indexOf(\'opera\')===-1)
+                && (clientPC.indexOf(\'webtv\')===-1) && (clientPC.indexOf(\'hotjava\')===-1));
 var is_moz = 0;
 
-var is_win = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
-var is_mac = (clientPC.indexOf("mac")!=-1);
+var is_win = ((clientPC.indexOf("win")!==-1) || (clientPC.indexOf("16bit") !== -1));
+var is_mac = (clientPC.indexOf("mac")!==-1);
 
 // Helpline messages
 b_help = "Bold text: [b]text[/b]  (alt+b)";
@@ -565,7 +532,7 @@ function helpline(help) {
 // Replacement for arrayname.length property
 function getarraysize(thearray) {
 	for (i = 0; i < thearray.length; i++) {
-		if ((thearray[i] == "undefined") || (thearray[i] == "") || (thearray[i] == null))
+		if ((thearray[i] === "undefined") || (thearray[i] === "") || (thearray[i] === null))
 			return i;
 		}
 	return thearray.length;
@@ -611,7 +578,7 @@ function emoticon(text) {
 	text = \' \' + text + \' \';
 	if (txtarea.createTextRange && txtarea.caretPos) {
 		var caretPos = txtarea.caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == \' \' ? text + \' \' : text;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) === \' \' ? text + \' \' : text;
 		txtarea.focus();
 	} else {
 		txtarea.value  += text;
@@ -654,7 +621,7 @@ function bbstyle(bbnumber) {
 	theSelection = false;
 	bblast = 0;
 
-	if (bbnumber == -1) { // Close all open tags & default button names
+	if (bbnumber === -1) { // Close all open tags & default button names
 		while (bbcode[0]) {
 			butnumber = arraypop(bbcode) - 1;
 			txtarea.value += bbtags[butnumber + 1];
@@ -685,7 +652,7 @@ function bbstyle(bbnumber) {
 
 	// Find last occurance of an open tag the same as the one just clicked
 	for (i = 0; i < bbcode.length; i++) {
-		if (bbcode[i] == bbnumber+1) {
+		if (bbcode[i] === bbnumber+1) {
 			bblast = i;
 			donotinsert = true;
 		}
@@ -703,7 +670,7 @@ function bbstyle(bbnumber) {
 			return;
 	} else { // Open tags
 
-		if (imageTag && (bbnumber != 14)) {		// Close image tag before adding another
+		if (imageTag && (bbnumber !== 14)) {		// Close image tag before adding another
 			txtarea.value += bbtags[15];
 			lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
 			document.post.addbbcode14.value = "Img";	// Return button back to normal state
@@ -712,7 +679,7 @@ function bbstyle(bbnumber) {
 
 		// Open tag
 		txtarea.value += bbtags[bbnumber];
-		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
+		if ((bbnumber === 14) && (imageTag === false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
 		arraypush(bbcode,bbnumber+1);
 		eval(\'document.post.addbbcode\'+bbnumber+\'.value += "*"\');
 		txtarea.focus();
@@ -727,7 +694,7 @@ function mozWrap(txtarea, open, close)
 	var selLength = txtarea.textLength;
 	var selStart = txtarea.selectionStart;
 	var selEnd = txtarea.selectionEnd;
-	if (selEnd == 1 || selEnd == 2)
+	if (selEnd === 1 || selEnd === 2)
 		selEnd = selLength;
 
 	var s1 = (txtarea.value).substring(0,selStart);
@@ -766,22 +733,22 @@ function storeCaret(textEl) {
 
 		<table border="0" cellpadding="3" cellspacing="1" width="100%" style="border-collapse:collapse;">
 			<tr>
-				<th class="thHead" colspan="2" height="18"><span class="cattitle">' . ($action == 'editpost' ? 'Edit post' : ($newtopic ? 'Post a new topic' : 'Reply to topic')) . '</span></th>
+				<th class="thHead" colspan="2" height="18"><span class="cattitle">' . ($action === 'editpost' ? 'Edit post' : ($newtopic ? 'Post a new topic' : 'Reply to topic')) . '</span></th>
 			</tr>
 
 
 
-' . ($board == "pt" && $is_first_post ? '
+' . ($board === "pt" && $is_first_post ? '
 			<tr>
 				<td class="row1" width="200"><span class="genmed"><b>Participants</b></span></td>
-				<td class="row2"><span class="genmed"><input type="text" class="post" name="participants" maxlength="1000" style="width:350px" tabindex="1" value="' . $startp . '' . $participants . '" />&nbsp;<input type="submit" style="width:95px" name="usersubmit" value="Find a user" class="liteoption" onClick="window.open(\'forum.php?action=finduser\', \'_finduser\', \'HEIGHT=250,resizable=yes,WIDTH=400\');return false;" /></span></td>
+				<td class="row2"><span class="genmed"><input type="text" class="post" name="participants" maxlength="1000" style="width:350px" tabindex="1" value="' . $startp . $participants .'" />&nbsp;<input type="submit" style="width:95px" name="usersubmit" value="Find a user" class="liteoption" onClick="window.open(\'forum.php?action=finduser\', \'_finduser\', \'HEIGHT=250,resizable=yes,WIDTH=400\');return false;" /></span></td>
 			</tr>
 ' : '') . '
-' . ($newtopic == 1 || $is_first_post ? '
+' . ($newtopic === 1 || $is_first_post ? '
 			<tr>
 			  <td class="row1" width="100"><span class="genmed"><b>Subject</b></span></td>
 			  <td class="row2"> <span class="genmed">
-				<input type="text" name="subject" maxlength="60" style="width:99%" tabindex="2" class="post" value="' . $postdata[title] . '" />
+				<input type="text" name="subject" maxlength="60" style="width:99%" tabindex="2" class="post" value="' . $postdata["title"] . '" />
 				</span> </td>
 			</tr>
 ' : '') . '
@@ -857,7 +824,7 @@ function storeCaret(textEl) {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="2">
                                 <tr>
                                     <td>
-                                        <textarea id="message" name="message" style="width:99%;height:200px" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">' . $quote_c . $postdata[content] . '</textarea>
+                                        <textarea id="message" name="message" style="width:99%;height:200px" wrap="virtual" style="width:450px" tabindex="3" class="post" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">' . $quote_c . $postdata["content"] . '</textarea>
                                         </td>
                                 </tr>
                             </table>
@@ -871,7 +838,7 @@ function storeCaret(textEl) {
             </tr>
         </table>
 
-' . ($newtopic != 1 && !$is_first_post ? '
+' . ($newtopic !== 1 && !$is_first_post ? '
     </td>
     </tr>
 </table>
@@ -899,7 +866,7 @@ function storeCaret(textEl) {
 
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr>
-	  <td align="right" valign="top"><span class="gensmall">All times are GMT ' . ((intval($userdata[gmt]) >= 0 ? '+' : '') . $userdata[gmt]) . '</span></td>
+	  <td align="right" valign="top"><span class="gensmall">All times are GMT ' . ((intval($userdata["gmt"]) >= 0 ? '+' : '') . $userdata["gmt"]) . '</span></td>
 	</tr>
   </table>
 </form>
@@ -912,15 +879,16 @@ function storeCaret(textEl) {
 ';
         //TODO CHECK participants on edit able to add/remove members?
     }
-} elseif ($action == "finduser") {
+} elseif ($action === "finduser") {
     $simple = 1;
 
-    if (!empty($user)) {
-        $username_search = preg_replace('/\*/', '%', parseToDB($user));
+
+    if (isset($_GET["user"])) {
+        $username_search = preg_replace('/\*/', '%', parseToDB($_GET["user"]));
 
         $sql = "SELECT name
 			FROM bcs_users
-			WHERE name LIKE '" . str_replace("\'", "''", $username_search) . "' AND id <> -1
+			WHERE name LIKE '$username_search' AND id > 0
 			ORDER BY name";
         $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         for ($x = 0; $x < mysql_num_rows($result); $x++) {
@@ -929,7 +897,7 @@ function storeCaret(textEl) {
 
             $username_list .= '<option value="' . $memberdata['name'] . '">' . $memberdata['name'] . '</option>';
         }
-        if (mysql_num_rows($result) == 0) {
+        if (mysql_num_rows($result) === 0) {
             $username_list = '<option>No matches found.</option>';
         }
     }
@@ -940,7 +908,7 @@ function storeCaret(textEl) {
 <!--
 function refresh_username(selected_username)
 {
-	if ( opener.document.forms[\'post\'].participants.value != \'\' )
+	if ( opener.document.forms[\'post\'].participants.value !== \'\' )
 		opener.document.forms[\'post\'].participants.value += \',\';
 
 	opener.document.forms[\'post\'].participants.value += selected_username;
@@ -988,7 +956,7 @@ function refresh_username(selected_username)
 </form>
 
 	';
-} elseif ($action == "delpost") {
+} elseif ($action === "delpost") {
 
     if (!is_numeric($post)) {
         die();
@@ -1000,8 +968,8 @@ function refresh_username(selected_username)
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
 
-    if ($s_editor != 1) {
-        if ($row[user] != $userdata[id]) {
+    if ($s_editor !== 1) {
+        if ($row["user"] !== $userdata["id"]) {
             die();
         }
     }
@@ -1009,68 +977,66 @@ function refresh_username(selected_username)
     if ($confirm_del) {
         $query = "DELETE FROM forum_posts WHERE id = '$post'";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-        bcs_die("Your post was deleted succesfully.", "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row[topic_id]);
+        bcs_die("Your post was deleted succesfully.", "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row["topic_id"]);
     } else {
         bcs_die("Are you sure you wish to delete this post?<br /><br /><form action=\"index.php?plugin=forum&amp;action=delpost&amp;post=" . $post . "\" method=POST><input type=submit name=confirm_del value=Delete></form>", "none");
     }
-} elseif ($action == "board") {
+} elseif ($action === "board") {
 
 
     $validation_ok = 1;
 
-    // View all topics from a board_id
-    if (!is_numeric($board) && $board != "pt" && $board != "rt" && $board != "ut" && $board != "mt" && $board != "up") {
-        die();
-    }
 
-    if ($board == "pt") {
-        if ($_SESSION['logged_in'] == FALSE) {
+
+    if ($board === "pt") {
+        if ($_SESSION['logged_in'] === FALSE) {
             bcs_die('Please log in first.');
         }
         // Private Topics
         // WARNING: Private topics may appear wrong
         // Fix me kommas en extra like check erachter
 
-        $_SESSION[showedpmwarning] = true;
+        $_SESSION["showedpmwarning"] = true;
 
         if ( $s_admin ) {
             $query = "SELECT * FROM forum_topics WHERE private = 1 ORDER BY time DESC";
         }
         else {
-            $query = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 ORDER BY time DESC";
+            $query = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1 ORDER BY time DESC";
         }
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
 
         $boardtitle = "Private Topics";
-    } elseif ($board == "rt") {
+    } elseif ($board === "rt") {
         if (!$s_auth) {
             bcs_die('Please log in first.');
         }
 
-        $query = "SELECT * FROM forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC";
+        $query = "SELECT * FROM forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
         $boardtitle = "Recent Topics";
-    } elseif ($board == "ut") {
+    } elseif ($board === "ut") {
 
 
         $query = "SELECT a.* from forum_topics as a, (SELECT topic_id, count(*) as count FROM forum_posts GROUP BY topic_id) as b WHERE b.count = 1 AND a.id = b.topic_id";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
         $boardtitle = "Unanswered Posts";
-    } elseif ($board == "mt") {
+    } elseif ($board === "mt") {
 
 
-        $query = "SELECT a.* FROM forum_topics as a, (SELECT topic_id FROM forum_posts WHERE user = " . $userdata[id] . " GROUP BY topic_id) as b WHERE b.topic_id = a.id";
+        $query = "SELECT a.* FROM forum_topics as a, (SELECT topic_id FROM forum_posts WHERE user = '$userdata[id]' GROUP BY topic_id) as b WHERE b.topic_id = a.id";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
         $boardtitle = "My Posts";
-    } elseif ($board == "up" && $user) {
-        if (!is_numeric($user))
-            die();
+    } elseif ($board === "up") {
+        if ( !isset($_GET["user"]) ) die("No user given!");
 
-        $query = "SELECT a.* FROM forum_topics as a, (SELECT topic_id FROM forum_posts WHERE user = " . $user . " GROUP BY topic_id) as b WHERE b.topic_id = a.id";
+        $user = (int)parseToDB($_GET["user"]);
+
+        $query = "SELECT a.* FROM forum_topics as a, (SELECT topic_id FROM forum_posts WHERE user = '$user' GROUP BY topic_id) as b WHERE b.topic_id = a.id";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
         $boardtitle = memberName($user) . '\'s Posts';
@@ -1083,29 +1049,28 @@ function refresh_username(selected_username)
         $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row2 = mysql_fetch_array($result2);
 
-        if ( $row2[modonly] == 1 && $s_editor == 0 ) die("no access");
+        if ( $row2["modonly"] === 1 && $s_editor === 0 ) die("no access");
 
-
-
-        $boardtitle = $row2[name];
+        $boardtitle = $row2["name"];
     }
 
 
     $c_title = $boardtitle;
-
+    $topicrow_content = "";
+    $temp = "";
 
     for ($x = 0; $x < mysql_num_rows($result); $x++) {
 
 
         $row = mysql_fetch_array($result);
 
-        $par_names = $row[private_chatters];
+        $par_names = $row["private_chatters"];
 
-        $nviews = $row[views];
+        $nviews = $row["views"];
 
         $topic_read = true;
 
-        if ($row[time] > $userdata[last_session]) {
+        if ($row["time"] > $userdata["last_session"]) {
             $topic_read = false;
         }
 
@@ -1123,10 +1088,10 @@ function refresh_username(selected_username)
         $query4 = "SELECT id, title, user, time, topic_id FROM forum_posts WHERE topic_id = '$row[id]' ORDER BY time DESC LIMIT 1";
         $result4 = bcs_query($query4) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row4 = mysql_fetch_array($result4);
-        if (strlen($row4[title]) > $max_title_length) {
-            $limitname = substr($row4[title], 0, $max_title_length) . "...";
+        if (strlen($row4["title"]) > $max_title_length) {
+            $limitname = substr($row4["title"], 0, $max_title_length) . "...";
         } else {
-            $limitname = $row4[title];
+            $limitname = $row4["title"];
         }
 
 
@@ -1134,36 +1099,37 @@ function refresh_username(selected_username)
         if ($nreplies > $posts_per_page) {
             $num_pages = ceil($nreplies / $posts_per_page);
             for ($a = 1; $a <= $num_pages; $a++) {
-                $temp .= "[" . createLink($a, "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row4[topic_id] . "&amp;page=" . $a) . "] ";
+                $temp .= "[" . createLink($a, "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row4["topic_id"] . "&amp;page=" . $a) . "] ";
             }
             $nav_extra = "<br /><span class=\"gen\">Go to page: " . $temp . "</span>";
         } else {
-            unset($nav_extra, $temp);
+            $nav_extra = "";
+            $temp = "";
         }
 
-        $lastpost = $ts . " " . createLink($limitname, "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row4[topic_id] . "#" . $row4[id]) . "<br />by " . memberLink($row4[user]) . " on " . createDate($row4[time], $userdata[gmt]);
-        if ($board == "pt") {
+        $lastpost = createLink($limitname, "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row4["topic_id"] . "#" . $row4["id"]) . "<br />by " . memberLink($row4["user"]) . " on " . createDate($row4["time"], $userdata["gmt"]);
+        if ($board === "pt") {
             $par_list = explode(',', $par_names);
-            unset($par_names);
+            $par_names = "";
             for ($z = 0; $z < count($par_list); $z++) {
                 $par_names .= $par_list[$z];
-                if ($z != count($par_list) - 1) {
+                if ($z !== count($par_list) - 1) {
                     $par_names .= "<br />";
                 }
             }
 
-            $pt_extra = "<td class=row" . ($x % 2 ? 1 : 2) . " width=\"28%\"><span class=\"gen\"><b>" . createLink($row2[title], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row[id]) . "</b></span>" . $nav_extra . "</td>
+            $pt_extra = "<td class=row" . ($x % 2 ? 1 : 2) . " width=\"28%\"><span class=\"gen\"><b>" . createLink($row2["title"], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row["id"]) . "</b></span>" . $nav_extra . "</td>
     <td class=row" . ($x % 2 ? 1 : 2) . " width=\"10%\"><span class=\"gensmall\">" . $par_names . "</span></td>";
         } else {
 
-            $pt_extra = "<td class=row" . ($x % 2 ? 1 : 2) . " width=\"38%\"><span class=\"gen\"><b>" . createLink($row2[title], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row[id]) . "</b></span>" . $nav_extra . "</td>";
+            $pt_extra = "<td class=row" . ($x % 2 ? 1 : 2) . " width=\"38%\"><span class=\"gen\"><b>" . createLink($row2["title"], "index.php?plugin=forum&amp;action=topic&amp;topic=" . $row["id"]) . "</b></span>" . $nav_extra . "</td>";
         }
 
 
         if ($topic_read) {
-            $rt_image = "<img src=themes/" . $c_theme . "/images/topic_read.gif alt=\"No new replies since your last visit\">";
+            $rt_image = "<img src=themes/images/topic_read.gif alt=\"No new replies since your last visit\">";
         } else {
-            $rt_image = "<img src=themes/" . $c_theme . "/images/topic_unread.gif>";
+            $rt_image = "<img src=themes/images/topic_unread.gif>";
         }
 
 
@@ -1178,26 +1144,25 @@ function refresh_username(selected_username)
         //</tr>
         //";
         $rowclass = $x % 2 ? "row2" : "row1";
-
-        if ( $row[sticky] == 1 ) {
-            $row2[title] = "<b>Sticky: $row2[title]</b>";
+        if ( (int)$row["sticky"] === 1 ) {
+            $row2["title"] = "<b>Sticky: $row2[title]</b>";
             $rowclass = "row3";
         }
 
         $topicrow_content .= '
   			<tr>
 			  <td class="'.$rowclass.'" align="center" valign="middle" width="20"><img src="theme/images/folder.gif" /></td>
-			  <td class="'.$rowclass.'" width="100%"><span class="topictitle"><a href="forum.php?action=topic&topic=' . $row[id] . '" class="topictitle">' . $row2[title] . ''.($s_admin?" ($row[id])":"").'</a></span></td>
+			  <td class="'.$rowclass.'" width="100%"><span class="topictitle"><a href="forum.php?action=topic&topic=' . $row["id"] . '" class="topictitle">' . $row2["title"] . ''.($s_admin?" ($row[id])":"").'</a></span></td>
 			  <td class="'.$rowclass.'" align="center" valign="middle"><span class="postdetails">' . $nreplies . '</span></td>
-			  <td class="'.$rowclass.'" align="center" valign="middle"><span class="name">' . memberLink($row2[user]) . '</span></td>
+			  <td class="'.$rowclass.'" align="center" valign="middle"><span class="name">' . memberLink($row2["user"]) . '</span></td>
 			  <td class="'.$rowclass.'" align="center" valign="middle"><span class="postdetails">' . $nviews . '</span></td>
-			  <td class="'.$rowclass.'" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">' . timeAgo($row4[time]) . ' ago<br />' . memberLink($row4[user]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row4[topic_id] . '#' . $row4[id] . '"><img src="theme/images/icon_latest_reply.gif"></a></span></td>
+			  <td class="'.$rowclass.'" align="center" valign="middle" nowrap="nowrap"><span class="postdetails">' . timeAgo($row4["time"]) . ' ago<br />' . memberLink($row4["user"]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row4["topic_id"] . '#' . $row4["id"] . '"><img src="theme/images/icon_latest_reply.gif"></a></span></td>
 			</tr>
 ';
     }
 
-    //if (($board != 7 && $board != "rt" ) || $s_admin == 1) {
-    if (mysql_num_rows($result) == 0) {
+    //if (($board !== 7 && $board !== "rt" ) || $s_admin === 1) {
+    if (mysql_num_rows($result) === 0) {
         $topicrow_content .= '
 
 			<tr>
@@ -1207,7 +1172,7 @@ function refresh_username(selected_username)
 //			$thelist .= "
 //
 //		<tr>
-//		<td class=row2 width=\"100%\" colspan=".($board=="pt"?6:5)."><span class=\"gen\">
+//		<td class=row2 width=\"100%\" colspan=".($board==="pt"?6:5)."><span class=\"gen\">
 //		There are no topics posted here yet. <a href=index.php?plugin=forum&action=reply&board=".$board.">Start a new topic</a>!
 //		</td>
 //		</tr>
@@ -1229,7 +1194,7 @@ function refresh_username(selected_username)
 	  <td align="right" valign="bottom" nowrap="nowrap"></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && $board == 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
 	<tr>
 	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $boardtitle . '</span></span></td>
@@ -1268,10 +1233,10 @@ function refresh_username(selected_username)
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
 	<tr>
 	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $boardtitle . '</span></span></td>
-	  <td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">All times are GMT ' . ((intval($userdata[gmt]) >= 0 ? '+' : '') . $userdata[gmt]) . '</span><br /><span class="nav"></span></td>
+	  <td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">All times are GMT ' . ((intval($userdata["gmt"]) >= 0 ? '+' : '') . $userdata["gmt"]) . '</span><br /><span class="nav"></span></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && $board == 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
   </table>
 
@@ -1316,7 +1281,7 @@ function refresh_username(selected_username)
 
 
 ';
-} elseif ($action == "byuser") {
+} elseif ($action === "byuser") {
     if (!is_numeric($user)) {
         die();
     }
@@ -1326,7 +1291,7 @@ function refresh_username(selected_username)
     for ($x = 0; $x < mysql_num_rows($result); $x++) {
         $row = mysql_fetch_array($result);
     }
-} elseif ($action == "topic") {
+} elseif ($action === "topic") {
     $validation_ok = 1;
 
     // View all posts from a topic_id
@@ -1347,6 +1312,7 @@ function refresh_username(selected_username)
 
     $finish = $page * $posts_per_page;
     $start = $finish - $posts_per_page;
+
     //$moresql = " LIMIT " . $start . "," . $posts_per_page;
 //    $moresql = "";
 
@@ -1354,10 +1320,12 @@ function refresh_username(selected_username)
     $result4 = bcs_query($query4) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row4 = mysql_fetch_array($result4);
 
-    $query = "SELECT * FROM forum_posts WHERE topic_id = '$topic' ORDER BY time ASC" . $moresql;
+    $query = "SELECT * FROM forum_posts WHERE topic_id = '$topic' ORDER BY time ASC";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
-    $c_title = $row4[title];
+    $c_title = $row4["title"];
+
+    $nav_pages = "";
 
     $query5 = "SELECT id FROM forum_posts WHERE topic_id = '$topic'";
     $result5 = bcs_query($query5) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
@@ -1365,7 +1333,7 @@ function refresh_username(selected_username)
     if ($nreplies > $posts_per_page) {
         $num_pages = ceil($nreplies / $posts_per_page);
         for ($a = 1; $a <= $num_pages; $a++) {
-            if ($a == $page) {
+            if ($a === $page) {
                 $temp .= "<b>" . $a . "</b> ";
             } else {
                 $temp .= "" . createLink($a, "index.php?plugin=forum&amp;action=topic&amp;topic=" . $topic . "&amp;page=" . $a) . " ";
@@ -1379,8 +1347,6 @@ function refresh_username(selected_username)
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row2 = mysql_fetch_array($result2);
 
-
-
     $query3 = "SELECT * FROM forum_boards WHERE id = '$row2[board_id]'";
     $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row3 = mysql_fetch_array($result3);
@@ -1389,90 +1355,92 @@ function refresh_username(selected_username)
     $result8 = bcs_query($query8) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row8 = mysql_fetch_array($result8);
 
-    if ( $row8[modonly] == 1 && $s_editor == 0 && $userdata[pending_editor] == 0 ) bcs_die("I'm sorry, but that topic is restricted to the development team.");
+    if ( $row8["modonly"] === 1 && $s_editor === 0 && $userdata["pending_editor"] === 0 ) bcs_die("I'm sorry, but that topic is restricted to the development team.");
 
 
     //$indexlink = createLink("ironbane Forum","index.php?plugin=forum");
 
-    if ($row2['private'] == 1) {
+    $userlist = "";
+    if ((int)$row2['private'] === 1) {
         // Check if we are allowed to view this topic
         $check_ok = 0;
-        $par_list = explode(',', $row2[private_chatters]);
+        $par_list = explode(',', $row2["private_chatters"]);
 
         // Add ourselves always
-        $userlist .= memberLink($userdata[id]);
+        $userlist .= memberLink($userdata["id"]);
 
         // Only comma if the list
         //$userlist .= ',';
 
         for ($x = 0; $x < count($par_list); $x++) {
-            if ($userdata[name] == $par_list[$x]) {
+            if ($userdata["name"] === $par_list[$x]) {
                 $check_ok = 1;
             } else {
                 $userlist .= ', ' . memberLink($par_list[$x]);
             }
         }
         // Check if we are the starter
-        if ($row2[private_from] == $userdata[id]) {
+        if ($row2["private_from"] === $userdata["id"]) {
             $check_ok = 1;
         } else {
-            $userlist .= ', ' . memberLink($row2[private_from]);
+            $userlist .= ', ' . memberLink($row2["private_from"]);
         }
 
         if (!$check_ok && !$s_admin) {
-            bcs_die('Sorry, you are not allowed to view this private topic.', 'javascript:history.back()');
+            bcs_die('Sorry, you are not allowed to view this private topic.', 'back');
         }
 
-        if ($row2[time] > $userdata[previous_session])$_SESSION[showedpmwarning] = true;
+        if ($row2["time"] > $userdata["previous_session"]) $_SESSION["showedpmwarning"] = true;
 
         $board = "pt";
         $boardname = "Private Topics";
     } else {
 
-        $board = $row2[board_id];
-        $boardname = $row3[name];
+        $board = $row2["board_id"];
+        $boardname = $row3["name"];
     }
-    //if ( $row2[board_id] != 7 || $s_admin == 1 ) {
-    $link1 = createLink("<img src=\"themes/" . $c_theme . "/images/buttons/reply.gif\" border=0>", "index.php?plugin=forum&amp;action=reply&amp;topic=" . $topic);
+    //if ( $row2[board_id] !== 7 || $s_admin === 1 ) {
+    $link1 = createLink("<img src=\"themes/images/buttons/reply.gif\" border=0>", "index.php?plugin=forum&amp;action=reply&amp;topic=" . $topic);
     //}
 
-    if ($s_editor == 1) {
+    if ($s_editor === 1) {
         $admin_topic = "<span class=\"gensmall\">";
-        $admin_topic .= createLink("<img src=\"themes/" . $c_theme . "/images/buttons/delete.gif\" border=0>", "index.php?plugin=forum&amp;action=deletetopic&amp;topic=" . $topic);
+        $admin_topic .= createLink("<img src=\"themes/images/buttons/delete.gif\" border=0>", "index.php?plugin=forum&amp;action=deletetopic&amp;topic=" . $topic);
         $admin_topic .= " ";
-        $admin_topic .= createLink("<img src=\"themes/" . $c_theme . "/images/buttons/lock.gif\" border=0>", "index.php?plugin=forum&amp;action=locktopic&amp;topic=" . $topic);
+        $admin_topic .= createLink("<img src=\"themes/images/buttons/lock.gif\" border=0>", "index.php?plugin=forum&amp;action=locktopic&amp;topic=" . $topic);
         $admin_topic .= "</span>";
     }
 
-
+    $postrow_content = "";
 
     for ($x = 0; $x < mysql_num_rows($result); $x++) {
         $row = mysql_fetch_array($result);
 
 
+        $moreinfo = "";
 
-        $query7 = "SELECT name, reg_date, forum_avatar, forum_sig, info_location, info_realname FROM bcs_users WHERE id = '$row[user]'";
+        $query7 = "SELECT name, reg_date, forum_avatar, forum_sig, info_location, info_realname, last_session FROM bcs_users WHERE id = '$row[user]'";
         $result7 = bcs_query($query7) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $row7 = mysql_fetch_array($result7);
 
         //$moreinfo .= "Level " . $row7[rpg_level]." ".classname($row7[rpg_class])."<br>Ranking: #".getRPGrank($row[user])."<br>";
 
 //        $guild = hasGuild($row[user]);
-//        if ($guild != false) {
+//        if ($guild !== false) {
 //            $moreinfo .= 'Guild: ' . guildlink($guild[id])."<br>";
 //        }
 
         //$moreinfo .= '<br>';
 
-        if ($row[user] != -1) {
-            $moreinfo .= 'Joined: ' . createDate($row7[reg_date], $userdata[gmt], 5) . '<br />Posts: ' . getTotalUserPosts($row[user]);
+        if ($row["user"] !== -1) {
+            $moreinfo .= 'Joined: ' . createDate($row7["reg_date"], $userdata["gmt"], 5) . '<br />Posts: ' . getTotalUserPosts($row["user"]);
         }
 
 //	if ( $row7[info_country] ) {
 //		$moreinfo .= "<br />Country: ".$row7[info_country];
 //	}
-        if ($row7[info_location]) {
-            $moreinfo .= "<br />Location: " . $row7[info_location];
+        if ($row7["info_location"]) {
+            $moreinfo .= "<br />Location: " . $row7["info_location"];
         }
 //	if ( $row7[info_age] ) {
 //		$moreinfo .= "<br />Age: ".$row7[info_age];
@@ -1497,47 +1465,47 @@ function refresh_username(selected_username)
 
         $is_online = false;
 
-        if ($row7[last_session] + 300 >= time()) {
+        if ($row7["last_session"] + 300 >= time()) {
             $is_online = true;
         }
 
         if ($is_online) {
             $io_msg = "I am currently <b>online</b>!";
-            $io_image = "<img src=themes/" . $c_theme . "/images/online.gif onmouseover=\"Tip('" . $io_msg . "')\" onmouseout=\"UnTip()\">";
+            $io_image = "<img src=themes/images/online.gif onmouseover=\"Tip('" . $io_msg . "')\" onmouseout=\"UnTip()\">";
         } else {
             $io_msg = "I am currently <i>offline</i>.";
-            $io_image = "<img src=themes/" . $c_theme . "/images/offline.gif onmouseover=\"Tip('" . $io_msg . "')\" onmouseout=\"UnTip()\">";
+            $io_image = "<img src=themes/images/offline.gif onmouseover=\"Tip('" . $io_msg . "')\" onmouseout=\"UnTip()\">";
         }
 
 
-        if ($row7[forum_avatar]) {
-            $u_avatar = "<img src=\"" . $row7[forum_avatar] . "\" alt=\"" . $row7[name] . "'s Avatar\">";
+        if ($row7["forum_avatar"]) {
+            $u_avatar = "<img src=\"" . $row7["forum_avatar"] . "\" alt=\"" . $row7["name"] . "'s Avatar\">";
         } else {
             $u_avatar = "";
         }
 
-        if ($row7[forum_sig]) {
-            $u_sig = "<span class=\"gen\"><br /><br />_________________<br />" . $row7[forum_sig] . "<br /></span>";
+        if ($row7["forum_sig"]) {
+            $u_sig = "<span class=\"gen\"><br /><br />_________________<br />" . $row7["forum_sig"] . "<br /></span>";
         } else {
             $u_sig = "";
         }
         //
 
         $button_edit = '';
-        $button_quote = '<a href="forum.php?action=reply&topic=' . $topic . '&quote_p=' . $row[id] . '"><img src="theme/images/lang_english/icon_quote.gif" border="0"></a>';
+        $button_quote = '<a href="forum.php?action=reply&topic=' . $topic . '&quote_p=' . $row["id"] . '"><img src="theme/images/lang_english/icon_quote.gif" border="0"></a>';
         $button_delete = '';
 
 
-        if ($s_editor == 1 || ( $row[user] == $userdata[id] && $s_auth )) {
-            $button_edit = '<a href="index.php?plugin=forum&action=editpost&post=' . $row[id] . '"><img src="theme/images/lang_english/icon_edit.gif" border="0"></a>';
+        if ($s_editor === 1 || ( $row["user"] === $userdata["id"] && $s_auth )) {
+            $button_edit = '<a href="index.php?plugin=forum&action=editpost&post=' . $row["id"] . '"><img src="theme/images/lang_english/icon_edit.gif" border="0"></a>';
         }
 
-        if ($s_editor == 1) {
-            $button_delete = '<a href="index.php?plugin=forum&action=delpost&post=' . $row[id] . '"><img src="theme/images/icon_delete.gif" border="0"></a>';
+        if ($s_editor === 1) {
+            $button_delete = '<a href="index.php?plugin=forum&action=delpost&post=' . $row["id"] . '"><img src="theme/images/icon_delete.gif" border="0"></a>';
         }
 
         $rated_list = "";
-        $rate_list = "<div id=\"rinfo" . $row[id] . "\"><br /></div>";
+        $rate_list = "<div id=\"rinfo" . $row["id"] . "\"><br /></div>";
 
         //$rate_list  .= "<table border=0 bgcolor=white><tr><td>";
 
@@ -1551,7 +1519,7 @@ function refresh_username(selected_username)
           }
 
           for($y=0;$y<count($listc);$y++){
-          if ( $y == 6 ) {
+          if ( $y === 6 ) {
           $rate_list .= "<br />";
           }
           $rate_list .= " <a onmouseover=\"document.getElementById('rinfo".$row[id]."').innerHTML='".$listd[$y]."'\" onmouseout=\"document.getElementById('rinfo".$row[id]."').innerHTML='<br />'\" href=\"index.php?plugin=forum&amp;action=ratepost&amp;post=".$row[id]."&amp;rating=".$listc[$y]."\"><img src=\"plugins/forum/smiles/rating/".$listc[$y].".gif\" border=\"0\" alt=\"".$listd[$y]."\"></a>";
@@ -1581,16 +1549,16 @@ function refresh_username(selected_username)
 //	}
 
 
-        $when = "<span class=gensmall>Posted on " . createDate($row[time], $userdata[gmt]) . "</span>";
+        $when = "<span class=gensmall>Posted on " . createDate($row["time"], $userdata["gmt"]) . "</span>";
 
         //TODO: rank image, page count, pagination, view posts since last visit etc
 
 
-        $image_profile = '<a href="user.php?n=' . $row7[name] . '"><img src="theme/images/lang_english/icon_profile.gif"></a>';
-        $image_pm = '<a href="forum.php?action=reply&board=pt&startp=' . $row7[name] . '"><img src="theme/images/lang_english/icon_pm.gif"></a>';
+        $image_profile = '<a href="user.php?n=' . $row7["name"] . '"><img src="theme/images/lang_english/icon_profile.gif"></a>';
+        $image_pm = '<a href="forum.php?action=reply&board=pt&startp=' . $row7["name"] . '"><img src="theme/images/lang_english/icon_pm.gif"></a>';
         $image_www = '';
-        if (!empty($row7[info_website])) {
-            $image_www = '<a href="' . $row7[info_website] . '" rel="nofollow"><img src="theme/images/lang_english/icon_www.gif"></a>';
+        if (!empty($row7["info_website"])) {
+            $image_www = '<a href="' . $row7["info_website"] . '" rel="nofollow"><img src="theme/images/lang_english/icon_www.gif"></a>';
         }
 
         $rowclass = $x % 2 ? "row2" : "row1";
@@ -1598,17 +1566,17 @@ function refresh_username(selected_username)
         $postrow_content .= '
 
 				<tr>
-					<td width="150" align="left" valign="top" class="' . $rowclass . '"><span class="name"><a name="' . $row[id] . '"></a><b>' . getPosterLink($row, $row[user]) . '</b>'.($row7[info_realname]!=""&&$row8[modonly]==1?' ('.$row7[info_realname].')':'').'</span><br /><span class="postdetails">' . getRank($row[user]) . ' Rep<br />' . $u_avatar . '<br /><br />' . $moreinfo . '</span><br /></td>
+					<td width="150" align="left" valign="top" class="' . $rowclass . '"><span class="name"><a name="' . $row["id"] . '"></a><b>' . getPosterLink($row, $row["user"]) . '</b>'.($row7["info_realname"]!==""&&$row8["modonly"]===1?' ('.$row7["info_realname"].')':'').'</span><br /><span class="postdetails">' . getRank($row["user"]) . '<br />' . $u_avatar . '<br /><br />' . $moreinfo . '</span><br /></td>
 					<td class="' . $rowclass . '" height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 						<tr>
-							<td width="100%">&nbsp;<img src="theme/images/icon_minipost.gif" border="0" />&nbsp;<span class="postdetails">Posted: ' . createDate($row[time], $userdata[gmt]) . ' ('.(timeAgo($row[time])).' ago)</span></td>
+							<td width="100%">&nbsp;<img src="theme/images/icon_minipost.gif" border="0" />&nbsp;<span class="postdetails">Posted: ' . createDate($row["time"], $userdata["gmt"]) . ' ('.(timeAgo($row["time"])).' ago)</span></td>
 							<td valign="top" nowrap="nowrap"><table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td width="100%" nowrap="nowrap">' . $button_quote . ' ' . $button_edit . ' ' . $button_delete . '</td></tr></table></td>
 						</tr>
 						<tr>
 							<td colspan="2"><hr /></td>
 						</tr>
 						<tr>
-							<td colspan="2"><span class="gen">' . post_parse($row[content]) . post_parse($u_sig) . '</span><span class="gensmall">' . (intval($row[lastedit_count]) > 0 ? $spacer.'Last edited by ' . memberLink($row[lastedit_author]) . ' on ' . createDate($row[lastedit_time], $userdata[gmt]) . ' ('.timeAgo($row[lastedit_time]).' ago). Edited ' . $row[lastedit_count] . ' time' . (intval($row[lastedit_count]) != 1 ? 's' : '') . ' in total' : '') . '</span></td>
+							<td colspan="2"><span class="gen">' . post_parse($row["content"]) . post_parse($u_sig) . '</span><span class="gensmall">' . (intval($row["lastedit_count"]) > 0 ? $spacer.'Last edited by ' . memberLink($row["lastedit_author"]) . ' on ' . createDate($row["lastedit_time"], $userdata["gmt"]) . ' ('.timeAgo($row["lastedit_time"]).' ago). Edited ' . $row["lastedit_count"] . ' time' . (intval($row["lastedit_count"]) !== 1 ? 's' : '') . ' in total' : '') . '</span></td>
 						</tr>
 					</table></td>
 				</tr>
@@ -1618,7 +1586,7 @@ function refresh_username(selected_username)
 
 						<table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 							<tr>
-								<td valign="middle" nowrap="nowrap"><table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td width="100%" nowrap="nowrap">' . ($row[user] != -1 ? ' ' . $image_profile . ' ' . $image_pm . ' ' . $image_www . ' ' : '') . '</td></tr></table></td>
+								<td valign="middle" nowrap="nowrap"><table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td width="100%" nowrap="nowrap">' . ($row["user"] !== -1 ? ' ' . $image_profile . ' ' . $image_pm . ' ' . $image_www . ' ' : '') . '</td></tr></table></td>
 							</tr>
 						</table>
 
@@ -1631,17 +1599,17 @@ function refresh_username(selected_username)
 
 ';
 
-        unset($moreinfo);
+
     }
 
-    if ( $row2[sticky] ) $row4[title] = "Sticky topic: ".$row4[title];
+    if ( $row2["sticky"] ) $row4["title"] = "Sticky topic: ".$row4["title"];
 
     $c_main = '
 
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr>
-	<td align="left" valign="bottom" colspan="2"><span class="maintitle">' . $row4[title] . '</a></span></td>
+	<td align="left" valign="bottom" colspan="2"><span class="maintitle">' . $row4["title"] . '</a></span></td>
   </tr>
 </table>
 
@@ -1650,10 +1618,10 @@ function refresh_username(selected_username)
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor != 1 && $board == 7)?'':'<a href="forum.php?action=reply&board=' . $row2[board_id] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
-	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4[title] . '</span></span></td>
+	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
   </tr>
 </table>
 
@@ -1663,7 +1631,7 @@ function refresh_username(selected_username)
   		<td class="tableborder">
 
 			<table width="100%" cellspacing="1" cellpadding="3" border="0" style="border-collapse:collapse;">
-			' . ($board == 'pt' ? '
+			' . ($board === 'pt' ? '
 							<tr>
 					<th class="catHead"colspan="2" nowrap="nowrap" align>Private</th>
 				</tr>
@@ -1690,10 +1658,10 @@ function refresh_username(selected_username)
 </div>
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr>
-	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4[title] . '</span></span></td>
+	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor != 1 && $board == 7)?'':'<a href="forum.php?action=reply&board=' . $row2[board_id] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
@@ -1707,7 +1675,7 @@ function refresh_username(selected_username)
         '.($s_editor?'
 	  <a href="forum.php?action=deletetopic&topic=' . $topic . '"><img src="theme/images/topic_delete.gif" alt="Delete this topic" title="Delete this topic" border="0" /></a>&nbsp;
 
-           '.($row2[sticky]?'<a href="forum.php?action=unstickytopic&topic=' . $topic . '"><img src="theme/images/topic_sticky.gif" alt="Sticky this topic" title="Sticky this topic" border="0" /></a>':'<a href="forum.php?action=stickytopic&topic=' . $topic . '"><img src="theme/images/topic_sticky.gif" alt="Sticky this topic" title="Sticky this topic" border="0" /></a>').'&nbsp;
+           '.($row2["sticky"]?'<a href="forum.php?action=unstickytopic&topic=' . $topic . '"><img src="theme/images/topic_sticky.gif" alt="Sticky this topic" title="Sticky this topic" border="0" /></a>':'<a href="forum.php?action=stickytopic&topic=' . $topic . '"><img src="theme/images/topic_sticky.gif" alt="Sticky this topic" title="Sticky this topic" border="0" /></a>').'&nbsp;
                ':'').'
           </td>
 	<td align="right" valign="top" nowrap="nowrap">
@@ -1731,7 +1699,8 @@ function refresh_username(selected_username)
 
     if ($s_auth) {
         // Add private topics
-        $catrow_content .= '
+
+        $catrow_content = '
                               <tr>
                                     <td colspan="4" class="categorybar">
 
@@ -1748,7 +1717,7 @@ function refresh_username(selected_username)
 
         // Private Topics extra loop (pre)
 
-        $query2 = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1";
+        $query2 = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1";
         $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         $ntopics = mysql_num_rows($result2);
         for ($y = 0; $y < $ntopics; $y++) {
@@ -1764,17 +1733,17 @@ function refresh_username(selected_username)
         $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
         for ($y = 0; $y < mysql_num_rows($result2); $y++) {
             $row2 = mysql_fetch_array($result2);
-            $query3 = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata[name] . "%') AND private = 1 AND id = '$row2[topic_id]'";
+            $query3 = "SELECT * FROM forum_topics WHERE (private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1 AND id = '$row2[topic_id]'";
             $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $row3 = mysql_fetch_array($result3);
-            if ($row3['private'] == 1) {
+            if ((int)$row3['private'] === 1) {
                 // We found one !
-                if (strlen($row2[title]) > $max_title_length) {
-                    $limitname = substr($row2[title], 0, $max_title_length) . "...";
+                if (strlen($row2["title"]) > $max_title_length) {
+                    $limitname = substr($row2["title"], 0, $max_title_length) . "...";
                 } else {
-                    $limitname = $row2[title];
+                    $limitname = $row2["title"];
                 }
-                $lastpost = timeAgo($row2[time]) . ' ago<br>' . memberLink($row2[user]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2[topic_id] . '#' . $row2[id] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
+                $lastpost = timeAgo($row2["time"]) . ' ago<br>' . memberLink($row2["user"]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2["topic_id"] . '#' . $row2["id"] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
                 break;
             } else {
                 $lastpost = "";
@@ -1803,7 +1772,7 @@ function refresh_username(selected_username)
     }
 
     // View all boards available
-    $querycats = "SELECT * FROM forum_cats WHERE modonly <= $userdata[editor] ORDER BY `order` ASC";
+    $querycats = "SELECT * FROM forum_cats WHERE modonly <= '$userdata[editor]' ORDER BY `order` ASC";
     $resultcats = bcs_query($querycats) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
 
@@ -1826,7 +1795,7 @@ function refresh_username(selected_username)
 					  <table border="0">
 						<tr>
 						  <td><img src="theme/images/category_icon.gif" /></td>
-						  <td><span class="cattitle">' . $rowcats[name] . '</span></td>
+						  <td><span class="cattitle">' . $rowcats["name"] . '</span></td>
 						</tr>
 					  </table>
 
@@ -1859,7 +1828,7 @@ function refresh_username(selected_username)
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
                 $nposts += mysql_num_rows($result3);
 
-                if ($row2[time] > $userdata[last_session]) {
+                if ($row2["time"] > $userdata["last_session"]) {
                     $topic_read = false;
                 }
             }
@@ -1873,14 +1842,14 @@ function refresh_username(selected_username)
                 $query3 = "SELECT * FROM forum_topics WHERE id = '$row2[topic_id]'";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
                 $row3 = mysql_fetch_array($result3);
-                if ($row3[board_id] == $row[id]) {
+                if ($row3["board_id"] === $row["id"]) {
                     // We found one !
-                    if (strlen($row2[title]) > $max_title_length) {
-                        $limitname = substr($row2[title], 0, $max_title_length) . "...";
+                    if (strlen($row2["title"]) > $max_title_length) {
+                        $limitname = substr($row2["title"], 0, $max_title_length) . "...";
                     } else {
-                        $limitname = $row2[title];
+                        $limitname = $row2["title"];
                     }
-                    $lastpost = timeAgo($row2[time]) . ' ago<br>by ' . memberLink($row2[user]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2[topic_id] . '#' . $row2[id] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
+                    $lastpost = timeAgo($row2["time"]) . ' ago<br>by ' . memberLink($row2["user"]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2["topic_id"] . '#' . $row2["id"] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
                     break;
                 } else {
                     $lastpost = "";
@@ -1896,8 +1865,8 @@ function refresh_username(selected_username)
 					<table border="0">
 						<tr>
 						  <td valign="top"><img src="theme/images/folder.gif" /></td>
-						  <td valign="top"><a href="index.php?plugin=forum&amp;action=board&amp;board=' . $row[id] . '" class="forumlink">' . $row[name] . '</a><br />
-							  <span class="gensmall">' . $row[description] . '</span></td>
+						  <td valign="top"><a href="index.php?plugin=forum&amp;action=board&amp;board=' . $row["id"] . '" class="forumlink">' . $row["name"] . '</a><br />
+							  <span class="gensmall">' . $row["description"] . '</span></td>
 						</tr>
 					  </table>
 				  </td>
@@ -1974,7 +1943,7 @@ function refresh_username(selected_username)
 				</tr>
 				<tr>
 					<td class="row1" align="center" valign="middle" rowspan="2" width="6%"><img src="theme/images/whosonline.gif" alt="Who is Online" /></td>
-					<td class="row1" align="left" width="94%"><span class="gensmall">In total, our players have made about <b>' . getRowCount("forum_posts") . '</b> forum posts.<br />We have <b>' . getRowCount("bcs_users WHERE id != -1") . '</b> registered players!<br />The newest registered player is <b>' . getNewestMember() . '</b>.</span></td>
+					<td class="row1" align="left" width="94%"><span class="gensmall">In total, our players have made about <b>' . getRowCount("forum_posts") . '</b> forum posts.<br />We have <b>' . getRowCount("bcs_users WHERE id > 0") . '</b> registered players!<br />The newest registered player is <b>' . getNewestMember() . '</b>.</span></td>
 				</tr>
 			</table>
 		</td>
@@ -2010,6 +1979,6 @@ $c_main = '
 
 //if ( $s_editor ) $s_admin = false;
 
-if ( $userdata[pending_editor] ) $s_editor = true;
+if ( $userdata["pending_editor"] ) $s_editor = true;
 
 ?>
