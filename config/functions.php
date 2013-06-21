@@ -62,9 +62,7 @@ function parseToSurface($text) {
 }
 
 function parseToDB($text, $allow_html=false) {
-    global $delimiter_a, $delimiter_b, $delimiter_c;
 
-    $text = str_replace(array($delimiter_a, $delimiter_b, $delimiter_c), " ", $text);
     $text = mysql_real_escape_string($text);
 
     if ( !$allow_html ) {
@@ -101,7 +99,7 @@ function bcs_die($msg, $url="index.php") {
         $use_simple_rendering, $spacer, $hspacer, $c_jquery, $use_jquery,
         $c_extra, $plugin, $noTitlePostFix, $use_nicedit, $use_jscrollpane,
         $s_editor, $use_niftyplayer, $s_editor, $c_footer, $c_jquery_manual,
-        $use_niftyplayer, $no_site_css, $c_head_after;
+        $use_niftyplayer, $no_site_css, $c_head_after, $c_head;
 
 
     $bcs_died = true;
@@ -143,7 +141,7 @@ function countdown() {
     }
 
     $c_main = '
-<table width="'.($use_simple_rendering?'100%':'800').'" cellspacing="0" cellpadding="5" border="0" align="center">
+<table width="'.($use_simple_rendering?'100%':'600').'" cellspacing="0" cellpadding="5" border="0" align="center">
   <tr>
 	<td valign="top" align="center" width="100%">
 	  <table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
@@ -271,12 +269,12 @@ function getRank($user) {
 
     $user = parseToDB($user);
 
-    $sql = "SELECT rep FROM bcs_users WHERE id = '$user'";
+    $sql = "SELECT editor FROM bcs_users WHERE id = '$user'";
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
 
 
-    return $row[rep];
+    return $row["editor"] == 0 ? "Player" : "Ironbane Team";
 
 
 }
@@ -287,18 +285,20 @@ function memberLink($user, $special="") {
     $user = parseToDB($user);
 
     if (is_numeric($user)) {
-        $sql = "SELECT name FROM bcs_users WHERE id = '$user'";
+        $sql = "SELECT name, editor FROM bcs_users WHERE id = '$user'";
     } else {
-        $sql = "SELECT name, rep FROM bcs_users WHERE name = '$user'";
+        $sql = "SELECT name, editor FROM bcs_users WHERE name = '$user'";
     }
 
     $result = bcs_query($sql) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row = mysql_fetch_array($result);
 
-    if ($user == -1) {
+    if ($user <= 0) {
         return "Guest";
     } else {
-        return $row["name"];
+        $color = !$row["editor"] ? "#1beee7" : "#BF96D8";
+        $special .= ' style="color:'.$color.'"';
+        return '<a href="user.php?n=' . $row["name"] . '"' . $special . '>' . $row["name"] . '</a>';
     }
 }
 
@@ -542,7 +542,7 @@ function getNewestMember() {
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $row3 = mysql_fetch_array($result2);
 
-    $new_member = memberLink($row3[id]);
+    $new_member = memberLink($row3["id"]);
 
     return $new_member;
 

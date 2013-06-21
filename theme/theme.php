@@ -60,12 +60,6 @@ if ($use_niftyplayer) {
 
 if (!$use_simple_rendering) {
 
-    if ( $s_auth ) {
-        // Chatbox
-        $c_head .= '<script type="text/javascript" src="config/chatbox.js"></script>
-        ';
-    }
-
    $nposts = getRowCount("forum_topics WHERE (time > '$userdata[previous_session]' AND private = 0) OR ((private_from = '$userdata[id]' OR private_chatters LIKE '%" . $userdata["name"] . "%') AND private = 1 AND time > '$userdata[previous_session]') ORDER BY time DESC");
 
     $c_header = '
@@ -98,6 +92,7 @@ if (!$use_simple_rendering) {
     ' : '') . '
       <div align="center">
         <a href="index.php">About</a>
+        | <a href="forum.php">Forum</a>
         | <a href="game.php">Play Ironbane</a>
         | <a href="get-involved.php">Get Involved</a>
         | <a href="https://github.com/ironbane" target="_new">GitHub</a>
@@ -107,23 +102,10 @@ if (!$use_simple_rendering) {
       </div>
 ' . ($s_auth ? '
 <div class="ib-chatbox-wrapper">
-    <div class="ib-welcome" id="chatBoxWelcome">
-  Hey, <b>'.  memberLink($userdata["id"]).'!</b><br>
-  You last visited '.timeAgo($userdata["previous_session"]).' ago.<br>
-    '.($nposts>0?'There '.($nposts==1?'is':'are').' <a href="forum.php?action=board&amp;board=rt"><b>'.$nposts.'</b> new/updated topic'.SorNot($nposts).'</a>':'There\'ve been no new posts').'.
+
+  Hey, <b>'.  memberLink($userdata["id"]).'!</b> You last visited '.timeAgo($userdata["previous_session"]).' ago. '.($nposts>0?'There '.($nposts==1?'is':'are').' <a href="forum.php?action=board&amp;board=rt"><b>'.$nposts.'</b> new/updated topic'.SorNot($nposts).'</a>':'There\'ve been no new posts').'.
    <br>Also seen today: '.  getListOfLastDayVisitors().'
-    </div>
-    <div class="ib-chatbox">
-        <div class="ib-chatbox-content" id="chatBoxContent">
 
-        </div>
-        <div class="ib-chat-input">
-            <input id="chatInput">
-        </div>
-    </div>
-    <div class="ib-chatters" id="chatBoxChatters">
-
-    </div>
 </div>
 
 ' : '<hr>') . '
