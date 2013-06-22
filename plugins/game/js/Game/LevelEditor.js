@@ -952,7 +952,7 @@ var LevelEditor = Class.extend({
 
     guiControls['opShowDebug'] = fOptions.add(this.editorGUI, 'opShowDebug');
     //guiControls['opBackupServer'] = fOptions.add(this.editorGUI, 'opBackupServer');
-    //guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
+    guiControls['opRestartServer'] = fOptions.add(this.editorGUI, 'opRestartServer');
     guiControls['opReloadData'] = fOptions.add(this.editorGUI, 'opReloadData');
 
 

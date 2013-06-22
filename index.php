@@ -88,7 +88,7 @@ if ( !empty($_COOKIE['bcs_username']) && !empty($_COOKIE['bcs_password']) && $_S
 			// Auth successful
 			//echo "Cookie check OK";
 			$_SESSION['logged_in'] = true;
-			$_SESSION['user_id'] = $row[id];
+			$_SESSION['user_id'] = $row["id"];
 		}
 	}
 }
