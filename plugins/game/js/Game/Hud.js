@@ -974,10 +974,10 @@ var HUDHandler = Class.extend({
         $('#statBar').css('top', (20) + 'px');
 
         $('#itemBar').css('left', (halfWidth - 240) + 'px');
-        $('#itemBar').css('top', ((frameHeight) - 52) + 'px');
+        $('#itemBar').css('top', ((frameHeight) - 48) + 'px');
 
-        $('#coinBar').css('left', (halfWidth - 240) + 'px');
-        $('#coinBar').css('top', ((frameHeight) - 80) + 'px');
+        $('#coinBar').css('left', '22px');
+        $('#coinBar').css('top', '72px');
 
         $('#lootBag').css('left', (halfWidth - 240) + 'px');
         $('#lootBag').css('top', ((frameHeight) - 120) + 'px');
