@@ -276,41 +276,43 @@ var HUDHandler = Class.extend({
             });
         }
 
+        // Disabled for now due to deadline, there are no cash items yet
+        // and the whole idea is still unclear
         // add special coin slot
-        if (!isLoot) {
-            var coinSlot = $('<div id="cashbox" class="itemBarSlot" style="width:48px;height:48px;background-image: url(plugins/game/images/hud/lootslot.png);background-size:48px;"></div>');
-            coinSlot.appendTo(div);
+        // if (!isLoot) {
+        //     var coinSlot = $('<div id="cashbox" class="itemBarSlot" style="width:48px;height:48px;background-image: url(plugins/game/images/hud/lootslot.png);background-size:48px;"></div>');
+        //     coinSlot.appendTo(div);
 
-            coinSlot.droppable({
-                drop: this.ItemSwitchEvent,
-                greedy: true
-            });
+        //     coinSlot.droppable({
+        //         drop: this.ItemSwitchEvent,
+        //         greedy: true
+        //     });
 
-            coinSlot.dblclick(function(e) {
-                // todo: add a popup asking how many coins to drop
-                var poppa = [
-                        '<h3>Drop how many?</h3>',
-                        '<input id="cashbox-drop-amount" class="iinput" type="text" value="1" />'
-                ].join('');
-                HUD.MessageAlert(poppa, 'question', function() {
-                    var amount = parseInt($('#cashbox-drop-amount').val(), 10);
-                    if (amount <= 0) {
-                        console.error('cant drop that low');
-                        return;
-                    }
-                    socketHandler.socket.emit('dropCash', {
-                        amount: amount
-                    }, function(err, response) {
-                        if (err) {
-                            console.error('error dropping cash', err);
-                            return;
-                        }
+        //     coinSlot.dblclick(function(e) {
+        //         // todo: add a popup asking how many coins to drop
+        //         var poppa = [
+        //                 '<h3>Drop how many?</h3>',
+        //                 '<input id="cashbox-drop-amount" class="iinput" type="text" value="1" />'
+        //         ].join('');
+        //         HUD.MessageAlert(poppa, 'question', function() {
+        //             var amount = parseInt($('#cashbox-drop-amount').val(), 10);
+        //             if (amount <= 0) {
+        //                 console.error('cant drop that low');
+        //                 return;
+        //             }
+        //             socketHandler.socket.emit('dropCash', {
+        //                 amount: amount
+        //             }, function(err, response) {
+        //                 if (err) {
+        //                     console.error('error dropping cash', err);
+        //                     return;
+        //                 }
 
-                        console.log('drop cash success', response);
-                    });
-                });
-            });
-        }
+        //                 console.log('drop cash success', response);
+        //             });
+        //         });
+        //     });
+        // }
     },
     UpdateEquippedItems: function() {
         for (var x = 0; x < 10; x++) {
