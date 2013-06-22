@@ -101,6 +101,13 @@ var SoundHandler = Class.extend({
       "greenSlime2": "NPCs/GreenSlime/02.wav",
       "greenSlime3": "NPCs/GreenSlime/03.wav",
       
+      "IBfire": "NPCs/IRONBANE/Fireattack.wav",
+      "IBbreath1": "NPCs/IRONBANE/breath1.wav",
+      "IBbreath2": "NPCs/IRONBANE/breath2.wav",
+      "IBGrowl": "NPCs/IRONBANE/growl3.wav",
+      "IBattack": "NPCs/IRONBANE/attack2.wav",
+      
+      
       
       "fireLongbow": "Weapons/WEAPON_LONG_BOW_01.wav",
       "fireAcidstaff": "Weapons/WEAPON_ACID_STAFF_02.wav",
