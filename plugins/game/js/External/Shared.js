@@ -58,45 +58,62 @@ var UnitTypeEnum = {
 var ZoneTypeEnum = {
   WORLD: 1,
   DUNGEON : 2,
-  TUTORIAL : 3
+  TUTORIAL : 3,
+  CASTLE : 4
 };
 
 var zoneTypeConfig = {};
 
 zoneTypeConfig[ZoneTypeEnum.WORLD] = {
-  'enableWater': true,
-  'waterLevel': -1.5,
-  'waterTexture': 1650,
-  'waterTextureGlow': 1651,
-  'enableClouds': true,
-  'cloudDensity':0.80,
-  'cloudLevel': 45,
-  'skyboxShader': "world",
-  "music": ["ib2"]
+  "enableFluid": true,
+  "fluidLevel": -1.5,
+  "fluidTexture": 1650,
+  "fluidTextureGlow": 1651,
+  "fluidType": "water",
+  "enableClouds": true,
+  "cloudDensity":0.80,
+  "cloudLevel": 45,
+  "skyboxShader": "world",
+  "music": ["ib2","ib4","ib5"]
 };
 
 zoneTypeConfig[ZoneTypeEnum.DUNGEON] = {
-  'enableWater': true,
-  'waterLevel': -1,
-  'waterTexture': 1650,
-  'waterTextureGlow': 1651,
-  'enableClouds': false,
-  'cloudDensity':0.0,
-  'cloudLevel': 0,
-  'skyboxShader': "dungeon",
-  "music": ["ib2"]
+  "enableFluid": true,
+  "fluidLevel": -1,
+  "fluidTexture": 1650,
+  "fluidTextureGlow": 1651,
+  "fluidType": "water",
+  "enableClouds": false,
+  "cloudDensity":0.0,
+  "cloudLevel": 0,
+  "skyboxShader": "dungeon",
+  "music": ["underground"]
 };
 
 zoneTypeConfig[ZoneTypeEnum.TUTORIAL] = {
-  'enableWater': true,
-  'waterLevel': 0.5,
-  'waterTexture': 1650,
-  'waterTextureGlow': 1651,
-  'enableClouds': false,
-  'cloudDensity':0.0,
-  'cloudLevel': 0,
-  'skyboxShader': "dungeon",
-  "music": ["ib2"]
+  "enableFluid": true,
+  "fluidLevel": 0.5,
+  "fluidTexture": 1650,
+  "fluidTextureGlow": 1651,
+  "fluidType": "water",
+  "enableClouds": false,
+  "cloudDensity":0.0,
+  "cloudLevel": 0,
+  "skyboxShader": "dungeon",
+  "music": ["tutorial"]
+};
+
+zoneTypeConfig[ZoneTypeEnum.CASTLE] = {
+  "enableFluid": true,
+  "fluidLevel": 0.5,
+  "fluidTexture": 102,
+  "fluidTextureGlow": 101,
+  "fluidType": "lava",
+  "enableClouds": false,
+  "cloudDensity":0.0,
+  "cloudLevel": 0,
+  "skyboxShader": "dungeon",
+  "music": ["castle"]
 };
 
 var LootBagTypeEnum = {

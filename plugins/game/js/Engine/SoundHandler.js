@@ -46,11 +46,46 @@ var SoundHandler = Class.extend({
         loops: 999
       },
 
+      "castle": {
+        file: "music/castle.mp3",
+        volume: 0.5,
+        // volume:0,
+        loops: 1
+      },
+
+      "tutorial": {
+        file: "music/tutorial.mp3",
+        volume: 0.5,
+        // volume:0,
+        loops: 1
+      },
+
       "ib2": {
         file: "music/IRONBANE 2.mp3",
-        volume: 1.0,
+        volume: 0.5,
         // volume:0,
-        loops: 999
+        loops: 1
+      },
+
+      "ib4": {
+        file: "music/IRONBANE 4.mp3",
+        volume: 0.5,
+        // volume:0,
+        loops: 1
+      },
+
+      "ib5": {
+        file: "music/IRONBANE 5.mp3",
+        volume: 0.5,
+        // volume:0,
+        loops: 1
+      },
+
+      "underground": {
+        file: "music/underground.mp3",
+        volume: 0.5,
+        // volume:0,
+        loops: 1
       },
 
       "click": "ui/click.wav",
@@ -171,7 +206,11 @@ var SoundHandler = Class.extend({
           url: ironbane_root_directory + 'plugins/game/sound/' + soundHandler.soundList[s].file,
           autoLoad: true,
           onload: function(success) {
-            if (success) {soundHandler.OnLoad(s);}
+
+            if (success) {
+              console.log("Loaded sound "+s);
+              soundHandler.OnLoad(s);
+            }
           }
         });
       })(s);

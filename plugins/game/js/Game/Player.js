@@ -474,7 +474,7 @@ var Player = Fighter.extend({
 
     var additionalCanMove = true;
 
-    if ( this.terrainAngle > 45 && this.position.y > GetZoneConfig('waterLevel') ) additionalCanMove = false;
+    if ( this.terrainAngle > 45 && this.position.y > GetZoneConfig('fluidLevel') ) additionalCanMove = false;
 
 
     var inputVelocity = new THREE.Vector3();
@@ -561,11 +561,11 @@ var Player = Fighter.extend({
     if ( le("chSpeed") ) maxSpeed *= 10;
 
 
-    //if ( zones[terrainHandler.zone]['enableWater'] ) {
-    if ( GetZoneConfig('enableWater') ) {
-      // Make some water splashes when we're moving under the waterLevel
+    //if ( zones[terrainHandler.zone]['enableFluid'] ) {
+    if ( GetZoneConfig('enableFluid') ) {
+      // Make some water splashes when we're moving under the fluidLevel
 
-      if ( this.position.y < GetZoneConfig('waterLevel')  ) {
+      if ( this.position.y < GetZoneConfig('fluidLevel')  ) {
 
 
         var waterFrictionVector = this.velocity.clone().normalize().multiplyScalar(dTime*10);
@@ -574,7 +574,7 @@ var Player = Fighter.extend({
         this.velocity.subSelf(waterFrictionVector);
         //}
 
-        maxSpeed -= (GetZoneConfig('waterLevel')-this.position.y)*4;
+        maxSpeed -= (GetZoneConfig('fluidLevel')-this.position.y)*4;
         maxSpeed = Math.max(2, maxSpeed);
 
       }

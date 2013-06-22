@@ -223,6 +223,11 @@ var Cell = Class.extend({
 
         waypointsOnly = waypointsOnly || false;
 
+        if ( _.isEmpty(this.objectData) ) {
+            // Skip to add mesh instantly
+            this.AddMesh();
+        }
+
         _.each(this.objectData, function(gObject) {
 
             if ( waypointsOnly ) return;

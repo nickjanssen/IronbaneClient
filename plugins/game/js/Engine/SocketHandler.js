@@ -173,13 +173,11 @@ var SocketHandler = Class.extend({
             setTimeout(function(){ironbane.showingGame = false;}, 100);
 
 
-            if ( reply.zone != terrainHandler.zone ) {
-                terrainHandler.Destroy();
-                terrainHandler.zone = reply.zone;
-                terrainHandler.status = terrainHandlerStatusEnum.INIT;
-            }
 
-            // Hacky, fill em up later
+            terrainHandler.ChangeZone(reply.zone);
+
+
+            // Hacky, fill em upt later
             socketHandler.playerData.items = reply.items;
 
 
@@ -492,40 +490,20 @@ var SocketHandler = Class.extend({
 
                 if ( unit == ironbane.player ) {
 
+                    terrainHandler.transitionState = transitionStateEnum.START;
+
                       $('#gameFrame').animate({
                         opacity: 0.00
                       }, 1000, function() {
+
+                        terrainHandler.transitionState = transitionStateEnum.MIDDLE;
 
                         setTimeout(function(){ironbane.showingGame = false;}, 100);
 
 
                         socketHandler.readyToReceiveUnits = false;
 
-
-                        if ( data.z != terrainHandler.zone ) {
-
-                            terrainHandler.Destroy();
-
-                            terrainHandler.zone = data.z;
-
-                            terrainHandler.status = terrainHandlerStatusEnum.INIT;
-
-                            bm(zones[data.z].name);
-
-
-                            // $('#itemBar').show();
-                            // $("#coinBar").show();
-                            // $("#statBar").show();
-
-                            // // bm('<span style="color:red">You died.</span>');
-                            // // setTimeout(function(){
-                            // //   bm('<span style="color:lightgreen">Press Escape to go back to the main menu.</span>');
-                            // // }, 6000);
-
-                            // $('div[id^="li"]').show();
-                            // $('div[id^="ii"]').show();
-
-                        }
+                        terrainHandler.ChangeZone(data.z);
 
                         ironbane.player.unitStandingOn = null;
 
@@ -611,30 +589,24 @@ var SocketHandler = Class.extend({
 
         this.socket.on('teleport', function (data) {
 
+            this.transitionState = transitionStateEnum.START;
 
           $('#gameFrame').animate({
             opacity: 0.00
           }, 1000, function() {
 
+
+
             setTimeout(function(){ironbane.showingGame = false;}, 100);
+
+            setTimeout(function(){
+                terrainHandler.transitionState = transitionStateEnum.MIDDLE;
+            }, 100);
 
 
             socketHandler.readyToReceiveUnits = false;
 
-            if ( data.zone != terrainHandler.zone ) {
-
-
-                terrainHandler.Destroy();
-
-                terrainHandler.zone = data.zone;
-
-                terrainHandler.status = terrainHandlerStatusEnum.INIT;
-
-
-
-                bm(zones[data.zone].name);
-
-            }
+            terrainHandler.ChangeZone(data.zone);
 
             ironbane.player.localPosition.copy(data.pos);
             ironbane.player.unitStandingOn = null;
@@ -662,6 +634,7 @@ var SocketHandler = Class.extend({
 
 
             victim.GetMeleeHit(attacker);
+
 
         });
         this.socket.on('setTileHeight', function (array) {

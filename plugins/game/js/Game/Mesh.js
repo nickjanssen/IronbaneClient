@@ -132,7 +132,7 @@ var Mesh = Unit.extend({
 
         _.each(cell.objects, function(obj) {
 
-          if ( me.InRangeOfPosition(this.position, light.distance) ) {
+          if ( me.InRangeOfPosition(obj.position, light.distance) ) {
             if ( obj.mesh ) {
               if ( ISDEF(obj.mesh.material.needsUpdate) ) {
                 obj.mesh.material.needsUpdate = true;

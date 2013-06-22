@@ -315,6 +315,27 @@ var ParticleTypeEnum = {
         particleStartScale: new THREE.Vector2(1.5,1.5),
         particleOpacity: function(p){return ParticleFunctions.OpacityLifeTime(p, 0.1, 0.9);}
     },
+    LAVABURN: {
+        texture: function(){
+            return ChooseRandom(['particles/flame1','particles/flame2','particles/flame3'])
+        },
+        delay: 0,
+        // The amount of particles to spawn
+        // -1 = infinite (default)
+        count: 1,
+        // The amount of time to spawn particles
+        // -1 = infinite (default)
+        particleStartPosition: function(){return new THREE.Vector3(0, 0.5, 0)},
+        particleStartVelocity: function(){
+            var angle = getRandomFloat(0,1) * Math.PI * 2;
+            return new THREE.Vector3(Math.cos(angle)*getRandomFloat(0,1), getRandomFloat(0,2), Math.sin(angle)*getRandomFloat(0,1))
+        },
+        particleEnableGravity: true,
+        lifeTime: -1,
+        particleLifeTime: 2.0,
+        particleStartScale: new THREE.Vector2(1.5,1.5),
+        particleOpacity: function(p){return ParticleFunctions.OpacityLifeTime(p, 0.1, 0.9);}
+    },
     ACIDBALL: {
         texture: 'projectiles/acidball',
         delay: 0,

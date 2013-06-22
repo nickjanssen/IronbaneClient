@@ -397,6 +397,11 @@ var Unit = PhysicsObject.extend({
   },
   Tick: function(dTime) {
 
+
+    if ( this instanceof Player &&
+      (!ironbane.player.canMove ||
+        terrainHandler.transitionState !== transitionStateEnum.END) ) return;
+
     this._super(dTime);
 
     if ( !(this instanceof Player) && ironbane.player ) {
@@ -516,7 +521,7 @@ var Unit = PhysicsObject.extend({
 
         var grav = gravity.clone();
 
-        if ( GetZoneConfig("enableWater") && this.position.y < GetZoneConfig('waterLevel')-0.5 ) {
+        if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel')-0.5 ) {
           grav.multiplyScalar(-1);
           if ( this.velocity.y < -0.5 ) {
             this.velocity.addSelf(new THREE.Vector3(0, dTime*15, 0));
@@ -527,20 +532,20 @@ var Unit = PhysicsObject.extend({
 
 
         }
-        if ( GetZoneConfig("enableWater") && this.position.y < GetZoneConfig('waterLevel') ) {
+        if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel') ) {
 
           //this.allowCheckGround = false;
 
           if ( this.waterSplashTimeout >= 0 ) this.waterSplashTimeout -= dTime;
           else {
             this.waterSplashTimeout = 0.1;
-            particleHandler.Add(ParticleTypeEnum.SPLASH, {
+            particleHandler.Add(GetZoneConfig("fluidType") === "lava" ? ParticleTypeEnum.LAVABURN : ParticleTypeEnum.SPLASH, {
               position:this.position.clone()
             });
           }
         }
 
-        if ( !GetZoneConfig("enableWater") || this.position.y < GetZoneConfig('waterLevel')-0.6 || this.position.y > GetZoneConfig('waterLevel')-0.4 ) {
+        if ( !GetZoneConfig("enableFluid") || this.position.y < GetZoneConfig('fluidLevel')-0.6 || this.position.y > GetZoneConfig('fluidLevel')-0.4 ) {
           this.velocity.addSelf(grav.clone().multiplyScalar(dTime));
         }
         else {
@@ -645,7 +650,7 @@ var Unit = PhysicsObject.extend({
 
           for ( var ro=0;ro<rayList.length;ro++ ) {
 
-            if ( GetZoneConfig("enableWater") && this.position.y < GetZoneConfig('waterLevel')-0.5 ) continue;
+            if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel')-0.5 ) continue;
 
             var rayCastPos = this.position.clone().addSelf(rayList[ro]);
 

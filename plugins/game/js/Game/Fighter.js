@@ -862,7 +862,7 @@ var Fighter = Unit.extend({
   },
   Jump: function() {
 
-    if ( this.terrainAngle > 45 && this.position.y > GetZoneConfig('waterLevel') ) return;
+    if ( this.terrainAngle > 45 && this.position.y > GetZoneConfig('fluidLevel') ) return;
 
     this.lastJumpTimer = 1.0;
 
@@ -889,41 +889,43 @@ var Fighter = Unit.extend({
   GetMeleeHit: function(attacker, power) {
 
 
-    // Don't get hit by healing spells
-    if ( attacker.id > 0 && this.id > 0 ) return;
+    if ( attacker ) {
+      // Don't get hit by healing spells
+      if ( attacker.id > 0 && this.id > 0 ) return;
 
 
-    // We can't hit dead people
-    if ( this.dead ) return;
+      // We can't hit dead people
+      if ( this.dead ) return;
 
 
-    attacker.SwingWeapon(this.position, attacker.weaponTemplate);
+      attacker.SwingWeapon(this.position, attacker.weaponTemplate);
 
 
-    power = power || 0.3;
+      power = power || 0.3;
 
-    //this.noPositionUpdateTimer = 0.1;
-    //this.isTouchingGround = false;
+      //this.noPositionUpdateTimer = 0.1;
+      //this.isTouchingGround = false;
 
-    this.meleeHitTimer = meleeTime * (0.5 + (power / 2));
+      this.meleeHitTimer = meleeTime * (0.5 + (power / 2));
 
-    var force = this.position.clone().subSelf(attacker.position).normalize().multiplyScalar(power);
-    force.y  = power;
+      var force = this.position.clone().subSelf(attacker.position).normalize().multiplyScalar(power);
+      force.y  = power;
 
-    this.renderOffset = force;
+      this.renderOffset = force;
 
 
-    // if ( this.armor > 0 ) {
-    //   soundHandler.Play("hit1", this.position);
-    // }
-    // else {
-    //   soundHandler.Play("hit2", this.position);
-    // }
+      // if ( this.armor > 0 ) {
+      //   soundHandler.Play("hit1", this.position);
+      // }
+      // else {
+      //   soundHandler.Play("hit2", this.position);
+      // }
 
-    //        if ( attacker != ironbane.player && pos ) {
-    //            attacker.SwingWeapon(pos);
-    //        }
-    //
+      //        if ( attacker != ironbane.player && pos ) {
+      //            attacker.SwingWeapon(pos);
+      //        }
+      //
+    }
 
     if ( this.health <= 0 ) {
 

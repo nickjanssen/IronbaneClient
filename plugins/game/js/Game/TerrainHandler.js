@@ -31,6 +31,11 @@ var terrainHandlerStatusEnum = {
   DESTROYED: 3
 };
 
+var transitionStateEnum = {
+  START: 0,
+  MIDDLE: 1,
+  END: 2
+};
 // Init:
 //  First, make sure that all cells in range of the player are loaded
 //  Send a Destroy signal to cells that are out of range
@@ -53,6 +58,11 @@ var TerrainHandler = Class.extend({
     this.lastOctreeBuildPosition = new THREE.Vector3(0, 1000000000, 0);
 
     this.currentMusic = "";
+    this.targetMusic = "";
+
+    // Used to freeze the player between teleports, so they don't fall down
+    // because of gravity inside a terrain/mesh between teleports
+    this.transitionState = transitionStateEnum.END;
   },
   Destroy: function() {
     _.each(this.cells, function(cell) {
@@ -82,31 +92,6 @@ var TerrainHandler = Class.extend({
       particleHandler.Add(ParticleTypeEnum.CLOUD, {});
     }
 
-    var zoneMusicPiece = ChooseRandom(GetZoneConfig("music"));
-
-    if ( socketHandler.loggedIn ) {
-      if ( this.currentMusic != zoneMusicPiece ) {
-        if ( this.currentMusic ) {
-          soundHandler.FadeOut(this.currentMusic, 5.00);
-
-          setTimeout(function() {
-            soundHandler.FadeIn(zoneMusicPiece, 5.00) ;
-          }, 5000);
-        }
-        else {
-          soundHandler.FadeIn(zoneMusicPiece, 5.00) ;
-        }
-
-        this.currentMusic = zoneMusicPiece;
-      }
-    }
-    else {
-        if ( this.currentMusic ) {
-          soundHandler.FadeOut(this.currentMusic, 5.00);
-          this.currentMusic = "";
-        }
-    }
-
     var me = this;
     this.skybox = new Skybox(function() {
       me.status = terrainHandlerStatusEnum.LOADED;
@@ -119,15 +104,17 @@ var TerrainHandler = Class.extend({
       ironbane.scene.remove(this.waterMesh);
     }
 
-    if ( !GetZoneConfig('enableWater') ) return;
+    if ( !GetZoneConfig('enableFluid') ) return;
 
-    var texture = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('waterTexture')+'.png', true);
+
+
+    var texture = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('fluidTexture')+'.png', true);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.x = 1000;
     texture.repeat.y = 1000;
 
-    var texture2 = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('waterTextureGlow')+'.png', true);
+    var texture2 = textureHandler.GetTexture( 'plugins/game/images/tiles/'+GetZoneConfig('fluidTextureGlow')+'.png', true);
     texture2.wrapS = THREE.RepeatWrapping;
     texture2.wrapT = THREE.RepeatWrapping;
     texture2.repeat.x = 1000;
@@ -171,15 +158,15 @@ var TerrainHandler = Class.extend({
 
     var shaderMaterial = new THREE.ShaderMaterial({
       uniforms : uniforms,
-      vertexShader : $('#vertex_water').text(),
-      fragmentShader : $('#fragment_water').text(),
-      transparent: true
+      vertexShader : $('#vertex_'+GetZoneConfig("fluidType")).text(),
+      fragmentShader : $('#fragment_'+GetZoneConfig("fluidType")).text(),
+      transparent: GetZoneConfig("fluidType") === "lava" ? false : true
     //alphaTest: 0.5
     });
 
     this.waterMesh = new THREE.Mesh(planeGeo, shaderMaterial);
     this.waterMesh.rotation.x = -Math.PI/2;
-    this.waterMesh.position.y = GetZoneConfig('waterLevel');
+    this.waterMesh.position.y = GetZoneConfig('fluidLevel');
     this.waterMesh.geometry.dynamic = true;
 
     ironbane.scene.add(this.waterMesh);
@@ -220,6 +207,22 @@ var TerrainHandler = Class.extend({
     }
 
     return p;
+  },
+  ChangeZone: function(newZone) {
+
+    if ( this.zone != newZone ) {
+      this.Destroy();
+      this.zone = newZone;
+      this.status = terrainHandlerStatusEnum.INIT;
+      bm(zones[this.zone].name);
+    }
+
+    var zoneMusicPiece = ChooseRandom(GetZoneConfig("music"));
+
+    if ( socketHandler.loggedIn ) {
+      this.targetMusic = zoneMusicPiece;
+    }
+
   },
   ReloadCells: function() {
     _.each(this.cells, function(cell) {
@@ -355,6 +358,15 @@ var TerrainHandler = Class.extend({
 
     }
 
+    if ( this.transitionState === transitionStateEnum.MIDDLE && this.status === terrainHandlerStatusEnum.LOADED &&
+      !this.IsLoadingCells() ) {
+
+        terrainHandler.transitionState = -1;
+        setTimeout(function(){
+            terrainHandler.transitionState = transitionStateEnum.END;
+        }, 100);
+    }
+
     if ( !socketHandler.readyToReceiveUnits &&
       this.status === terrainHandlerStatusEnum.LOADED &&
       socketHandler.loggedIn ) {
@@ -415,6 +427,23 @@ var TerrainHandler = Class.extend({
         });
         break;
     }
+
+    if ( this.targetMusic != this.currentMusic ) {
+      var me = this;
+      if ( this.currentMusic ) {
+        soundHandler.FadeOut(this.currentMusic, 5.00);
+
+        setTimeout(function() {
+          soundHandler.FadeIn(me.targetMusic, 5.00) ;
+        }, 5000);
+      }
+      else {
+        soundHandler.FadeIn(this.targetMusic, 5.00) ;
+      }
+
+      this.currentMusic = this.targetMusic;
+    }
+
 
 
 

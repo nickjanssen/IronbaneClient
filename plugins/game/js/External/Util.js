@@ -308,6 +308,8 @@ if ( !SERVER ) {
   }
 
   function FindUnit(id) {
+    if ( !id ) return null;
+
     if ( ironbane.player && ironbane.player.id == id ) return ironbane.player;
 
     for (i = 0; i < ironbane.unitList.length; i++) {
