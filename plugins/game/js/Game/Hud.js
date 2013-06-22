@@ -490,11 +490,11 @@ var HUDHandler = Class.extend({
 
             if (ISDEF(reply.offeredPrice)) {
 
-                var goldPieces = hudHandler.GetStatContent(reply.offeredPrice, 'misc/coin_medium', reply.offeredPrice, true, true);
+                var goldPieces = hudHandler.GetStatContent(1, 'misc/coin_medium', 1, true, true);
 
                 var doReturn = false;
 
-                hudHandler.MessageAlert("I'd offer " + goldPieces + " for yer " + items[startItem.template].name + ". What do ye think?", 'question', function() {
+                hudHandler.MessageAlert('I\'d offer <span style="color:rgb(255, 215, 0)">'+reply.offeredPrice+' x ' + goldPieces + '</span> for yer ' + items[startItem.template].name + '. What do ye think?', 'question', function() {
                     hudHandler.PutItem(startItem, slotNumber, slotID, true)
                 }, function() { // Teleport back!
                     TeleportElement('ii' + startItem.id, 'is' + startItem.slot);
