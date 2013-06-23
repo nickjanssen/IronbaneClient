@@ -1,9 +1,11 @@
 /plugins/game/images/characters/cache/*.*
 /plugins/game/data/
 /plugins/game/images/
+/plugins/game/sound/
 /workshop/
 /uploads/
 config.php
 *.psd
 dbErrors.txt
 Thumbs.db
+desktop.ini
