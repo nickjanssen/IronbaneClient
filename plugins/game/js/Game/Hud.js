@@ -1997,6 +1997,12 @@ var HUDHandler = Class.extend({
         $("#book").hide();
     },
     AddChatMessage: function(msg) {
+        if (typeof msg === 'string') {
+            // wrap it in an object for the template
+            msg = {
+                message: msg
+            };
+        }
         $('#chatContent').trigger('onMessage', msg);
     }
 });
