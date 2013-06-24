@@ -697,7 +697,7 @@ function RawVector3(vec) {
 
 
 function ISDEF(o) {
-  return typeof o != "undefined";
+  return typeof o !== "undefined";
 };
 
 

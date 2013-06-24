@@ -187,35 +187,37 @@ var SoundHandler = Class.extend({
 
       "placeholder": "placeholder"
     };
+    var self = this;
     for (var s in this.soundList) {
+      console.log(s);
       if (typeof this.soundList[s] !== 'object') {
         this.soundList[s] = {
           file: this.soundList[s]
         };
       }
 
-      if (!ISDEF(this.soundList[s]['volume'])) {
-        this.soundList[s]['volume'] = 0.3;
+      if (!ISDEF(this.soundList[s].volume)) {
+        
+        this.soundList[s].volume = 0.3;
       }
-    }
 
-    for (var s in this.soundList) {
-      (function(s) {
-        soundHandler.sounds[s] = soundManager.createSound({
+       (function(s) {
+        self.sounds[s] = soundManager.createSound({
           id: s,
-          url: ironbane_root_directory + 'plugins/game/sound/' + soundHandler.soundList[s].file,
+          url: ironbane_root_directory + 'plugins/game/sound/' + self.soundList[s].file,
           autoLoad: true,
           onload: function(success) {
 
             if (success) {
               console.log("Loaded sound "+s);
-              soundHandler.OnLoad(s);
+              self.OnLoad(s);
             }
           }
         });
       })(s);
     }
 
+     
 
   },
   FadeOut: function(sound, time) {
