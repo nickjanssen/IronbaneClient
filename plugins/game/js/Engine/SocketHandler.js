@@ -206,7 +206,7 @@ var SocketHandler = Class.extend({
                 template = {type:UnitTypeEnum.PLAYER};
             }
 
-            var unitname = data.id < 0 ? template.name : data.name
+            var unitname = data.id < 0 ? template.name : data.name;
 
             switch (template.type) {
                 case UnitTypeEnum.MOVINGOBSTACLE:

@@ -440,7 +440,7 @@ else if ( $action == "getchars" ) {
 				startdata.user = '.$userdata["id"].';
                 startdata.name = "'.$userdata["name"].'";
                 startdata.pass = "'.$userdata["pass"].'";
-                startdata.characterUsed = "'.$userdata["characterused"].'";
+                startdata.characterUsed = "'.$userdata["characterUsed"].'";
 				charCount = chars.length;
 
 				if ( charCount > 0 && startdata.characterUsed == 0 ) startdata.characterUsed = chars[0].id;

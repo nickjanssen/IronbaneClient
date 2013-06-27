@@ -1710,9 +1710,8 @@ var HUDHandler = Class.extend({
             //   preload(['plugins/game/images/characters/base/skin/'+x+'_big.png']);
             // }
 
-            var newChar = '';
-
-            newChar += '<label for="ncname">Name</label><div class="spacersmall"></div><input type="text" id="ncname" class="iinput" style="width:305px" maxlength="12"><div id="charCustomizationContainer"><div id="charCustomizationButtonsLeft"></div><div id="charCustomizationPreview"></div><div id="charCustomizationButtonsRight"></div></div><button id="btnConfirmNewChar" class="ibutton_attention" style="width:150px">Create</button><button id="btnBackMainChar" class="ibutton" style="width:150px">Cancel</button>';
+            
+            var newChar = '<label for="ncname">Name</label><div class="spacersmall"></div><input type="text" id="ncname" class="iinput" style="width:305px" maxlength="12"><div id="charCustomizationContainer"><div id="charCustomizationButtonsLeft"></div><div id="charCustomizationPreview"></div><div id="charCustomizationButtonsRight"></div></div><button id="btnConfirmNewChar" class="ibutton_attention" style="width:150px">Create</button><button id="btnBackMainChar" class="ibutton" style="width:150px">Cancel</button>';
 
             $('#charSelect').html(newChar);
 
