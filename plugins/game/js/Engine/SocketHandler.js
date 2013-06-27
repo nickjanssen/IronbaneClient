@@ -403,28 +403,6 @@ var SocketHandler = Class.extend({
 
         });
 
-//        this.socket.on('items', function (data) {
-//            //if ( !socketHandler.loggedIn ) return;
-//            if ( ISDEF(data.errmsg) ) {
-//                hudHandler.MessageAlert(data.errmsg);
-//                return;
-//            }
-//
-//            // Loop over our items, and check which ones we are wearing and have equipped
-//
-//
-//            socketHandler.playerData.items = data;
-//
-//            hudHandler.MakeSlotItems(false);
-//        });
-        this.socket.on('setCoins', function (coins) {
-            // occurs when someone nearby loots from a bag
-            // refresh the bag
-            ironbane.player.coins = coins;
-            hudHandler.MakeCoinBar(true);
-
-        });
-
         this.socket.on('receiveItem', function (data) {
             // occurs when someone nearby loots from a bag
             // refresh the bag

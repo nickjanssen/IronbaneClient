@@ -275,44 +275,6 @@ var HUDHandler = Class.extend({
                 greedy: true
             });
         }
-
-        // Disabled for now due to deadline, there are no cash items yet
-        // and the whole idea is still unclear
-        // add special coin slot
-        // if (!isLoot) {
-        //     var coinSlot = $('<div id="cashbox" class="itemBarSlot" style="width:48px;height:48px;background-image: url(plugins/game/images/hud/lootslot.png);background-size:48px;"></div>');
-        //     coinSlot.appendTo(div);
-
-        //     coinSlot.droppable({
-        //         drop: this.ItemSwitchEvent,
-        //         greedy: true
-        //     });
-
-        //     coinSlot.dblclick(function(e) {
-        //         // todo: add a popup asking how many coins to drop
-        //         var poppa = [
-        //                 '<h3>Drop how many?</h3>',
-        //                 '<input id="cashbox-drop-amount" class="iinput" type="text" value="1" />'
-        //         ].join('');
-        //         HUD.MessageAlert(poppa, 'question', function() {
-        //             var amount = parseInt($('#cashbox-drop-amount').val(), 10);
-        //             if (amount <= 0) {
-        //                 console.error('cant drop that low');
-        //                 return;
-        //             }
-        //             socketHandler.socket.emit('dropCash', {
-        //                 amount: amount
-        //             }, function(err, response) {
-        //                 if (err) {
-        //                     console.error('error dropping cash', err);
-        //                     return;
-        //                 }
-
-        //                 console.log('drop cash success', response);
-        //             });
-        //         });
-        //     });
-        // }
     },
     UpdateEquippedItems: function() {
         for (var x = 0; x < 10; x++) {
@@ -385,36 +347,6 @@ var HUDHandler = Class.extend({
             } else if (!ironbane.player.canLoot && slotID === 'gameFrame') {
                 // Send a request
                 hudHandler.DropItem(startItem, itemID, itemNumber);
-            } else if (slotID === 'cashbox') {
-                //console.log('droppin on the cash box', itemID, startItem, items[startItem.template]);
-                if (items[startItem.template].type !== 'cash') {
-                    // Revert
-                    TeleportElement(itemID, 'is' + startItem.slot);
-                } else {
-                    //console.log('dropped some coin on the box!', items[startItem.template], startItem);
-                    socketHandler.socket.emit('putCash', {
-                        itemId: startItem.id,
-                        slotNumber: slotNumber
-                    }, function(err, response) {
-                        if (err) {
-                            console.error('error dropping cash', err, startItem);
-                            // Revert
-                            TeleportElement(itemID, 'is' + startItem.slot);
-                            return;
-                        }
-
-                        // for success we remove this from the DOM
-                        $('#' + itemID).remove();
-                        // hide tooltip
-                        $("#tooltip").hide();
-                        // remove from items array
-                        socketHandler.playerData.items = _.filter(socketHandler.playerData.items, function(item) {
-                            return item.id !== startItem.id;
-                        });
-                        // update hud
-                        hudHandler.UpdateEquippedItems();
-                    });
-                }
             } else {
                 // Revert
                 TeleportElement(itemID, 'is' + startItem.slot);
@@ -435,33 +367,6 @@ var HUDHandler = Class.extend({
                 switchItem = hudHandler.FindItemBySlot(slotNumber, false);
 
                 hudHandler.LootItem(switchItem, startItem, slotNumber, slotID);
-            } else if (slotID === 'cashbox') {
-                if (items[startItem.template].type !== 'cash') {
-                    // Revert
-                    TeleportElement(itemID, 'ls' + startItem.slot);
-                } else {
-                    console.log('attempting coins from loot: ', ironbane.player.lootUnit);
-
-                    socketHandler.socket.emit('putCash', {
-                        npcId: ironbane.player.lootUnit.id,
-                        itemId: startItem.id,
-                        slotNumber: slotNumber
-                    }, function(err, response) {
-                        if (err) {
-                            console.error('error dropping cash', err, startItem);
-                            // Revert
-                            TeleportElement(itemID, 'ls' + startItem.slot);
-                            return;
-                        }
-
-                        // for success we remove this from the DOM
-                        $('#' + itemID).remove();
-                        // hide tooltip
-                        $("#tooltip").hide();
-                        // remove from loot bag unit's list
-                        console.log('loot bag owner', ironbane.player.lootUnit);
-                    });
-                }
             } else {
                 // Revert
                 TeleportElement(itemID, 'ls' + startItem.slot);
@@ -612,19 +517,18 @@ var HUDHandler = Class.extend({
         });
     },
     SwitchItem: function(slotNumber, startItem, itemID, slotID, inLoot) {
-
         var data = {
             'slotNumber': slotNumber,
             'itemID': startItem.id
         };
 
         if (inLoot) {
-            data['npcID'] = ironbane.player.lootUnit.id;
+            data.npcID = ironbane.player.lootUnit.id;
         }
 
         socketHandler.socket.emit('switchItem', data, function(reply) {
 
-            if (ISDEF(reply.errmsg)) {
+            if (reply.errmsg) {
                 hudHandler.MessageAlert(reply.errmsg);
 
                 // Teleport back!
@@ -657,7 +561,6 @@ var HUDHandler = Class.extend({
             hudHandler.UpdateEquippedItems();
 
             soundHandler.Play(ChooseRandom(["bag1"]));
-
         });
     },
     LootItem: function(switchItem, startItem, slotNumber, slotID) {
@@ -1046,7 +949,7 @@ var HUDHandler = Class.extend({
     MakeCoinBar: function(flash) {
         var self = this,
             el = $('#coinBar'),
-            coins = ironbane.player.coins,
+            coins = ironbane.player.getTotalCoins(),
             img = 'misc/coin_medium',
             imgFlash = 'misc/coin_medium_flash',
             src = 'plugins/game/images/' + (flash ? imgFlash : img) + '_full.png';

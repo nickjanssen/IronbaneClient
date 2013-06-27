@@ -14,16 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 var CameraStatusEnum = {
-  ThirdPerson:"ThirdPerson",
-  ThirdPersonToFirstPersonTransition:"ThirdPersonToFirstPersonTransition",
-  FirstPerson:"FirstPerson"
-}
+    ThirdPerson: "ThirdPerson",
+    ThirdPersonToFirstPersonTransition: "ThirdPersonToFirstPersonTransition",
+    FirstPerson: "FirstPerson"
+};
 
 var Player = Fighter.extend({
   Init: function(position, rotation, id, name) {
@@ -59,8 +55,6 @@ var Player = Fighter.extend({
     this.lootUnit = null;
 
     this.cameraStatus = CameraStatusEnum.ThirdPerson;
-
-    this.coins = socketHandler.playerData['coins'];
 
     // this.lookAtPosition = new THREE.Vector3();
 
@@ -116,6 +110,16 @@ var Player = Fighter.extend({
     //this.heartPieces = socketHandler.playerData.heartPieces.split(",");
 
   },
+    getTotalCoins: function() {
+        console.log('getTotalCoins', socketHandler.playerData.items);
+
+        // sum value of cash items in inventory
+        return _.reduce(_.pluck(_.where(socketHandler.playerData.items, {
+            type: 'cash'
+        }), 'value'), function(memo, num) {
+            return memo + num;
+        }, 0);
+    },
   CheckForItemsBeforeMakingImage: function() {
     if ( socketHandler.playerData.items == null ) {
       setTimeout(function(){
