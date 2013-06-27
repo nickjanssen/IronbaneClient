@@ -348,7 +348,6 @@ var mouseIntervalFunction = function(event){
 
         _.each(ironbane.unitList, function(obj) {
 
-          var obj = ironbane.unitList[u];
 
           if ( obj.InRangeOfPosition(position, 1)
             && ((obj instanceof Unit) && obj.id < 0) ) {
@@ -363,9 +362,8 @@ var mouseIntervalFunction = function(event){
         }
         else {
           _.each(ironbane.unitList, function(unit) {
-            var unit = ironbane.unitList[u];
-
-            if ( unit.id >= 0 ) continue;
+            
+            if ( unit.id < 0 ) {
 
             if ( currentMouseToWorldData.object == unit.mesh ) {
               if ( levelEditor.editorGUI.neDeleteMode ) {
@@ -373,7 +371,7 @@ var mouseIntervalFunction = function(event){
               }
 
             }
-
+              }
           });
         }
       }
