@@ -23,17 +23,11 @@
 
 var rotation_speed = 100;
 
-
 var unitFriction = 3;
 var unitMaxSpeed = 5;
 var unitMaxSpeedBackwards = 3;
 
 var sizeScalingSpeed = 2;
-
-
-
-
-
 
 var Unit = PhysicsObject.extend({
   Init: function(position, rotation, id, name, param, size) {
@@ -137,7 +131,7 @@ var Unit = PhysicsObject.extend({
     uc.x = tx;
     uc.z = tz;
 
-    var result = parseInt(Math.atan2(uc.z, uc.x) * (180/Math.PI));
+    var result = parseInt(Math.atan2(uc.z, uc.x) * (180/Math.PI), 10);
 
     result += 180;
 
@@ -309,9 +303,9 @@ var Unit = PhysicsObject.extend({
   },
   Destroy: function() {
 
-    for(var p=0;p<this.lightsToMaintain.length;p++){
-      this.object3D.remove(this.lightsToMaintain[p]);
-    }
+    _.each(this.lightsToMaintain, function(light){
+      this.object3D.remove(light);
+    });
 
     if ( this.mesh ) {
 
@@ -335,8 +329,6 @@ var Unit = PhysicsObject.extend({
               object.material.deallocate();
             }
           }
-
-
 
           object.deallocate();
 
@@ -390,9 +382,6 @@ var Unit = PhysicsObject.extend({
   },
   DisplayUVFrame: function(indexH, indexV, numberOfSpritesH, numberOfSpritesV, mirror) {
     if  ( !this.mesh ) return;
-
-
-
     DisplayUVFrame(this.mesh, indexH, indexV, numberOfSpritesH, numberOfSpritesV, mirror);
   },
   Tick: function(dTime) {
@@ -424,10 +413,6 @@ var Unit = PhysicsObject.extend({
         // }
       }
     }
-
-
-
-
     // Automatic scaling
     var sizeMod = sizeScalingSpeed * dTime;
 
@@ -440,10 +425,6 @@ var Unit = PhysicsObject.extend({
     else {
       this.size = this.targetSize;
     }
-
-
-
-
 
     var radians = (this.rotation.y + 90) * (Math.PI/180);
 
@@ -633,8 +614,8 @@ var Unit = PhysicsObject.extend({
         }
 
         // We don't like to cast rays when we're at 0,0, causes glitches
-        if ( this.position.x % 1 == 0 ) this.localPosition.x += 0.001;
-        if ( this.position.z % 1 == 0 ) this.localPosition.z += 0.001;
+        if ( this.position.x % 1 === 0 ) this.localPosition.x += 0.001;
+        if ( this.position.z % 1 === 0 ) this.localPosition.z += 0.001;
 
 
         // Stand on top of terrain and meshes
@@ -655,16 +636,13 @@ var Unit = PhysicsObject.extend({
             var rayCastPos = this.position.clone().addSelf(rayList[ro]);
 
             var ray = new THREE.Ray( rayCastPos, new THREE.Vector3(0, -1, 0));
-
-
-
-
-
             var normal = new THREE.Vector3();
             var point = new THREE.Vector3();
             var distance = 0;
             var succesfulRays = 0;
             var struckUnit = null;
+
+              var distanceCheck = 0.5;
 
 
             var intersects = terrainHandler.RayTest(ray, {
@@ -713,7 +691,6 @@ var Unit = PhysicsObject.extend({
                }
 
 
-              var distanceCheck = 0.5;
 
               distance = distance.Round(2);
 
@@ -735,7 +712,7 @@ var Unit = PhysicsObject.extend({
                 if ( showEditor && levelEditor.editorGUI.chClimb ) this.terrainAngle = 0;
 
                 if ( this.terrainAngle < 45 ) {
-                  normalCopy.set(0,1,0)
+                  normalCopy.set(0,1,0);
                 }
 
 

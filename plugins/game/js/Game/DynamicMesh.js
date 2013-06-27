@@ -34,7 +34,7 @@ var DynamicMesh = Mesh.extend({
 
         this.changeRotation = false;
 
-        if ( ISDEF(this.metadata.movementType) ) this.movementType = parseInt(this.metadata.movementType);
+        if ( ISDEF(this.metadata.movementType) ) this.movementType = parseInt(this.metadata.movementType, 10);
         if ( ISDEF(this.metadata.speedMultiplier) ) this.speedMultiplier = parseFloat(this.metadata.speedMultiplier);
         if ( ISDEF(this.metadata.distanceMultiplier) ) this.distanceMultiplier = parseFloat(this.metadata.distanceMultiplier);
 

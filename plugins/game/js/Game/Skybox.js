@@ -63,7 +63,7 @@ var Skybox = PhysicsObject.extend({
     ;
     ironbane.scene.add(this.sunMesh);
 
-    if ( zones[terrainHandler.zone]['type'] == ZoneTypeEnum.DUNGEON ) {
+    if ( zones[terrainHandler.zone].type == ZoneTypeEnum.DUNGEON ) {
       this.sunMesh.visible = false;
     }
 
@@ -107,14 +107,14 @@ var Skybox = PhysicsObject.extend({
     var textures = [];
 
     // Only push materials that are actually inside the materials
-    for (var i=0; i<geometry.jsonMaterials.length; i++) {
+    _.each(geometry.jsonMaterials, function(material) {
 
       // Check if there's a map inside the material, and if it contains a sourceFile
-      if ( !_.isUndefined(geometry.jsonMaterials[i]["mapDiffuse"])) {
+      if ( !_.isUndefined(material.mapDiffuse)) {
         // Extract the tile!
-        textures.push("images/tiles/"+(geometry.jsonMaterials[i]["mapDiffuse"].split("."))[0]);
+        textures.push("images/tiles/"+(material.mapDiffuse.split("."))[0]);
       }
-    }
+    });
 
     // Check if there's a map inside the material, and if it contains a sourceFile
     _.each(textures, function(texture) {

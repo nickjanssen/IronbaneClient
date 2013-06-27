@@ -1229,7 +1229,7 @@ var HUDHandler = Class.extend({
         }
 
         if (startdata.loggedIn) {
-            if (startdata.characterUsed == 0) {
+            if (startdata.characterUsed === 0) {
                 charSelect += '<button id="btnNewChar" class="ibutton' + (slotsLeft == 0 ? '_disabled' : '') + '" style="width:216px">Create Character</button>';
             } else {
 
@@ -1553,8 +1553,9 @@ var HUDHandler = Class.extend({
                     if (string == 'OK') {
 
                         $.post('gamehandler.php?action=getchars', function(data) {
+                           
+                            console.log(data);
                             eval(data);
-
                             startdata.loggedIn = true;
 
                             //hudHandler.EnableButtons(['btnConfirmLogin','btnBack']);
@@ -1895,7 +1896,7 @@ var HUDHandler = Class.extend({
                     chars.push(data);
 
                     charCount = chars.length;
-                    if (charCount > 0 && startdata.characterUsed == 0) startdata.characterUsed = chars[0].id;
+                    if (charCount > 0 && startdata.characterUsed === 0) startdata.characterUsed = chars[0].id;
 
                     hudHandler.MakeCharSelectionScreen();
                 });
@@ -1979,7 +1980,7 @@ var HUDHandler = Class.extend({
         if (ISDEF(textArray[page - 2])) {
             $("#bookFooterLeft").html('<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>');
             $("#bookPrevPage").click(function() {
-                hudHandler.ShowBook(text, page - 2)
+                hudHandler.ShowBook(text, page - 2);
             });
         } else {
             $("#bookFooterLeft").empty();
@@ -1987,7 +1988,7 @@ var HUDHandler = Class.extend({
         if (ISDEF(textArray[page + 2])) {
             $("#bookFooterRight").html('<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>');
             $("#bookNextPage").click(function() {
-                hudHandler.ShowBook(text, page + 2)
+                hudHandler.ShowBook(text, page + 2);
             });
         } else {
             $("#bookFooterRight").empty();

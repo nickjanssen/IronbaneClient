@@ -65,7 +65,7 @@ var ChatBubble = PhysicsObject.extend({
 
 
             ctx.font = '26pt Arial Black';
-            ctx.textAlign = 'center'
+            ctx.textAlign = 'center';
 
             var dim = ctx.measureText(fillText);
 

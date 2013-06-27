@@ -28,10 +28,10 @@ var ToggleableObstacle = Train.extend({
 
         this._super(position, rotation, id, param, metadata);
 
-        this.on = metadata['on'];
+        this.on = metadata.on;
         
 
-        this.maxSpeed = 5.0 * this.metadata['speedMultiplier'];
+        this.maxSpeed = 5.0 * this.metadata.speedMultiplier;
         
   
 //        (function(unit){
@@ -46,23 +46,7 @@ var ToggleableObstacle = Train.extend({
         
         this._super(geometry);
         
-        var height = this.boundingBox.size.y * this.metadata['distanceMultiplier'];
-        var width = this.boundingBox.size.x * this.metadata['distanceMultiplier'];
-        var depth = this.boundingBox.size.z * this.metadata['distanceMultiplier'];
-        
-        var mp = this.on ? 1 : 0;
-
-        switch (this.movementType) {
-            case ToggleableObstacleMovementTypeEnum.DoorX:
-                this.localPosition.x = this.startPosition.x + width * mp;
-                break;
-            case ToggleableObstacleMovementTypeEnum.DoorY:
-                this.localPosition.y = this.startPosition.y + height * mp;
-                break;                
-            case ToggleableObstacleMovementTypeEnum.DoorZ:
-                this.localPosition.z = this.startPosition.z + depth * mp;
-                break;                                       
-        }
+       this.Toggle(this.on);
         
         this.targetPosition = this.localPosition.clone();
         this.targetRotation = this.rotation.clone();
@@ -72,9 +56,9 @@ var ToggleableObstacle = Train.extend({
     Toggle: function(on) {
         this.on = on;
         
-        var height = this.boundingBox.size.y * this.metadata['distanceMultiplier'];
-        var width = this.boundingBox.size.x * this.metadata['distanceMultiplier'];
-        var depth = this.boundingBox.size.z * this.metadata['distanceMultiplier'];
+        var height = this.boundingBox.size.y * this.metadata.distanceMultiplier;
+        var width = this.boundingBox.size.x * this.metadata.distanceMultiplier;
+        var depth = this.boundingBox.size.z * this.metadata.distanceMultiplier;
         
         var mp = this.on ? 1 : 0;
 

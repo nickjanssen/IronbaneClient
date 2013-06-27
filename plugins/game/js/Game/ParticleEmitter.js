@@ -189,7 +189,7 @@ var ParticleEmitter = Class.extend({
         this.lifeTimer += dTime;
 
         if ((this.lifeTimer > this.lifeTime && this.lifeTime >= 0) ||
-            (this.count == 0 && this.particles.length == 0)) {
+            (this.count === 0 && this.particles.length === 0)) {
             this.removeNextTick = true;
         }
 
@@ -198,7 +198,7 @@ var ParticleEmitter = Class.extend({
 
         if ( this.delay > 0 ) this.delay -= dTime;
 
-        if (this.spawnTimer > this.spawnWaitTime && this.count != 0 && this.delay <= 0) {
+        if (this.spawnTimer > this.spawnWaitTime && this.count !== 0 && this.delay <= 0) {
             this.spawnTimer = 0.0;
 
             // Set a new timelimit depending on the delay spawn time (which can be random)

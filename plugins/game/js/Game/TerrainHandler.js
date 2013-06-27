@@ -295,7 +295,7 @@ var TerrainHandler = Class.extend({
 
     if ( !noMeshes ) {
       for(var m=0;m<meshList.length;m++) {
-        var subIntersects = ray.intersectOctreeObjects( meshList[m].octree.objects )
+        var subIntersects = ray.intersectOctreeObjects( meshList[m].octree.objects );
 
         intersects = intersects.concat(subIntersects);
       }

@@ -23,7 +23,7 @@ var CameraStatusEnum = {
   ThirdPerson:"ThirdPerson",
   ThirdPersonToFirstPersonTransition:"ThirdPersonToFirstPersonTransition",
   FirstPerson:"FirstPerson"
-}
+};
 
 var Player = Fighter.extend({
   Init: function(position, rotation, id, name) {
@@ -48,7 +48,7 @@ var Player = Fighter.extend({
 
     this.thirdPersonReference = this.originalThirdPersonReference.clone();
 
-    this.targetSize = socketHandler.playerData['size'];
+    this.targetSize = socketHandler.playerData.size;
 
     this.sendDataTimeout = 0.0;
 
@@ -60,7 +60,7 @@ var Player = Fighter.extend({
 
     this.cameraStatus = CameraStatusEnum.ThirdPerson;
 
-    this.coins = socketHandler.playerData['coins'];
+    this.coins = socketHandler.playerData.coins;
 
     // this.lookAtPosition = new THREE.Vector3();
 
@@ -117,9 +117,9 @@ var Player = Fighter.extend({
 
   },
   CheckForItemsBeforeMakingImage: function() {
-    if ( socketHandler.playerData.items == null ) {
+    if ( socketHandler.playerData.items === null ) {
       setTimeout(function(){
-        ironbane.player.CheckForItemsBeforeMakingImage()
+        ironbane.player.CheckForItemsBeforeMakingImage();
       }, 1000);
     }
     else {
@@ -127,8 +127,7 @@ var Player = Fighter.extend({
       var weapon = this.GetEquippedWeapon();
 
       if ( weapon ) {
-        var template = items[weapon['template']];
-        this.UpdateWeapon(template['id']);
+        this.UpdateWeapon(items[weapon.template].id);
       }
     }
 
@@ -274,17 +273,16 @@ var Player = Fighter.extend({
 
 
 
+    var crad = Math.cos(rotrad);
+    var srad = Math.sin(rotrad);
 
 
 
 
 
+    uc.x = ((uc.x * crad) - (uc.z * srad));
+    uc.z = ((uc.x * srad) + (uc.z * rotrad));
 
-    var tx = ((uc.x * Math.cos(rotrad)) - (uc.z * Math.sin(rotrad)));
-    var tz = ((uc.x * Math.sin(rotrad)) + (uc.z * Math.cos(rotrad)));
-
-    uc.x = tx;
-    uc.z = tz;
 
     var preTarget = this.position.clone().addSelf(uc);
 
@@ -450,17 +448,12 @@ var Player = Fighter.extend({
       this.targetRotation.y = this.localRotationY + this.unitStandingOn.rotation.y;
     }
     else {
-      this.targetRotation.y = this.localRotationY
+      this.targetRotation.y = this.localRotationY;
     }
     //
-    while ( this.targetRotation.y < 0 ) {
       //this.rotation.y += 360;
-      this.targetRotation.y += 360;
-    }
-    while ( this.targetRotation.y > 360 ) {
-      //this.rotation.y -= 360;
-      this.targetRotation.y -= 360;
-    }
+      this.targetRotation.y = this.targetRotation.y % 360;
+    
 
     if ( !this.unitStandingOn ) {
       this.localRotationY = this.targetRotation.y;
@@ -759,7 +752,7 @@ var Player = Fighter.extend({
 
       this.aimTexture = this.targetAimTexture;
 
-      if ( this.aimTexture != "" ) {
+      if ( this.aimTexture !== "" ) {
         this.aimMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1, 1),
           textureHandler.GetTexture('plugins/game/images/misc/'+this.aimTexture+'.png', false, {
             transparent:true,
@@ -892,15 +885,11 @@ var Player = Fighter.extend({
 
         // Don't return if out of range, instead adjust the position where we're
         // shooting at
-        if ( DistanceSq(position, this.position) > Math.pow(WeaponRanges[template['subtype']], 2) ) {
+        if ( DistanceSq(position, this.position) > Math.pow(WeaponRanges[template.subtype], 2) ) {
           var playerToPoint = position.clone().subSelf(this.position);
-          playerToPoint.normalize().multiplyScalar(WeaponRanges[template['subtype']]);
+          playerToPoint.normalize().multiplyScalar(WeaponRanges[template.subtype]);
           position = this.position.clone().addSelf(playerToPoint);
         }
-
-
-        var particle = template['particle'];
-
 
         var proj = new Projectile(this.position.clone().addSelf(this.side.clone().multiplyScalar(0.4)), position.clone(), this);
 
@@ -1109,15 +1098,14 @@ var Player = Fighter.extend({
   },
   GetEquippedWeapon: function() {
 
-    for(var i=0;i<socketHandler.playerData.items.length;i++) {
-      var item = socketHandler.playerData.items[i];
+    _.each(socketHandler.playerData.items, function(item){
 
       var template = items[item.template];
 
       if ( item.equipped && (template.type == 'weapon' || template.type == 'tool')) {
         return item;
       }
-    }
+    });
 
     return null;
   },
@@ -1130,8 +1118,7 @@ var Player = Fighter.extend({
     this.appearance.body = 0;
     this.appearance.feet = 0;
 
-    for(var i=0;i<socketHandler.playerData.items.length;i++) {
-      var item = socketHandler.playerData.items[i];
+     _.each(socketHandler.playerData.items, function(item){
 
       var template = items[item.template];
 
@@ -1153,7 +1140,7 @@ var Player = Fighter.extend({
 
         }
       }
-    }
+    });
 
     this.UpdateClothes();
 
