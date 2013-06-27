@@ -29,7 +29,7 @@ var Lever = ToggleableObstacle.extend({
     this._super(position, new THREE.Vector3(), id, 17, {
       'movementType':4,
       'rotY':0,
-      'on':metadata['on']
+      'on':metadata.on
       });
 	                
             

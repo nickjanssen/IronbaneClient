@@ -18,7 +18,7 @@
 
 // Variables
 var hasChatFocus = false;
-var lastUsedChat = new Array();
+var lastUsedChat = [];
 var lastUsedChatCounter = 0;
 var lastUsedChatSelectCounter = 0;
 
@@ -41,7 +41,7 @@ $('#chatInput').focus(function(){
 $('#chatInput').blur(function(){
   if ( !socketHandler.inGame ) return;
 
-  if ( $('#chatInput').attr('value') == '' ) {
+  if ( $('#chatInput').attr('value') === '' ) {
     $('#chatInput').attr('value', msg);
   }
   hasChatFocus = false;
@@ -346,9 +346,8 @@ var mouseIntervalFunction = function(event){
         // Find an object near that position which could be a waypoint
         var npc = null;
 
-        for(var u=0;u<ironbane.unitList.length;u++){
+        _.each(ironbane.unitList, function(obj) {
 
-          var obj = ironbane.unitList[u];
 
           if ( obj.InRangeOfPosition(position, 1)
             && ((obj instanceof Unit) && obj.id < 0) ) {
@@ -356,16 +355,15 @@ var mouseIntervalFunction = function(event){
           }
 
 
-        }
+        });
 
         if ( npc ) {
           socketHandler.socket.emit('deleteNPC', npc.id);
         }
         else {
-          for(var u=0;u<ironbane.unitList.length;u++) {
-            var unit = ironbane.unitList[u];
-
-            if ( unit.id >= 0 ) continue;
+          _.each(ironbane.unitList, function(unit) {
+            
+            if ( unit.id < 0 ) {
 
             if ( currentMouseToWorldData.object == unit.mesh ) {
               if ( levelEditor.editorGUI.neDeleteMode ) {
@@ -373,8 +371,8 @@ var mouseIntervalFunction = function(event){
               }
 
             }
-
-          }
+              }
+          });
         }
       }
       else if ( levelEditor.editorGUI.enablePathPlacer ) {

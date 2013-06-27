@@ -58,7 +58,7 @@ var Fighter = Unit.extend({
       WALK : 1,
       FIGHT : 2,
       CAST : 3
-    }
+    };
 
     this.spriteStatus = this.SpriteStatusEnum.STAND;
     this.spriteForward = true;
@@ -416,7 +416,7 @@ var Fighter = Unit.extend({
 
       if ( terrainHandler.skybox ) this.mesh.material.uniforms.vSun.value.copy(terrainHandler.skybox.sunVector);
 
-      var max = parseInt(this.healthMax/3);
+      var max = parseInt(this.healthMax/3, 10);
 
       if ( this.health < max ) {
 
@@ -472,8 +472,7 @@ var Fighter = Unit.extend({
       var pivotY = 0.25;
 
       var time = (new Date()).getTime()/1000.0;
-      var test = Math.cos(time);
-
+      
       var swingXamount = 0;
       var swingYamount = 0;
       var swingZamount = 0;
@@ -484,7 +483,7 @@ var Fighter = Unit.extend({
 
       var pointDirection = null;
       if ( this instanceof Player && currentMouseToWorldData) {
-        var pointDirection = ConvertVector3(currentMouseToWorldData.point).subSelf(this.position).normalize();
+        pointDirection = ConvertVector3(currentMouseToWorldData.point).subSelf(this.position).normalize();
       }
 
       switch(weaponSpriteIndex) {

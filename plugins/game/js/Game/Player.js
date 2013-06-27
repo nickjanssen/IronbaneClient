@@ -1199,5 +1199,3 @@ var Player = Fighter.extend({
 
   }
 });
-
-

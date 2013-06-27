@@ -203,7 +203,7 @@ var Mesh = Unit.extend({
     (function(unit){
       meshHandler.Load(model, function(geometry) {
         unit.BuildMesh( geometry );
-      }, unit.meshData['scale'])
+      }, unit.meshData['scale']);
     })(this);
     //meshHandler.GetMesh(this.param, this);
 

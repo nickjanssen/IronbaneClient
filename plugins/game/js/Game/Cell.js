@@ -159,12 +159,12 @@ var Cell = Class.extend({
         }
 
 
-        for(var o=0;o<this.objects.length;o++) {
-            this.objects[o].Destroy();
+        _.each(this.objects, function(object) {
+            object.Destroy();
 
             // Remove from unitList
-            ironbane.unitList = _.without(ironbane.unitList, this.objects[o]);
-        }
+            ironbane.unitList = _.without(ironbane.unitList, object);
+        });
 
         this.objects = [];
 
@@ -172,21 +172,21 @@ var Cell = Class.extend({
     },
     ReloadWaypointsOnly: function() {
 
-        for(var o=0;o<this.objects.length;++o) {
+        _.each(this.objects, function(object) {
 
-            if ( !(this.objects[o] instanceof Waypoint) ) continue;
+            if ( object instanceof Waypoint) {
 
-            this.objects[o].Destroy();
-            // Remove from unitList
+                o.Destroy();
+                // Remove from unitList
 
-            ironbane.unitList = _.without(ironbane.unitList, this.objects[o]);
-
-            this.objects.splice(o--, 1);
-        }
-
-        for(var m=0;m<this.waypointMeshes.length;m++) {
-            ironbane.scene.remove(this.waypointMeshes[m]);
-        }
+                ironbane.unitList = _.without(ironbane.unitList, this.objects[o]);
+                this.objects = _.without(this.objects, o);
+                //this.objects.splice(o--, 1);
+            }
+        });
+        _.each(this.waypointMeshes, function(waypointMesh) {
+            ironbane.scene.remove(waypointMesh);
+        });
 
         this.waypointMeshes = [];
 
@@ -270,7 +270,7 @@ var Cell = Class.extend({
                   meshData = preMeshes[0];
                 }
 
-                var filename = (meshData['filename'].split("."))[0]+".js";
+                var filename = (meshData.filename.split("."))[0]+".js";
 
                 var model = meshPath + filename;
 
@@ -294,7 +294,7 @@ var Cell = Class.extend({
 
                         cell.AddMesh();
 
-                }, meshData['scale']);
+                }, meshData.scale);
                 })(this, pos, rotation, metadata, meshData, param);
 
             }
@@ -306,26 +306,26 @@ var Cell = Class.extend({
 
             var graph = this.graphData;
 
-            if ( graph && graph['nodes'] !== undefined ) {
-                for(var n=0;n<graph['nodes'].length;n++) {
-                    var node = graph['nodes'][n];
+            if ( graph && _.isUndefined(graph.nodes)) {
+                for(var n=0;n<graph.nodes.length;n++) {
+                    var node = graph.nodes[n];
 
                     var pos = ConvertVector3(node.pos);
 
                     var texture = "misc/waypoint";
-                    if ( levelEditor.selectedNode && levelEditor.selectedNode['id'] == parseInt(node['id']) ) {
+                    if ( levelEditor.selectedNode && levelEditor.selectedNode.id == parseInt(node.id, 10) ) {
                         texture = "misc/waypoint_red";
                     }
 
-                    var nodeID = parseInt(node['id']);
+                    var nodeID = parseInt(node.id, 10);
                     var unit = new Waypoint(pos, node);
 
                     if ( unit ) {
                         ironbane.unitList.push(unit);
                         this.objects.push(unit);
 
-                        for (var e=0;e<node['edges'].length;e++ ) {
-                            var edge = node['edges'][e];
+                        for (var e=0;e<node.edges.length;e++ ) {
+                            var edge = node.edges[e];
 
                             // Find the node in adjacent cells
 
@@ -339,14 +339,14 @@ var Cell = Class.extend({
 
                                     var graphData = terrainHandler.GetCellByGridPosition(x, z).graphData;
 
-                                    if ( graphData["nodes"] === undefined ) continue;
+                                    if ( graphData.nodes === undefined ) continue;
 
-                                    var subnodes = graphData['nodes'];
+                                    var subnodes = graphData.nodes;
 
                                     for( var sn=0;sn<subnodes.length;sn++ ) {
 
-                                        if ( edge == subnodes[sn]['id'] ) {
-                                            var subpos = ConvertVector3(subnodes[sn]['pos']);
+                                        if ( edge == subnodes[sn].id ) {
+                                            var subpos = ConvertVector3(subnodes[sn].pos);
                                             var vec = subpos.subSelf(pos);
                                             if ( !vec.isZero() ) {
                                                 var aH = new THREE.ArrowHelper(vec, pos.clone().addSelf(new THREE.Vector3(0, 0.5, 0)), vec.length()-1, 0x00FFFF);

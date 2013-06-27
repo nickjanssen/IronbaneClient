@@ -66,7 +66,7 @@ var zoneTypeConfig = {};
 
 zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   "enableFluid": true,
-  "fluidLevel": -1.5,
+  "fluidLevel": -1.3,
   "fluidTexture": 1650,
   "fluidTextureGlow": 1651,
   "fluidType": "water",

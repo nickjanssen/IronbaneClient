@@ -97,7 +97,7 @@ var EditorGUI = function() {
 
   this.pmExecute = function() {
     socketHandler.socket.emit('pmManage', {
-      action: parseInt(levelEditor.editorGUI.pmAction),
+      action: parseInt(levelEditor.editorGUI.pmAction, 10),
       characterName: levelEditor.editorGUI.pmCharacterName,
       reason: levelEditor.editorGUI.pmReason,
       hours: levelEditor.editorGUI.pmHours
@@ -144,13 +144,13 @@ var EditorGUI = function() {
       template: movingObstacleTemplate,
       param: levelEditor.editorGUI.epmoMesh,
       data: {
-        movementType:parseInt(levelEditor.editorGUI.epmoMovementType),
+        movementType:parseInt(levelEditor.editorGUI.epmoMovementType, 10),
         speedMultiplier:parseFloat(levelEditor.editorGUI.epmoSpeedMultiplier),
         distanceMultiplier:parseFloat(levelEditor.editorGUI.epmoDistanceMultiplier),
         rotY: ironbane.player.rotation.y.Round()
       }
     });
-  }
+  };
 
   this.eptoMesh = firstOfObject(ModelEnum);
   this.eptoMovementType = firstOfObject(ToggleableObstacleMovementTypeEnum);
@@ -164,14 +164,14 @@ var EditorGUI = function() {
       template: toggleableObstacleTemplate,
       param: levelEditor.editorGUI.eptoMesh,
       data: {
-        movementType:parseInt(levelEditor.editorGUI.eptoMovementType),
+        movementType:parseInt(levelEditor.editorGUI.eptoMovementType, 10),
         speedMultiplier:parseFloat(levelEditor.editorGUI.eptoSpeedMultiplier),
         distanceMultiplier:parseFloat(levelEditor.editorGUI.eptoDistanceMultiplier),
         rotY: ironbane.player.rotation.y.Round(),
         startOpen : levelEditor.editorGUI.eptoStartOpen
       }
     });
-  }
+  };
 
 
   this.eptAddExit = function() {
@@ -182,7 +182,7 @@ var EditorGUI = function() {
         invisible: levelEditor.editorGUI.eptInvisible
       }
     });
-  }
+  };
   this.eptTargetExit = 0;
   this.eptInvisible = false;
   this.eptAddEntrance = function() {
@@ -194,7 +194,7 @@ var EditorGUI = function() {
         invisible: levelEditor.editorGUI.eptInvisible
       }
     });
-  }
+  };
 
   this.eplSwitchNumber = 0;
   this.eplAdd = function() {
@@ -202,7 +202,7 @@ var EditorGUI = function() {
       position: ironbane.player.position,
       template: leverTemplate,
       data: {
-        switchNumber: parseInt(levelEditor.editorGUI.eplSwitchNumber)
+        switchNumber: parseInt(levelEditor.editorGUI.eplSwitchNumber, 10)
       }
     });
   }

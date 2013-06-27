@@ -250,13 +250,6 @@ var Projectile = Unit.extend({
         this.targetRotY = this.rotY;
 
         this.lifeTime = this.type.lifeTime;
-
-
-
-
-
-
-
     },
     Add: function () {
 

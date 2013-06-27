@@ -58,7 +58,7 @@ var Sign = Mesh.extend({
 
     //this.metadata['fontSize'] = 29;
 
-    ctx.font = this.metadata['fontSize']+'pt Arial';
+    ctx.font = this.metadata.fontSize+'pt Arial';
 
 
     //fillText = 'It was a dark and stormy night.\nWe had just begin cleaning\nup the room when we suddenly\nheard this big BANG!'
