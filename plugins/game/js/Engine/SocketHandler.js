@@ -21,7 +21,7 @@ var playerZone = 1;
 var SocketHandler = Class.extend({
     Init: function() {
 
-        if ( ! Detector.webgl ) return;
+        if (!Detector.webgl) return;
 
         this.loggedIn = false;
 
@@ -42,11 +42,11 @@ var SocketHandler = Class.extend({
     },
     InitConnection: function() {
 
-        if ( this.serverOnline ) {
+        if (this.serverOnline) {
 
-            this.socket = io.connect('http://'+ironbane_hostname+':'+ironbane_port+'/');
+            this.socket = io.connect('http://' + ironbane_hostname + ':' + ironbane_port + '/');
 
-            this.socket.emit('getStartData', {}, function (reply) {
+            this.socket.emit('getStartData', {}, function(reply) {
                 numberOfPlayersOnline = reply.numberOfPlayersOnline;
 
                 socketHandler.Setup();
@@ -54,36 +54,35 @@ var SocketHandler = Class.extend({
             });
 
             // Socket behaviour
-            this.socket.on('chatMessage', function (data) {
+            this.socket.on('chatMessage', function(data) {
                 hudHandler.AddChatMessage(data);
             });
 
-            this.socket.on('bigMessage', function (data) {
+            this.socket.on('bigMessage', function(data) {
                 bm(data.message);
             });
 
-            this.socket.on('cutscene', function (id) {
+            this.socket.on('cutscene', function(id) {
                 cinema.PlayCutscene(id);
             });
 
-            this.socket.on('say', function (data) {
+            this.socket.on('say', function(data) {
                 var unit = FindUnit(data['id']);
 
-                if ( unit ) {
+                if (unit) {
                     ironbane.unitList.push(new ChatBubble(unit, data['message']));
                 }
             });
 
 
-            this.socket.on('disconnect', function () {
-
+            this.socket.on('disconnect', function() {
 
 
 
                 socketHandler.socket.disconnect();
 
 
-                for(var u=0;u<ironbane.unitList.length;u++) ironbane.unitList[u].Destroy();
+                for (var u = 0; u < ironbane.unitList.length; u++) ironbane.unitList[u].Destroy();
 
                 ironbane.unitList = [];
 
@@ -93,7 +92,7 @@ var SocketHandler = Class.extend({
 
                 socketHandler.loggedIn = false;
 
-                if ( !noDisconnectTrigger ) {
+                if (!noDisconnectTrigger) {
                     socketHandler.serverOnline = false;
 
                     hudHandler.MessageAlert('It appears the server crashed! Either that, or there is something wrong with your internet connection. I\'m terribly sorry about that.<br><br>In case the server crashed, an auto-restart will most-likely occur. Please refresh the page in a few seconds.', 'nobutton');
@@ -101,14 +100,13 @@ var SocketHandler = Class.extend({
 
 
 
-            //hudHandler.ShowMenuScreen();
+                //hudHandler.ShowMenuScreen();
 
-            //hudHandler.Init();
+                //hudHandler.Init();
 
 
-            //alert('socket disconnected');
+                //alert('socket disconnected');
             });
-
 
 
 
@@ -116,42 +114,36 @@ var SocketHandler = Class.extend({
 
     },
     Connect: function(abortConnect) {
-        if ( !this.serverOnline ) return;
+        if (!this.serverOnline) return;
 
-        if ( !ISDEF(startdata.characterUsed) ) return;
+        if (!ISDEF(startdata.characterUsed)) return;
 
-		if ( socketHandler.inGame )  {
-			//alert('Already in game!');
-			return;
-		}
+        if (socketHandler.inGame) {
+            //alert('Already in game!');
+            return;
+        }
 
         var data;
 
-        if ( startdata.loggedIn ) {
+        if (startdata.loggedIn) {
             data = {
                 id: startdata.user,
                 characterID: startdata.characterUsed,
                 guest: false,
                 pass: startdata.pass
             };
-        }
-        else {
+        } else {
             data = {
                 characterID: startdata.characterUsed,
                 guest: true
             };
         }
 
-		$('#bogusButton').select();
-		$('#gameFrame').focus();
+        $('#bogusButton').select();
+        $('#gameFrame').focus();
 
-
-
-
-
-        this.socket.emit('connectServer', data, function (reply) {
-
-            if ( ISDEF(reply.errmsg) ) {
+        this.socket.emit('connectServer', data, function(reply) {
+            if (ISDEF(reply.errmsg)) {
                 hudHandler.MessageAlert(reply.errmsg);
                 abortConnect();
                 hudHandler.ShowMenuScreen();
@@ -160,47 +152,31 @@ var SocketHandler = Class.extend({
 
             socketHandler.loggedIn = true;
 
-
-
-
             // Get a spawn from the server
             socketHandler.spawnLocation = ConvertVector3(reply.position);
             socketHandler.spawnRotation = reply.rotY;
 
             socketHandler.playerData = reply;
 
-
-            setTimeout(function(){ironbane.showingGame = false;}, 100);
-
-
+            setTimeout(function() {
+                ironbane.showingGame = false;
+            }, 100);
 
             terrainHandler.ChangeZone(reply.zone);
 
-
-            // Hacky, fill em upt later
-            socketHandler.playerData.items = reply.items;
-
-
-
-
             socketHandler.inGame = true;
 
-
-
-
-            if ( reply.editor ) {
+            if (reply.editor) {
                 showEditor = true;
                 levelEditor.Start();
             }
 
-
             hudHandler.MakeSlotItems(false);
-
         });
     },
     Setup: function() {
 
-        this.socket.on('addUnit', function (data) {
+        this.socket.on('addUnit', function(data) {
             //if ( !socketHandler.loggedIn ) return;
             // Depending on the type we add diffent things
             // return;
@@ -210,11 +186,12 @@ var SocketHandler = Class.extend({
 
 
             var template = null;
-            if ( data['id'] < 0 ) {
+            if (data['id'] < 0) {
                 template = units[data['template']];
-            }
-            else {
-                template = {type:UnitTypeEnum.PLAYER}
+            } else {
+                template = {
+                    type: UnitTypeEnum.PLAYER
+                }
             }
 
             var unitname = data['id'] < 0 ? template.name : data['name']
@@ -248,11 +225,10 @@ var SocketHandler = Class.extend({
                     unit = new Sign(ConvertVector3(data['position']), new THREE.Vector3(data['rotX'], data['rotY'], data['rotZ']), data['id'], data['param'], data['metadata']);
                     break;
                 case UnitTypeEnum.LOOTABLE:
-                    if ( data['param'] < 10 ) {
-                      unit = new LootBag(ConvertVector3(data['position']), data['id'], data['param']);
-                    }
-                    else {
-                      unit = new LootableMesh(ConvertVector3(data['position']), new THREE.Vector3(data['rotX'], data['rotY'], data['rotZ']), data['id'], data['param'], data['metadata']);
+                    if (data['param'] < 10) {
+                        unit = new LootBag(ConvertVector3(data['position']), data['id'], data['param']);
+                    } else {
+                        unit = new LootableMesh(ConvertVector3(data['position']), new THREE.Vector3(data['rotX'], data['rotY'], data['rotZ']), data['id'], data['param'], data['metadata']);
                     }
                     break;
                 default:
@@ -261,12 +237,12 @@ var SocketHandler = Class.extend({
                     break;
             }
 
-            if ( data['id'] < 0 ) {
+            if (data['id'] < 0) {
                 unit.template = template;
             }
 
 
-            if ( unit instanceof Fighter ) {
+            if (unit instanceof Fighter) {
                 // Update clothing
                 unit.appearance.hair = data['hair'];
                 unit.appearance.skin = data['skin'];
@@ -275,27 +251,27 @@ var SocketHandler = Class.extend({
                 unit.appearance.head = data['head'];
                 unit.appearance.feet = data['feet'];
 
-                if ( template.type == UnitTypeEnum.TURRET ) {
-                  if ( !showEditor || !levelEditor.editorGUI.opShowDebug ) {
-                    unit.appearance.hair = 0;
-                    unit.appearance.eyes = 0;
-                    unit.appearance.skin = 0;
-                    unit.appearance.body = 0;
-                    unit.appearance.head = 0;
-                    unit.appearance.feet = 0;
+                if (template.type == UnitTypeEnum.TURRET) {
+                    if (!showEditor || !levelEditor.editorGUI.opShowDebug) {
+                        unit.appearance.hair = 0;
+                        unit.appearance.eyes = 0;
+                        unit.appearance.skin = 0;
+                        unit.appearance.body = 0;
+                        unit.appearance.head = 0;
+                        unit.appearance.feet = 0;
 
-                    unit.enableShadow = false;
-                  }
+                        unit.enableShadow = false;
+                    }
                 }
             }
 
 
 
-            if ( unit ) {
-                if ( unit instanceof Fighter ) {
+            if (unit) {
+                if (unit instanceof Fighter) {
                     unit.UpdateClothes();
 
-                    if ( ISDEF(data['weapon']) ) {
+                    if (ISDEF(data['weapon'])) {
                         unit.UpdateWeapon(data['weapon']);
                     }
                 }
@@ -303,7 +279,7 @@ var SocketHandler = Class.extend({
                 ironbane.unitList.push(unit);
             }
         });
-        this.socket.on('doJump', function (data) {
+        this.socket.on('doJump', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var unit = FindUnit(data['id']);
@@ -331,46 +307,50 @@ var SocketHandler = Class.extend({
 
         // });
 
-        this.socket.on('toggle', function (data) {
+        this.socket.on('toggle', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var unit = FindUnit(data['id']);
 
-            if ( unit && unit instanceof ToggleableObstacle ) {
+            if (unit && unit instanceof ToggleableObstacle) {
                 unit.Toggle(data['on']);
             }
 
 
         });
 
-        this.socket.on('addParticle', function (data) {
+        this.socket.on('addParticle', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
 
 
-            if ( ISDEF(data['fu']) ) {
+            if (ISDEF(data['fu'])) {
                 var unit = FindUnit(data['fu']);
-                particleHandler.Add(ParticleTypeEnum[data['p']], {followUnit:unit});
-            }
-            else if ( ISDEF(data['pfu']) ) {
+                particleHandler.Add(ParticleTypeEnum[data['p']], {
+                    followUnit: unit
+                });
+            } else if (ISDEF(data['pfu'])) {
                 var unit = FindUnit(data['pfu']);
-                particleHandler.Add(ParticleTypeEnum[data['p']], {particleFollowUnit:unit});
-            }
-            else if ( ISDEF(data['pos']) ) {
-                particleHandler.Add(ParticleTypeEnum[data['p']], {position:ConvertVector3(data['pos'])});
+                particleHandler.Add(ParticleTypeEnum[data['p']], {
+                    particleFollowUnit: unit
+                });
+            } else if (ISDEF(data['pos'])) {
+                particleHandler.Add(ParticleTypeEnum[data['p']], {
+                    position: ConvertVector3(data['pos'])
+                });
             }
 
 
         });
 
-        this.socket.on('addProjectile', function (data) {
+        this.socket.on('addProjectile', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var unit = FindUnit(data['o']);
 
             // if ( !data['p'] || !ISDEF(ProjectileTypeEnum[data['p']]) ) ba('Bad projectile type');
 
-            if ( unit ) {
+            if (unit) {
                 // Alter the start position to cope with lag
                 data['s'] = unit.position.clone();
             }
@@ -379,11 +359,11 @@ var SocketHandler = Class.extend({
 
             var target = ConvertVector3(data['t']);
 
-            if ( data.sw )  {
+            if (data.sw) {
                 unit.SwingWeapon(target, weapon);
             }
 
-            var particle = new Projectile( ConvertVector3(data['s']), target, unit, data['w']);
+            var particle = new Projectile(ConvertVector3(data['s']), target, unit, data['w']);
 
             particle.velocity.addSelf(unit.fakeVelocity);
 
@@ -392,7 +372,7 @@ var SocketHandler = Class.extend({
             ironbane.unitList.push(particle);
         });
 
-        this.socket.on('updateClothes', function (data) {
+        this.socket.on('updateClothes', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var unit = FindUnit(data['id']);
@@ -405,7 +385,7 @@ var SocketHandler = Class.extend({
 
         });
 
-        this.socket.on('updateWeapon', function (data) {
+        this.socket.on('updateWeapon', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var unit = FindUnit(data['id']);
@@ -414,7 +394,7 @@ var SocketHandler = Class.extend({
 
         });
 
-        this.socket.on('receiveItem', function (data) {
+        this.socket.on('receiveItem', function(data) {
             // occurs when someone nearby loots from a bag
             // refresh the bag
 
@@ -424,59 +404,61 @@ var SocketHandler = Class.extend({
 
         });
 
-        this.socket.on('lootFromBag', function (data) {
+        this.socket.on('lootFromBag', function(data) {
             // occurs when someone nearby loots from a bag
             // refresh the bag
 
             var npcID = data;
 
-            if ( ironbane.player.canLoot ) {
+            if (ironbane.player.canLoot) {
                 // Make a request for the items and update the UI when we receive them
-                socketHandler.socket.emit('loot', npcID, function (reply) {
-                        if ( ISDEF(reply.errmsg) ) {
-                                hudHandler.MessageAlert(reply.errmsg);
-                                return;
+                socketHandler.socket.emit('loot', npcID, function(reply) {
+                    if (ISDEF(reply.errmsg)) {
+                        hudHandler.MessageAlert(reply.errmsg);
+                        return;
+                    }
+
+                    if (ironbane.player.canLoot) {
+                        // Todo: remove the items via UI
+                        for (var i = 0; i < ironbane.player.lootItems.length; i++) {
+                            var lootItem = ironbane.player.lootItems[i];
+
+                            $('#li' + lootItem.id).remove();
                         }
 
-                        if ( ironbane.player.canLoot ) {
-                            // Todo: remove the items via UI
-                            for(var i=0;i<ironbane.player.lootItems.length;i++){
-                                    var lootItem = ironbane.player.lootItems[i];
-
-                                    $('#li'+lootItem.id).remove();
-                            }
-
-                            ironbane.player.lootItems = [];
-                        }
-                        //if ( !socketHandler.loggedIn ) return;
-                        ironbane.player.lootItems = reply;
-                        hudHandler.MakeSlotItems(true);
+                        ironbane.player.lootItems = [];
+                    }
+                    //if ( !socketHandler.loggedIn ) return;
+                    ironbane.player.lootItems = reply;
+                    hudHandler.MakeSlotItems(true);
                 });
             }
 
 
         });
 
-        this.socket.on('respawn', function (data) {
+        this.socket.on('respawn', function(data) {
 
             var unit = FindUnit(data['id']);
 
-            if ( unit ) {
+            if (unit) {
 
                 unit.health = data['h'];
                 unit.localPosition.copy(ConvertVector3(data['p']));
 
-                if ( unit == ironbane.player ) {
+                if (unit == ironbane.player) {
 
                     terrainHandler.transitionState = transitionStateEnum.START;
 
-                      $('#gameFrame').animate({
+                    $('#gameFrame').animate({
                         opacity: 0.00
-                      }, 1000, function() {
+                    }, 1000, function() {
 
                         terrainHandler.transitionState = transitionStateEnum.MIDDLE;
 
-                        setTimeout(function(){ironbane.showingGame = false;}, 100);
+                        setTimeout(function() {
+                            ironbane.showingGame = false;
+                        }, 100);
 
 
                         socketHandler.readyToReceiveUnits = false;
@@ -492,8 +474,7 @@ var SocketHandler = Class.extend({
                         hudHandler.ReloadInventory();
 
 
-                      });
-
+                    });
 
 
 
@@ -508,13 +489,13 @@ var SocketHandler = Class.extend({
 
 
         });
-//        this.socket.on('doSwing', function (data) {
-//            //if ( !socketHandler.loggedIn ) return;
-//
-//            var unit = FindUnit(data.id);
-//
-//            unit.SwingWeapon();
-//        });
+        //        this.socket.on('doSwing', function (data) {
+        //            //if ( !socketHandler.loggedIn ) return;
+        //
+        //            var unit = FindUnit(data.id);
+        //
+        //            unit.SwingWeapon();
+        //        });
         // this.socket.on('swingWeapon', function (data) {
         //     var attacker = FindUnit(data['id']);
 
@@ -532,71 +513,73 @@ var SocketHandler = Class.extend({
         //     }
         // });
 
-        this.socket.on('setStat', function (data) {
+        this.socket.on('setStat', function(data) {
             var unit = FindUnit(data['id']);
 
-            if ( unit ) {
-                if ( data['s'] == 'h') {
+            if (unit) {
+                if (data['s'] == 'h') {
                     //unit.health = data['h'];
                     unit.SetHealth(data['h'], data['np']);
-                    if ( unit == ironbane.player ) {
+                    if (unit == ironbane.player) {
                         hudHandler.MakeHealthBar(true);
                     }
                 }
-                if ( data['s'] == 'a') {
+                if (data['s'] == 'a') {
                     //unit.armor = data['a'];
                     unit.SetArmor(data['a'], data['np']);
-                    if ( unit == ironbane.player ) {
+                    if (unit == ironbane.player) {
                         hudHandler.MakeArmorBar(true);
                     }
                 }
-                if ( data['s'] == 'hm') {
+                if (data['s'] == 'hm') {
                     unit.healthMax = data['hm'];
-                    if ( unit == ironbane.player ) {
+                    if (unit == ironbane.player) {
                         hudHandler.MakeHealthBar(true);
                     }
                 }
-                if ( data['s'] == 'am') {
+                if (data['s'] == 'am') {
                     unit.armorMax = data['am'];
-                    if ( unit == ironbane.player ) {
+                    if (unit == ironbane.player) {
                         hudHandler.MakeArmorBar(true);
                     }
                 }
             }
         });
 
-        this.socket.on('teleport', function (data) {
+        this.socket.on('teleport', function(data) {
 
             this.transitionState = transitionStateEnum.START;
 
-          $('#gameFrame').animate({
-            opacity: 0.00
-          }, 1000, function() {
+            $('#gameFrame').animate({
+                opacity: 0.00
+            }, 1000, function() {
 
 
 
-            setTimeout(function(){ironbane.showingGame = false;}, 100);
+                setTimeout(function() {
+                    ironbane.showingGame = false;
+                }, 100);
 
-            setTimeout(function(){
-                terrainHandler.transitionState = transitionStateEnum.MIDDLE;
-            }, 100);
-
-
-            socketHandler.readyToReceiveUnits = false;
-
-            terrainHandler.ChangeZone(data.zone);
-
-            ironbane.player.localPosition.copy(data.pos);
-            ironbane.player.unitStandingOn = null;
+                setTimeout(function() {
+                    terrainHandler.transitionState = transitionStateEnum.MIDDLE;
+                }, 100);
 
 
-          });
+                socketHandler.readyToReceiveUnits = false;
+
+                terrainHandler.ChangeZone(data.zone);
+
+                ironbane.player.localPosition.copy(data.pos);
+                ironbane.player.unitStandingOn = null;
+
+
+            });
 
 
         });
 
 
-        this.socket.on('getMeleeHit', function (data) {
+        this.socket.on('getMeleeHit', function(data) {
             //if ( !socketHandler.loggedIn ) return;
 
             var victim = FindUnit(data['victim']);
@@ -610,16 +593,15 @@ var SocketHandler = Class.extend({
 
 
 
-
             victim.GetMeleeHit(attacker);
 
 
         });
-        this.socket.on('setTileHeight', function (array) {
+        this.socket.on('setTileHeight', function(array) {
 
-            if ( !le("globalEnable") ) return;
+            if (!le("globalEnable")) return;
 
-            for (var d=0;d<array.length;d++ ) {
+            for (var d = 0; d < array.length; d++) {
                 var data = array[d];
 
                 levelEditor.SetTileHeight(data['tx'], data['tz'], data['height'], false, false, true);
@@ -627,23 +609,23 @@ var SocketHandler = Class.extend({
 
 
             // Make all gameobjects re-init their height
-//            for(var u in ironbane.unitList){
-//                ironbane.unitList[u].positionedShadowMesh = false;
-//            }
+            //            for(var u in ironbane.unitList){
+            //                ironbane.unitList[u].positionedShadowMesh = false;
+            //            }
 
 
         });
-        this.socket.on('setTileImage', function (data) {
-            if ( !le("globalEnable") ) return;
+        this.socket.on('setTileImage', function(data) {
+            if (!le("globalEnable")) return;
 
             levelEditor.SetTileImage(data['tx'], data['tz'], data['image'], false, true);
         });
-        this.socket.on('removeUnit', function (data) {
+        this.socket.on('removeUnit', function(data) {
             //if ( !socketHandler.loggedIn ) return;
             //bm('remove unit: '+data.id);
 
             // Remove the unit from the list
-            for (var i=0;i<ironbane.unitList.length;i++) {
+            for (var i = 0; i < ironbane.unitList.length; i++) {
                 if (ironbane.unitList[i].id == data['id']) {
                     ironbane.unitList[i].Destroy();
                     ironbane.unitList.splice(i, 1);
@@ -654,26 +636,26 @@ var SocketHandler = Class.extend({
 
 
 
-        this.socket.on('addModel', function (data) {
+        this.socket.on('addModel', function(data) {
             //if ( !socketHandler.loggedIn ) return;
             //bm('remove unit: '+data.id);
 
-          hudHandler.AddChatMessage('Adding model...');
+            hudHandler.AddChatMessage('Adding model...');
 
-          levelEditor.PlaceModel(ConvertVector3(data.position),
-            data.rX,
-            data.rY,
-            data.rZ,
-            parseInt(data.param));
+            levelEditor.PlaceModel(ConvertVector3(data.position),
+                data.rX,
+                data.rY,
+                data.rZ,
+                parseInt(data.param));
         });
 
-        this.socket.on('paintModel', function (data) {
+        this.socket.on('paintModel', function(data) {
             //if ( !socketHandler.loggedIn ) return;
             //bm('remove unit: '+data.id);
 
             // Find the model at this position, and reload it
 
-            if ( data.global ) {
+            if (data.global) {
                 // When global, change preMeshes
                 _.extend(preMeshes[data.id], data.metadata);
 
@@ -681,44 +663,41 @@ var SocketHandler = Class.extend({
                 var cellPos = WorldToCellCoordinates(data.pos.x,
                     data.pos.z, cellSize);
 
-                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData,
-                    function(obj) {
+                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData, function(obj) {
 
-                        if ( obj.metadata &&
-                            ConvertVector3(obj).equals(ConvertVector3(data.pos).Round() ) ) {
-                            _.extend(obj.metadata, data.metadata);
-                        }
+                    if (obj.metadata &&
+                        ConvertVector3(obj).equals(ConvertVector3(data.pos).Round())) {
+                        _.extend(obj.metadata, data.metadata);
+                    }
 
 
-                    });
+                });
 
 
                 _.each(terrainHandler.cells, function(cell) {
                     cell.ReloadObjectsOnly();
                 });
-            }
-            else {
+            } else {
 
                 var cellPos = WorldToCellCoordinates(data.pos.x,
                     data.pos.z, cellSize);
 
-                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData,
-                    function(obj) {
+                _.each(terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData, function(obj) {
 
-                        if ( _.isEmpty(data.metadata) ) {
-                            delete obj.metadata;
-                        }
+                    if (_.isEmpty(data.metadata)) {
+                        delete obj.metadata;
+                    }
 
-                        if ( obj.metadata ) {
-                            //_.extend(obj.metadata, data.metadata);
-                            obj.metadata = data.metadata;
-                        }
-                    });
+                    if (obj.metadata) {
+                        //_.extend(obj.metadata, data.metadata);
+                        obj.metadata = data.metadata;
+                    }
+                });
 
 
                 _.each(terrainHandler.cells, function(cell) {
                     _.each(cell.objects, function(obj) {
-                        if ( obj.position.clone().Round(2).equals(data.pos) ) {
+                        if (obj.position.clone().Round(2).equals(data.pos)) {
 
                             var rotation = obj.rotation.clone();
                             var param = obj.param;
@@ -742,7 +721,7 @@ var SocketHandler = Class.extend({
             }
         });
 
-        this.socket.on('deleteModel', function (pos) {
+        this.socket.on('deleteModel', function(pos) {
 
             pos = ConvertVector3(pos).Round(2);
             //if ( !socketHandler.loggedIn ) return;
@@ -754,7 +733,7 @@ var SocketHandler = Class.extend({
             // Check
             _.each(terrainHandler.cells, function(cell) {
                 _.each(cell.objects, function(obj) {
-                    if ( obj.position.clone().Round(2).equals(pos) ) {
+                    if (obj.position.clone().Round(2).equals(pos)) {
 
                         cell.objects = _.without(cell.objects, obj);
 
@@ -764,7 +743,7 @@ var SocketHandler = Class.extend({
                             return obj.position.clone().Round(2).equals(ConvertVector3(otherObj));
                         });
 
-                        if ( objInList ) {
+                        if (objInList) {
                             var temp = terrainHandler.GetCellByGridPosition(cellPos.x, cellPos.z).objectData;
                             temp =
                                 _.without(temp, objInList);
@@ -774,17 +753,17 @@ var SocketHandler = Class.extend({
                     }
                 });
 
-                if ( !le("globalEnable") ) {
+                if (!le("globalEnable")) {
                     var newList = [];
                     _.each(cell.objectData, function(obj) {
-                        if ( !ConvertVector3(obj).equals(pos) ) newList.push(obj);
+                        if (!ConvertVector3(obj).equals(pos)) newList.push(obj);
                     });
                     cell.objectData = newList;
 
                 }
             });
 
-            if ( !le("globalEnable") ) {
+            if (!le("globalEnable")) {
                 terrainHandler.GetCellByWorldPosition(pos).Reload();
             }
 
@@ -795,35 +774,35 @@ var SocketHandler = Class.extend({
 
 
         // Pathfinding
-        this.socket.on('ppAddNode', function (data) {
-            if ( !showEditor ) return;
+        this.socket.on('ppAddNode', function(data) {
+            if (!showEditor) return;
 
             nodeHandler.AddNode(0, data['id'], ConvertVector3(data['pos']));
         });
 
-        this.socket.on('ppAddEdge', function (data) {
-            if ( !showEditor ) return;
+        this.socket.on('ppAddEdge', function(data) {
+            if (!showEditor) return;
 
             nodeHandler.AddEdge(0, data['from'], data['to'], data['twoway']);
         });
 
-        this.socket.on('ppDeleteNode', function (data) {
-            if ( !showEditor ) return;
+        this.socket.on('ppDeleteNode', function(data) {
+            if (!showEditor) return;
 
             nodeHandler.DeleteNode(0, data['id']);
         });
 
 
-        this.socket.on('snapshot', function (snapshot) {
+        this.socket.on('snapshot', function(snapshot) {
             //if ( !socketHandler.loggedIn ) return;
 
-            for(var x=0;x<snapshot.length;x++) {
+            for (var x = 0; x < snapshot.length; x++) {
                 var unitdata = snapshot[x];
                 var unit = FindUnit(unitdata.id);
-                if ( unit ) {
-                    if ( unit != ironbane.player ) {
+                if (unit) {
+                    if (unit != ironbane.player) {
 
-                        if ( ISDEF(unitdata.p) ) {
+                        if (ISDEF(unitdata.p)) {
                             unit.targetPosition.x = unitdata.p.x;
                             unit.targetPosition.z = unitdata.p.z;
                             unit.targetPosition.y = unitdata.p.y;
@@ -834,32 +813,31 @@ var SocketHandler = Class.extend({
 
 
 
-                        if ( ISDEF(unitdata.rx) ) unit.targetRotation.x = unitdata.rx;
-                        if ( ISDEF(unitdata.ry) ) unit.targetRotation.y = unitdata.ry;
-                        if ( ISDEF(unitdata.rz) ) unit.targetRotation.z = unitdata.rz;
+                        if (ISDEF(unitdata.rx)) unit.targetRotation.x = unitdata.rx;
+                        if (ISDEF(unitdata.ry)) unit.targetRotation.y = unitdata.ry;
+                        if (ISDEF(unitdata.rz)) unit.targetRotation.z = unitdata.rz;
 
 
-                        if ( ISDEF(unitdata.u) ) {
+                        if (ISDEF(unitdata.u)) {
                             unit.unitStandingOn = FindUnit(unitdata.u);
-                        }
-                        else {
+                        } else {
                             unit.unitStandingOn = null;
                         }
 
-                        if ( Math.abs(unit.localPosition.y - unitdata.p.y) > 1 ) unit.localPosition.y = unitdata.p.y;
+                        if (Math.abs(unit.localPosition.y - unitdata.p.y) > 1) unit.localPosition.y = unitdata.p.y;
 
 
-                    //						// If players are still too far away from their target we can't set their speed to 0
-                    //						// Do some prediction
-                    //						var distance = unit.targetPosition.clone().subSelf(unit.position).length();
-                    ////						player.tSpeed = Math.max(player.tSpeed, distance * 10);
-                    ////                                                player.tSpeed = Math.min(player.tSpeed, distance * 10);
-                    //
-                    ////                        unit.targetSpeed = Math.max(distance*100, 50);
-                    ////                        unit.targetSpeed = Math.min(distance*100, max_speed);
-                    //                        unit.targetSpeed = Math.max(distance*50, player.tSpeed);
-                    //
-                    //                        debug.SetWatch('unit.targetSpeed', unit.targetSpeed);
+                        //						// If players are still too far away from their target we can't set their speed to 0
+                        //						// Do some prediction
+                        //						var distance = unit.targetPosition.clone().subSelf(unit.position).length();
+                        ////						player.tSpeed = Math.max(player.tSpeed, distance * 10);
+                        ////                                                player.tSpeed = Math.min(player.tSpeed, distance * 10);
+                        //
+                        ////                        unit.targetSpeed = Math.max(distance*100, 50);
+                        ////                        unit.targetSpeed = Math.min(distance*100, max_speed);
+                        //                        unit.targetSpeed = Math.max(distance*50, player.tSpeed);
+                        //
+                        //                        debug.SetWatch('unit.targetSpeed', unit.targetSpeed);
                     }
                 }
             }

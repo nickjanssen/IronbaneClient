@@ -67,7 +67,7 @@ var HUDHandler = Class.extend({
     bigMessages: [],
     alertBoxActive: false,
     Init: function() {
-        this.allowSound = ISDEF(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
+        this.allowSound = !_.isUndefined(localStorage.allowSound) ? (localStorage.allowSound === 'true') : true;
 
         if (Detector.webgl) {
             if (socketHandler.serverOnline) {
@@ -374,35 +374,34 @@ var HUDHandler = Class.extend({
         }
     },
     PutItem: function(startItem, slotNumber, slotID, acceptOffer) {
-
         // We put something from the inventory to the loot
-
         var data = {
             "npcID": ironbane.player.lootUnit.id,
             "slotNumber": slotNumber,
             "itemID": startItem.id
         };
 
-        if (ISDEF(acceptOffer)) data['acceptOffer'] = true;
+        if (!_.isUndefined(acceptOffer)) {
+            data.acceptOffer = true;
+        }
         socketHandler.socket.emit('putItem', data, function(reply) {
-
-            if (ISDEF(reply.errmsg)) {
+            console.log('putItem reply', reply);
+            if (!_.isUndefined(reply.errmsg)) {
                 hudHandler.MessageAlert(reply.errmsg);
-
                 // Teleport back!
                 TeleportElement('ii' + startItem.id, 'is' + startItem.slot);
                 //if ( switchItem ) TeleportElement('li'+switchItem.id, 'ls'+switchItem.slot);
                 return;
             }
 
-            if (ISDEF(reply.offeredPrice)) {
+            if (!_.isUndefined(reply.offeredPrice)) {
 
                 var goldPieces = hudHandler.GetStatContent(1, 'misc/coin_medium', 1, true, true);
 
                 var doReturn = false;
 
-                hudHandler.MessageAlert('I\'d offer <span style="color:rgb(255, 215, 0)">'+reply.offeredPrice+' x ' + goldPieces + '</span> for yer ' + items[startItem.template].name + '. What do ye think?', 'question', function() {
-                    hudHandler.PutItem(startItem, slotNumber, slotID, true)
+                hudHandler.MessageAlert('I\'d offer <span style="color:rgb(255, 215, 0)">' + reply.offeredPrice + ' x ' + goldPieces + '</span> for yer ' + items[startItem.template].name + '. What do ye think?', 'question', function() {
+                    hudHandler.PutItem(startItem, slotNumber, slotID, true);
                 }, function() { // Teleport back!
                     TeleportElement('ii' + startItem.id, 'is' + startItem.slot);
                     ironbane.unitList.push(new ChatBubble(ironbane.player.lootUnit, "Then take yer stuff with ye!"));
@@ -412,8 +411,10 @@ var HUDHandler = Class.extend({
                 return;
             }
 
-            if (ISDEF(reply.newCoins)) {
-                ironbane.player.coins = reply.newCoins;
+            // because money bags may have been adjusted, entire inventory is sync'd up
+            if (_.isArray(reply.items)) {
+                socketHandler.playerData.items = reply.items;
+                hudHandler.ReloadInventory();
                 hudHandler.MakeCoinBar(true);
 
                 // Remove the loot bag
@@ -425,7 +426,9 @@ var HUDHandler = Class.extend({
 
                     $('#li' + lootItem.id).remove();
 
-                    if (currentHoverDiv == 'li' + lootItem.id) $('#tooltip').hide();
+                    if (currentHoverDiv === 'li' + lootItem.id) {
+                        $('#tooltip').hide();
+                    }
                 }
 
                 ironbane.player.lootItems = [];
@@ -435,20 +438,14 @@ var HUDHandler = Class.extend({
 
             // Delete from playerData
             socketHandler.playerData.items = _.without(socketHandler.playerData.items, startItem);
-
-            //            // Remove the pricetag if present
-            //            if ( ISDEF(startItem.price) ) {
-            //                delete startItem.price;
-            //            }
-
             ironbane.player.lootItems.push(startItem);
 
             // If it was armor, update our appearance
             if (startItem.equipped) {
-                if (items[startItem.template].type == 'armor') {
+                if (items[startItem.template].type === 'armor') {
                     ironbane.player.UpdateAppearance();
                 }
-                if (items[startItem.template].type == 'weapon') {
+                if (items[startItem.template].type === 'weapon') {
                     ironbane.player.UpdateWeapon(0);
                 }
             }
@@ -474,7 +471,7 @@ var HUDHandler = Class.extend({
             'itemID': itemNumber
         }, function(reply) {
 
-            if (ISDEF(reply.errmsg)) {
+            if (!_.isUndefined(reply.errmsg)) {
                 hudHandler.MessageAlert(reply.errmsg);
 
                 // Teleport back!
@@ -527,7 +524,7 @@ var HUDHandler = Class.extend({
         }
 
         socketHandler.socket.emit('switchItem', data, function(reply) {
-
+            console.log('switchItem reply', reply);
             if (reply.errmsg) {
                 hudHandler.MessageAlert(reply.errmsg);
 
@@ -572,18 +569,18 @@ var HUDHandler = Class.extend({
         };
 
         socketHandler.socket.emit('lootItem', data, function(reply) {
-
-            if (ISDEF(reply.errmsg)) {
+            if (!_.isUndefined(reply.errmsg)) {
                 hudHandler.MessageAlert(reply.errmsg);
 
                 // Teleport back!
                 TeleportElement('li' + startItem.id, 'ls' + startItem.slot);
-
                 return;
             }
 
-            if (ISDEF(reply.newCoins)) {
-                ironbane.player.coins = reply.newCoins;
+            // because money bags may have been adjusted, entire inventory is sync'd up
+            if (_.isArray(reply.items)) {
+                socketHandler.playerData.items = reply.items;
+                hudHandler.ReloadInventory();
                 hudHandler.MakeCoinBar(true);
             }
 
@@ -618,7 +615,7 @@ var HUDHandler = Class.extend({
             ironbane.player.lootItems = _.without(ironbane.player.lootItems, startItem);
 
             // Remove the pricetag if present
-            if (ISDEF(startItem.price)) {
+            if (!_.isUndefined(startItem.price)) {
                 delete startItem.price;
 
                 hudHandler.MakeItemHover('li' + startItem.id, startItem);
@@ -705,16 +702,6 @@ var HUDHandler = Class.extend({
                     itemInfo += infoRow('Restores', this.GetStatContent(item.attr1, "misc/heart", 0, false, true));
                 }
                 break;
-            case 'cash': // todo: show this for all? merchant skill?
-                var valueHTML = [
-                        '<span class="amount" style="color:gold;padding-left: 16px;',
-                        'background-image:url(/plugins/game/images/misc/coin_full.png);',
-                        'background-repeat:no-repeat;">',
-                        'x ', item.value,
-                        '</span>'
-                ].join('');
-                itemInfo += infoRow('Value', valueHTML);
-                break;
         }
 
         // if selling vendor sets price on server...
@@ -728,6 +715,15 @@ var HUDHandler = Class.extend({
             ].join('');
             itemInfo += infoRow('Price', priceHtml);
         }
+
+        var valueHTML = [
+                '<span class="amount" style="color:gold;padding-left: 16px;',
+                'background-image:url(/plugins/game/images/misc/coin_full.png);',
+                'background-repeat:no-repeat;">',
+                'x ', item.value,
+                '</span>'
+        ].join('');
+        itemInfo += infoRow('Value', valueHTML);
 
         if (debugging) {
             itemInfo += infoRow('ID', item.id);
@@ -751,7 +747,6 @@ var HUDHandler = Class.extend({
         MakeHoverBox(div, content);
     },
     MakeSlotItems: function(isLoot) {
-
         var data = isLoot ? ironbane.player.lootItems : socketHandler.playerData.items;
 
         if (isLoot) {
@@ -779,7 +774,7 @@ var HUDHandler = Class.extend({
             //bm("item:"+item.id+",slot"+item.slot+"");
 
             var itemurl;
-            if (template.type == 'armor') {
+            if (template.type === 'armor') {
                 itemurl = 'plugins/game/images/characters/base/' + (template['subtype']) + '/big.php?i=' + (template['image']) + '';
             } else {
                 itemurl = 'plugins/game/images/items/big.php?i=' + (template['image']);
@@ -976,7 +971,7 @@ var HUDHandler = Class.extend({
         $('#healthBar').html(content);
         if (doFlash) {
             setTimeout(function() {
-                hudHandler.MakeHealthBar()
+                hudHandler.MakeHealthBar();
             }, 50);
         }
     },
@@ -992,8 +987,8 @@ var HUDHandler = Class.extend({
         $('#alertBox').hide();
         hudHandler.alertBoxActive = false;
 
-        if (ISDEF(hudHandler.doYes)) hudHandler.doYes = undefined;
-        if (ISDEF(hudHandler.doNo)) hudHandler.doNo = undefined;
+        if (!_.isUndefined(hudHandler.doYes)) hudHandler.doYes = undefined;
+        if (!_.isUndefined(hudHandler.doNo)) hudHandler.doNo = undefined;
 
     },
     MessageAlert: function(message, options, doYes, doNo) {
@@ -1037,7 +1032,7 @@ var HUDHandler = Class.extend({
             $('#alertBox').hide();
             hudHandler.alertBoxActive = false;
 
-            if (ISDEF(hudHandler.doYes)) hudHandler.doYes();
+            if (!_.isUndefined(hudHandler.doYes)) hudHandler.doYes();
 
             hudHandler.doYes = undefined;
         });
@@ -1046,7 +1041,7 @@ var HUDHandler = Class.extend({
             $('#alertBox').hide();
             hudHandler.alertBoxActive = false;
 
-            if (ISDEF(hudHandler.doNo)) hudHandler.doNo();
+            if (!_.isUndefined(hudHandler.doNo)) hudHandler.doNo();
 
             hudHandler.doNo = undefined;
         });
@@ -1059,7 +1054,7 @@ var HUDHandler = Class.extend({
     },
     EnableButtons: function(buttons) {
         for (var b = 0; b < buttons.length; b++) {
-            if (ISDEF(this.oldButtonClasses[buttons[b]])) {
+            if (!_.isUndefined(this.oldButtonClasses[buttons[b]])) {
                 $('#' + buttons[b]).attr('class', this.oldButtonClasses[buttons[b]]);
             } else {
                 $('#' + buttons[b]).attr('class', 'ibutton');
@@ -1228,7 +1223,7 @@ var HUDHandler = Class.extend({
                 for (var c = 0; c < chars.length; c++) {
                     if (chars[c].id == startdata.characterUsed) {
                         var next = parseInt(c) - 1;
-                        if (ISDEF(chars[next])) {
+                        if (!_.isUndefined(chars[next])) {
                             startdata.characterUsed = chars[next].id;
                         } else {
                             startdata.characterUsed = 0;
@@ -1257,7 +1252,7 @@ var HUDHandler = Class.extend({
                 for (var c = 0; c < chars.length; c++) {
                     if (chars[c].id == startdata.characterUsed) {
                         var next = parseInt(c) + 1;
-                        if (ISDEF(chars[next])) {
+                        if (!_.isUndefined(chars[next])) {
                             startdata.characterUsed = chars[next].id;
                         } else {
                             startdata.characterUsed = 0;
@@ -1311,7 +1306,7 @@ var HUDHandler = Class.extend({
 
                         data = JSON.parse(string);
 
-                        if (ISDEF(data.errmsg)) {
+                        if (!_.isUndefined(data.errmsg)) {
                             hudHandler.MessageAlert(data.errmsg);
                             return;
                         }
@@ -1384,7 +1379,7 @@ var HUDHandler = Class.extend({
 
                     data = JSON.parse(string);
 
-                    if (ISDEF(data.errmsg)) {
+                    if (!_.isUndefined(data.errmsg)) {
                         hudHandler.MessageAlert(data.errmsg);
                         hudHandler.EnableButtons(['btnConfirmDeletion', 'btnBack']);
                         return;
@@ -1787,7 +1782,7 @@ var HUDHandler = Class.extend({
 
                     data = JSON.parse(string);
 
-                    if (ISDEF(data.errmsg)) {
+                    if (!_.isUndefined(data.errmsg)) {
                         hudHandler.MessageAlert(data.errmsg);
                         hudHandler.EnableButtons(['btnConfirmNewChar', 'btnBackMainChar']);
                         return;
@@ -1867,19 +1862,19 @@ var HUDHandler = Class.extend({
 
         textArray = text.split("|");
 
-        if (ISDEF(textArray[page])) {
+        if (!_.isUndefined(textArray[page])) {
             $("#bookPageLeft").html(textArray[page]);
         } else {
             $("#bookPageLeft").empty();
         }
-        if (ISDEF(textArray[page + 1])) {
+        if (!_.isUndefined(textArray[page + 1])) {
             $("#bookPageRight").html(textArray[page + 1]);
         } else {
             $("#bookPageRight").empty();
         }
 
 
-        if (ISDEF(textArray[page - 2])) {
+        if (!_.isUndefined(textArray[page - 2])) {
             $("#bookFooterLeft").html('<button id="bookPrevPage" class="ibutton_book" style="width:150px">Previous Page</button>');
             $("#bookPrevPage").click(function() {
                 hudHandler.ShowBook(text, page - 2)
@@ -1887,7 +1882,7 @@ var HUDHandler = Class.extend({
         } else {
             $("#bookFooterLeft").empty();
         }
-        if (ISDEF(textArray[page + 2])) {
+        if (!_.isUndefined(textArray[page + 2])) {
             $("#bookFooterRight").html('<button id="bookNextPage" class="ibutton_book" style="width:150px">Next Page</button>');
             $("#bookNextPage").click(function() {
                 hudHandler.ShowBook(text, page + 2)
