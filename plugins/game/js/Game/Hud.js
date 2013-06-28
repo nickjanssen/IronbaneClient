@@ -538,6 +538,15 @@ var HUDHandler = Class.extend({
                 return;
             }
 
+            // a "good" response should include the server's items
+            if(reply.items) {
+                socketHandler.playerData.items = reply.items;
+                hudHandler.ReloadInventory();
+                hudHandler.UpdateEquippedItems();
+
+                soundHandler.Play(ChooseRandom(["bag1"]));
+            }
+
             var switchItem = hudHandler.FindItemBySlot(slotNumber, inLoot);
             if (switchItem) {
                 switchItem.slot = startItem.slot;
@@ -1451,7 +1460,7 @@ var HUDHandler = Class.extend({
                     if (string == 'OK') {
 
                         $.post('gamehandler.php?action=getchars', function(data) {
-                           
+
                             console.log(data);
                             eval(data);
                             startdata.loggedIn = true;
@@ -1608,7 +1617,7 @@ var HUDHandler = Class.extend({
             //   preload(['plugins/game/images/characters/base/skin/'+x+'_big.png']);
             // }
 
-            
+
             var newChar = '<label for="ncname">Name</label><div class="spacersmall"></div><input type="text" id="ncname" class="iinput" style="width:305px" maxlength="12"><div id="charCustomizationContainer"><div id="charCustomizationButtonsLeft"></div><div id="charCustomizationPreview"></div><div id="charCustomizationButtonsRight"></div></div><button id="btnConfirmNewChar" class="ibutton_attention" style="width:150px">Create</button><button id="btnBackMainChar" class="ibutton" style="width:150px">Cancel</button>';
 
             $('#charSelect').html(newChar);

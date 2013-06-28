@@ -408,34 +408,13 @@ var SocketHandler = Class.extend({
         this.socket.on('lootFromBag', function(data) {
             // occurs when someone nearby loots from a bag
             // refresh the bag
-
-            var npcID = data;
+            console.log('lootFromBag REPLY:', data);
 
             if (ironbane.player.canLoot) {
-                // Make a request for the items and update the UI when we receive them
-                socketHandler.socket.emit('loot', npcID, function(reply) {
-                    if (ISDEF(reply.errmsg)) {
-                        hudHandler.MessageAlert(reply.errmsg);
-                        return;
-                    }
-
-                    if (ironbane.player.canLoot) {
-                        // Todo: remove the items via UI
-                        for (var i = 0; i < ironbane.player.lootItems.length; i++) {
-                            var lootItem = ironbane.player.lootItems[i];
-
-                            $('#li' + lootItem.id).remove();
-                        }
-
-                        ironbane.player.lootItems = [];
-                    }
-                    //if ( !socketHandler.loggedIn ) return;
-                    ironbane.player.lootItems = reply;
-                    hudHandler.MakeSlotItems(true);
-                });
+                // var npcID = data.bag;
+                ironbane.player.lootItems = data.loot;
+                hudHandler.MakeSlotItems(true);
             }
-
-
         });
 
         this.socket.on('respawn', function(data) {
@@ -447,7 +426,7 @@ var SocketHandler = Class.extend({
                 unit.health = data['h'];
                 unit.localPosition.copy(ConvertVector3(data['p']));
 
-                if (unit == ironbane.player) {
+                if (unit === ironbane.player) {
 
                     terrainHandler.transitionState = transitionStateEnum.START;
 
