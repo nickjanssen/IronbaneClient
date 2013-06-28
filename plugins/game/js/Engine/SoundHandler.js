@@ -174,6 +174,12 @@ var SoundHandler = Class.extend({
       "bubble2": "inventory/bubble2.wav",
       "bubble3": "inventory/bubble3.wav",
 
+      "IBfire": "NPCs/IRONBANE/Fireattack.wav",
+      "IBbreath1": "NPCs/IRONBANE/breath1.wav",
+      "IBbreath2": "NPCs/IRONBANE/breath2.wav",
+      "IBgrowl": "NPCs/IRONBANE/growl3.wav",
+      "IBattack": "NPCs/IRONBANE/attack2.wav",
+
       // "step1": "step/grass1.wav",
       // "step2": "step/grass2.wav",
       // "stepWater1": "step/water1.wav",
