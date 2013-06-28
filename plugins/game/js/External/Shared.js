@@ -193,9 +193,6 @@ var meleeRange = 3.0;
 
 var maxHealth = 20;
 
-var maxCoins = 24;
-
-
 function CalculateItemPrice(item) {
   //                    var temp = {
   //                        id: server.GetAValidItemID(),

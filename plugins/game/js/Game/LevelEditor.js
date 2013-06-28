@@ -55,16 +55,11 @@ var EditorGUI = function() {
   this.chSunOffset = 0;
   this.chFOV = 75;
 
-  var itemCollection = {};
-  _.each(items, function(item) {
-    itemCollection[item.name] = item.name;
-  });
-  this.itemCollection = itemCollection;
-
-  this.chItemName = firstOfObject(itemCollection);
+  this.itemCollection = _.pluck(items, 'name').sort();
+  this.chItemName = this.itemCollection[0];
   this.chGiveItem = function() {
     socketHandler.socket.emit('chatMessage', {
-      message: '/giveitem "'+levelEditor.editorGUI.chItemName+'"'
+      message: '/giveitem "' + levelEditor.editorGUI.chItemName + '"'
     });
   };
 
@@ -356,7 +351,7 @@ var EditorGUI = function() {
     socketHandler.socket.emit('addNPC', {
       position: ironbane.player.position,
       roty: ironbane.player.rotation.y,
-      template: levelEditor.editorGUI.npcTemplate,
+      template: unitTemplates[levelEditor.editorGUI.npcTemplate],
       param: levelEditor.editorGUI.npcParam
     });
 
@@ -912,7 +907,7 @@ var LevelEditor = Class.extend({
 
 
 
-    guiControls['npcTemplate'] = fNPCEditor.add(this.editorGUI, 'npcTemplate', unitTemplates);
+    guiControls['npcTemplate'] = fNPCEditor.add(this.editorGUI, 'npcTemplate', Object.keys(unitTemplates).sort());
 
     guiControls['npcParam'] = fNPCEditor.add(this.editorGUI, 'npcParam');
 

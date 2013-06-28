@@ -14,133 +14,97 @@
     You should have received a copy of the GNU General Public License
     along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 var CameraStatusEnum = {
-  ThirdPerson:"ThirdPerson",
-  ThirdPersonToFirstPersonTransition:"ThirdPersonToFirstPersonTransition",
-  FirstPerson:"FirstPerson"
-}
+    ThirdPerson: "ThirdPerson",
+    ThirdPersonToFirstPersonTransition: "ThirdPersonToFirstPersonTransition",
+    FirstPerson: "FirstPerson"
+};
 
 var Player = Fighter.extend({
-  Init: function(position, rotation, id, name) {
+    Init: function(position, rotation, id, name) {
+        this._super(position, rotation, id, name, 0,
+            socketHandler.playerData.size, socketHandler.playerData.health, socketHandler.playerData.armor,
+            socketHandler.playerData.healthMax, socketHandler.playerData.armorMax);
 
+        this.drawNameMesh = false;
+        this.originalThirdPersonReference = new THREE.Vector3(0, 2.5, -4);
+        ironbane.camera.position.copy(position.clone().addSelf(new THREE.Vector3(0, 1, 0)));
+        this.thirdPersonReference = this.originalThirdPersonReference.clone();
+        this.targetSize = socketHandler.playerData.size;
+        this.sendDataTimeout = 0.0;
+        this.canMove = true;
+        this.canLoot = false;
+        this.lootItems = [];
+        this.lootUnit = null;
+        this.cameraStatus = CameraStatusEnum.ThirdPerson;
 
-    this._super(position, rotation, id, name, 0, socketHandler.playerData['size'], socketHandler.playerData['health'], socketHandler.playerData['armor'],
-      socketHandler.playerData['healthMax'], socketHandler.playerData['armorMax']);
+        (function(unit) {
+            setTimeout(function() {
+                hudHandler.MakeHealthBar();
+                hudHandler.MakeArmorBar();
+                hudHandler.MakeCoinBar();
+            }, 0);
+        })(this);
 
+        this.CheckForItemsBeforeMakingImage();
 
+        // Reddish glow that follows the mouse
+        this.aimTexture = "";
+        this.targetAimTexture = "";
+        this.aimMesh = null;
+        this.aimMeshPosition = new THREE.Vector3();
 
+        // Secondary helper
+        this.aimHelperTexture = "";
+        // this.targetAimHelperTexture = "";
+        this.aimHelperMesh = null;
+        this.aimHelperMeshPosition = new THREE.Vector3();
 
-    this.drawNameMesh = false;
+        this.currentZoneMusic = null;
 
-    //        this.targetPosition.x = 1.0;
-    //        this.targetPosition.z = 1.0;
+        if ( showEditor ) {
+            this.enableGravity = !levelEditor.editorGUI.chFlyMode;
+        }
 
+        this.mouseRayCastCheckTimeout = 0.0;
 
+        this.localRotationY = rotation.y;
 
-    this.originalThirdPersonReference = new THREE.Vector3(0, 2.5, -4);
+        this.isLookingAround = false;
+    },
+    getTotalCoins: function() {
+        //console.log('getTotalCoins', socketHandler.playerData.items);
 
-    ironbane.camera.position.copy(position.clone().addSelf(new THREE.Vector3(0, 1, 0)));
+        // sum value of cash items in inventory
+        return _.reduce(_.pluck(_.where(socketHandler.playerData.items, {
+            type: 'cash'
+        }), 'value'), function(memo, num) {
+            return memo + num;
+        }, 0);
+    },
+    CheckForItemsBeforeMakingImage: function() {
+        if (socketHandler.playerData.items === null) {
+            setTimeout(function() {
+                ironbane.player.CheckForItemsBeforeMakingImage();
+            }, 1000);
+        } else {
+            this.UpdateAppearance();
+            var weapon = this.GetEquippedWeapon();
 
-    this.thirdPersonReference = this.originalThirdPersonReference.clone();
+            if (weapon) {
+                var template = items[weapon['template']];
+                this.UpdateWeapon(template['id']);
+            }
+        }
+    },
+    Destroy: function() {
+        //$('#loadingBar').show();
+        this.DestroyAimMesh();
+        this.DestroyAimHelperMesh();
 
-    this.targetSize = socketHandler.playerData['size'];
-
-    this.sendDataTimeout = 0.0;
-
-    this.canMove = true;
-
-    this.canLoot = false;
-    this.lootItems = [];
-    this.lootUnit = null;
-
-    this.cameraStatus = CameraStatusEnum.ThirdPerson;
-
-    this.coins = socketHandler.playerData['coins'];
-
-    // this.lookAtPosition = new THREE.Vector3();
-
-    // $('#loadingBar').hide();
-
-    (function(unit){
-      setTimeout(function(){
-        hudHandler.MakeHealthBar();
-        hudHandler.MakeArmorBar();
-        hudHandler.MakeCoinBar();
-
-      },0);
-    })(this);
-
-    this.CheckForItemsBeforeMakingImage();
-
-
-    // Reddish glow that follows the mouse
-    this.aimTexture = "";
-    this.targetAimTexture = "";
-    this.aimMesh = null;
-    this.aimMeshPosition = new THREE.Vector3();
-
-    // Secondary helper
-    this.aimHelperTexture = "";
-    // this.targetAimHelperTexture = "";
-    this.aimHelperMesh = null;
-    this.aimHelperMeshPosition = new THREE.Vector3();
-
-    //this.aimHelperMesh.LookAt(new THREE.Vector3(0,1,0));
-
-
-    // For more accurate raycasting
-    //    this.rayOffsetList = [];
-    //    this.rayOffsetList.push(new THREE.Vector3(0.05, 0.5, 0.05));
-    //    this.rayOffsetList.push(new THREE.Vector3(-0.05, 0.5, 0.05));
-    //    this.rayOffsetList.push(new THREE.Vector3(0.05, 0.5, -0.05));
-    //    this.rayOffsetList.push(new THREE.Vector3(-0.05, 0.5, -0.05));
-
-    this.currentZoneMusic = null;
-
-
-    if ( showEditor ) {
-      this.enableGravity = !levelEditor.editorGUI.chFlyMode;
-    }
-
-    this.mouseRayCastCheckTimeout = 0.0;
-
-    this.localRotationY = rotation.y;
-
-    this.isLookingAround = false;
-
-    //this.heartPieces = socketHandler.playerData.heartPieces.split(",");
-
-  },
-  CheckForItemsBeforeMakingImage: function() {
-    if ( socketHandler.playerData.items == null ) {
-      setTimeout(function(){
-        ironbane.player.CheckForItemsBeforeMakingImage()
-      }, 1000);
-    }
-    else {
-      this.UpdateAppearance();
-      var weapon = this.GetEquippedWeapon();
-
-      if ( weapon ) {
-        var template = items[weapon['template']];
-        this.UpdateWeapon(template['id']);
-      }
-    }
-
-  },
-  Destroy: function() {
-
-    //$('#loadingBar').show();
-    this.DestroyAimMesh();
-    this.DestroyAimHelperMesh();
-
-    this._super();
-  },
+        this._super();
+    },
   DestroyAimMesh: function() {
     if ( this.aimMesh ) {
       ironbane.scene.remove(this.aimMesh);
