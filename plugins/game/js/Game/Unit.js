@@ -305,7 +305,7 @@ var Unit = PhysicsObject.extend({
 
     _.each(this.lightsToMaintain, function(light){
       this.object3D.remove(light);
-    });
+    }, this);
 
     if ( this.mesh ) {
 
