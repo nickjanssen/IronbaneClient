@@ -865,9 +865,15 @@ console.log(this);
 
     if ( this.terrainAngle > 45 && this.position.y > GetZoneConfig('fluidLevel') ) return;
 
+    this.velocity.y = 5;
+    if(this.position.y < GetZoneConfig('fluidLevel')) {
+      this.velocity.y = 2;
+    }
+
+    
+
     this.lastJumpTimer = 1.0;
 
-    this.velocity.y = 5;
 
     this.allowCheckGround = false;
 

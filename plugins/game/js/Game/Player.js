@@ -515,6 +515,11 @@ var Player = Fighter.extend({
           this.Jump();
           socketHandler.socket.emit('doJump', {});
         }
+        else if(this.position.y < GetZoneConfig('fluidLevel')) {
+          this.Jump();
+          //not sure how I should send the vertical velocity?
+          socketHandler.socket.emit('doJump', {});
+        }
       }
       if(keyTracker[16]){
 
