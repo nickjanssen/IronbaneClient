@@ -166,7 +166,7 @@ var HUDHandler = Class.extend({
                 $("#btnToggleSound").html("&#9834;");
                 $("#btnToggleSound").css("color", "");
 
-                soundHandler.Play("theme");
+                soundHandler.Play("music/ib_theme");
             } else {
                 $("#btnToggleSound").html("<del>&#9834;</del>");
                 $("#btnToggleSound").css("color", "red");
@@ -716,7 +716,7 @@ var HUDHandler = Class.extend({
         if (item.price) {
             var priceHtml = [
                     '<span class="amount" style="color:gold;padding-left: 16px;',
-                    'background-image:url(/plugins/game/images/misc/coin_full.png);',
+                    'background-image:url(plugins/game/images/misc/coin_full.png);',
                     'background-repeat:no-repeat;">',
                     'x ', item.price,
                     '</span>'
@@ -1085,12 +1085,12 @@ var HUDHandler = Class.extend({
     HideMenuScreen: function() {
         $('#loginBox, #devNews, #sideMenu, #soundToggleBox').hide();
         $('#chatBox, #itemBar, #coinBar, #statBar').show();
-        soundHandler.FadeOut("theme", 5000);
+        soundHandler.FadeOut("music/ib_theme", 5000);
     },
     ShowMenuScreen: function() {
         $('#sideMenu, #loginBox, #devNews, #soundToggleBox').show();
         $('#chatBox, #itemBar, #lootBag, #coinBar, #statBar').hide();
-        soundHandler.FadeIn("theme", 5000);
+        soundHandler.FadeIn("music/ib_theme", 5000);
     },
     MakeCharSelectionScreen: function() {
 
