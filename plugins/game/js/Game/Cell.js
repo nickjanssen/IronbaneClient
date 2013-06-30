@@ -84,6 +84,7 @@ var Cell = Class.extend({
           me.filesToLoad--;
           me.objectData = [];
           console.warn('Not found: '+objectsFile);
+          me.FinishLoad();
         });
 
 
@@ -99,6 +100,7 @@ var Cell = Class.extend({
             me.filesToLoad--;
             me.graphData = {};
             console.warn('No graph found: '+graphFile);
+            me.FinishLoad();
           });
         }
 
