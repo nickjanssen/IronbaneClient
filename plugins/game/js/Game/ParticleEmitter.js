@@ -99,7 +99,11 @@ var ParticleEmitter = Class.extend({
 
         particle.scale = (CheckForFunctionReturnValue(this.type.particleStartScale, particle) || new THREE.Vector2(1.0, 1.0)).clone().multiplyScalar(0.02);
 
-
+        if ( this.particleFollowUnit ) {
+            if ( this.particleFollowUnit.size > 2 ) {
+                particle.scale.multiplyScalar(this.particleFollowUnit.size * 0.5);
+            }
+        }
 
 
         particle.velocity = (CheckForFunctionReturnValue(this.type.particleStartVelocity, particle) || new THREE.Vector3()).clone();

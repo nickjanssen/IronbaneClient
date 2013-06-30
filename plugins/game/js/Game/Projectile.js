@@ -188,10 +188,11 @@ var Projectile = Unit.extend({
 
         this.particle = null;
 
+        this.size = this.owner.size;
 
-        this._super(position, 0, GetNewProjectileID(), 'Projectile', 0);
+        this._super(position, 0, GetNewProjectileID(), 'Projectile', 0, this.size);
 
-        this.size = this.type.size;
+
 
         // Overwrite the default of '5'
         this.maxSpeed = 200;
@@ -405,11 +406,12 @@ var Projectile = Unit.extend({
 
             this.meshChild.add(mesh);
 
-            this.meshChild.scale.set(0.75 * this.owner.size, 0.75 * this.owner.size, 0.75 * this.owner.size);
 
             this.meshChild.rotation.x = Math.PI*1.75;
 
         }
+
+        this.meshChild.scale.set(0.75 * this.owner.size, 0.75 * this.owner.size, 0.75 * this.owner.size);
 
         ironbane.scene.add(this.mesh);
 
