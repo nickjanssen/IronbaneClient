@@ -217,6 +217,9 @@ var TerrainHandler = Class.extend({
       bm(zones[this.zone].name);
     }
 
+    if ( ironbane.player ) {
+      ironbane.player.onChangeZone(newZone);
+    }
     var zoneMusicPiece = ChooseRandom(GetZoneConfig("music"));
 
     if ( socketHandler.loggedIn ) {
@@ -304,7 +307,7 @@ var TerrainHandler = Class.extend({
 
     if ( !noTerrain ) {
 
-      //30-6-2013 - Ingmar : check on existence of ironbane.player, during load of the game, the terrainhandler is loading first and then the player. 
+      //30-6-2013 - Ingmar : check on existence of ironbane.player, during load of the game, the terrainhandler is loading first and then the player.
       // player does not have yet to exist here, so wait a few cycles
       if(ironbane.player) {
       if ( DistanceSq(this.lastOctreeBuildPosition, ironbane.player.position) > 10*10 ) {

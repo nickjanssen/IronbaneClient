@@ -72,6 +72,8 @@ var Player = Fighter.extend({
         this.localRotationY = rotation.y;
 
         this.isLookingAround = false;
+
+        this.onChangeZone(terrainHandler.zone);
     },
     getTotalCoins: function() {
         //console.log('getTotalCoins', socketHandler.playerData.items);
@@ -128,6 +130,19 @@ var Player = Fighter.extend({
       ironbane.renderer.deallocateObject( this.aimHelperMesh );
 
     }
+  },
+  onChangeZone: function(newZone) {
+
+    // Hack for Ironbane's Chamber "spooky cam"
+    if ( newZone === 7 ) {
+      this.originalThirdPersonReference.set(0, 0.8, -4).multiplyScalar(1.5);
+      this.thirdPersonReference
+        .copy(this.originalThirdPersonReference);
+    }
+    else {
+      this.originalThirdPersonReference.set(0, 2.5, -4);
+    }
+
   },
   Tick: function(dTime) {
 
