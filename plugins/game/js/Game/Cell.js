@@ -175,17 +175,15 @@ var Cell = Class.extend({
     ReloadWaypointsOnly: function() {
 
         _.each(this.objects, function(object) {
-
             if ( object instanceof Waypoint) {
+                object.Destroy();
 
-                o.Destroy();
                 // Remove from unitList
-
-                ironbane.unitList = _.without(ironbane.unitList, this.objects[o]);
-                this.objects = _.without(this.objects, o);
-                //this.objects.splice(o--, 1);
+                ironbane.unitList = _.without(ironbane.unitList, object);
+                this.objects = _.without(this.objects, object);
             }
-        });
+        }, this);
+
         _.each(this.waypointMeshes, function(waypointMesh) {
             ironbane.scene.remove(waypointMesh);
         });

@@ -1452,8 +1452,6 @@ var HUDHandler = Class.extend({
                     if (string == 'OK') {
 
                         $.post('gamehandler.php?action=getchars', function(data) {
-
-                            console.log(data);
                             eval(data);
                             startdata.loggedIn = true;
 
