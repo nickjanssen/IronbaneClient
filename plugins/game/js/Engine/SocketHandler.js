@@ -354,6 +354,9 @@ var SocketHandler = Class.extend({
             if (unit) {
                 // Alter the start position to cope with lag
                 data['s'] = unit.position.clone();
+
+                // Take into account the size
+                data.s.y += unit.size * 0.5;
             }
 
             var weapon = ISDEF(data.w) ? items[data.w] : null;
