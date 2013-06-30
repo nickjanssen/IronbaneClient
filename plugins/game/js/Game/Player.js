@@ -26,6 +26,9 @@ var Player = Fighter.extend({
         this._super(position, rotation, id, name, 0,
             socketHandler.playerData.size, socketHandler.playerData.health, socketHandler.playerData.armor,
             socketHandler.playerData.healthMax, socketHandler.playerData.armorMax);
+        this.template = {}
+        this.template.type = UnitTypeEnum.PLAYER;
+        console.log(this);
 
         this.drawNameMesh = false;
         this.originalThirdPersonReference = new THREE.Vector3(0, 2.5, -4);
@@ -429,7 +432,7 @@ var Player = Fighter.extend({
       this.targetRotation.y = this.localRotationY + this.unitStandingOn.rotation.y;
     }
     else {
-      this.targetRotation.y = this.localRotationY
+      this.targetRotation.y = this.localRotationY;
     }
     //
     while ( this.targetRotation.y < 0 ) {
@@ -965,8 +968,11 @@ var Player = Fighter.extend({
 
 
               switch (template.subtype) {
+                 case 'cash':
+            soundHandler.Play(ChooseRandom(["getCoin1","getCoin2", "getCoin3"]), this.position);
+            break;
                 case "restorative":
-                  soundHandler.Play(ChooseRandom(["bubble1"]));
+                  soundHandler.Play(ChooseRandom(["bubble1", "bubble2", "bubble3"]));
                   break;
               }
 
@@ -987,7 +993,7 @@ var Player = Fighter.extend({
           // Set to equipped
           item.equipped = item.equipped ? 0 : 1;
 
-          soundHandler.Play(item.equipped ? "equip1" : "equip2");
+          soundHandler.Play(item.equipped ? "equip/equip1" : "equip/equip2");
 
           // Send a request to equipment
           // Other players will update the view
@@ -1013,7 +1019,7 @@ var Player = Fighter.extend({
           item.equipped = item.equipped ? 0 : 1;
 
 
-          soundHandler.Play(item.equipped ? "equip1" : "equip2");
+          soundHandler.Play(item.equipped ? "equip/equip1" : "equip/equip2");
 
           switch (template.subtype) {
             case 'sword':
@@ -1057,6 +1063,7 @@ var Player = Fighter.extend({
               // soundHandler.Play(item.equipped ? "equip1" : "equip2");
 
               break;
+
             default:
               // soundHandler.Play(item.equipped ? "equip1" : "equip2");
               break;

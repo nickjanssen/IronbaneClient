@@ -42,6 +42,7 @@ var SoundHandler = Class.extend({
 
         "ib2": {
             file: "music/IRONBANE 2.mp3",
+            preload: true,
             volume: 0.5,
             // volume:0,
             loops: 1
@@ -50,6 +51,7 @@ var SoundHandler = Class.extend({
         "ib4": {
             file: "music/IRONBANE 4.mp3",
             volume: 0.5,
+            preload: true,
             // volume:0,
             loops: 1
         },
@@ -57,9 +59,42 @@ var SoundHandler = Class.extend({
         "ib5": {
             file: "music/IRONBANE 5.mp3",
             volume: 0.5,
+            preload: true,
             // volume:0,
             loops: 1
         },
+
+         "ib6": {
+            file: "music/IRONBANE 6.mp3",
+            volume: 0.5,
+            // volume:0,
+            loops: 1
+        },
+        
+         "ib7": {
+            file: "music/IRONBANE 7.mp3",
+            volume: 0.5,
+            // volume:0,
+            loops: 1
+        },
+
+         "ib8": {
+            file: "music/IRONBANE 8.mp3",
+            volume: 0.5,
+            // volume:0,
+            loops: 1
+        },
+
+         "ib10": {
+            file: "music/IRONBANE 10.mp3",
+            volume: 0.5,
+            // volume:0,
+            loops: 1
+        },
+        
+        
+        
+
 
         "underground": {
             file: "music/underground.mp3",
@@ -71,12 +106,11 @@ var SoundHandler = Class.extend({
         "click": "ui/click.wav",
 
         "switch": "misc/switch.wav",
+        "switch2": "misc/switch2.wav",
         "bag1": "misc/bag1.wav",
         "bag2": "misc/bag2.wav",
-        "drop": "misc/drop.ogg",
-        "drop1": "misc/drop1.wav",
-        "drop2": "misc/drop2.wav",
-        // "enterGame": "misc/enterGame.ogg",
+        "drop": "misc/drop.wav",
+        "enterGame": "misc/enterGame.wav",
 
 
         "equipSword1": "equip/equipSword1.wav",
@@ -102,13 +136,22 @@ var SoundHandler = Class.extend({
         "die2": "battle/die2.wav",
         "die3": "battle/die3.wav",
 
+        "mutant" : "die/mutant.wav",
+
         "fireStaff": "battle/fireStaff.wav",
         "fireArrow": "battle/fireArrow.wav",
+        "fireArrow2" : "battle/fireArrow2.wav",
 
         "jump1": "player/jump/Player_Jump_01.wav",
+        "jump2": "player/jump/Player_Jump_02.wav",
+        "jump3": "player/jump/Player_Jump_03.wav",
+        "jump4": "player/jump/Player_Jump_04.wav",
+        "jump5": "player/jump/Player_Jump_05.wav",
         "getItem": "player/GetItem/PLAYER_GET_ITEM_01.wav",
         "regenHealth": "player/RegenHealth/PLAYER_REGEN_HEALTH_03.wav",
-        "getCoin": "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "getCoin1": "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "getCoin2": "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "getCoin3": "player/GetCoins/PLAYER_GET_COINS_01.wav",
         "takeDamage": "player/TakeDamage/PLAYER_TAKE_DAMAGE_03.wav",
 
         "greenSlime1": "NPCs/GreenSlime/01.wav",
@@ -160,6 +203,24 @@ var SoundHandler = Class.extend({
         // "stepWater1": "step/water1.wav",
         // "stepWater2": "step/water2.wav",
         "jump": "fighter/jump.wav",
+        "ratdie" : "npcs/rat/die",
+
+        "deathb" : "monster/deathb.wav",
+        "deathd" : "monster/deathd.wav",
+        "deathe" : "monster/deathe.wav",
+        "deathr" : "monster/deathr.wav",
+        "deaths" : "monster/deaths.wav",
+        "grunt1" : "monster/grunt1.wav",
+        "grunt2" : "monster/grunt2.wav",
+        "painb" : "monster/painb.wav",
+        "paind" : "monster/paind.wav",
+        "paine" : "monster/paine.wav",
+        "painp" : "monster/painp.wav",
+        "painr" : "monster/painr.wav",
+        "pains" : "monster/pains.wav",
+        "piggrunt1" : "monster/piggrunt1",
+        "piggrunt2" : "monster/piggrunt2",
+
         //      "race": "battle/02_-_rage_racer.mp3",
         //      "splash": "battle/splash.ogg",
 
@@ -184,12 +245,14 @@ var SoundHandler = Class.extend({
     },
     Preload: function() {
         var self = this;
-        _.each(self.soundList, function(sound, key) {
+        _.each(self.soundList, function(sound) {
             if(!_.isObject(sound)) {
                 sound = {file: sound};
             }
             //30-6-2013: Ingmar: if sound.volume is undefined, get a fixed value
             sound.volume = (sound.volume !== undefined) ? sound.volume : self.DEFAULT_VOLUME;
+            sound.loops = (sound.loops !== undefined) ? sound.loops : 1;
+            var key = sound.file.substring(0, sound.file.length - 4);
             self.sounds[key] = soundManager.createSound({
                 id: key,
                 url: ironbane_root_directory + 'plugins/game/sound/' + sound.file,
@@ -204,6 +267,8 @@ var SoundHandler = Class.extend({
         });
     },
     FadeOut: function(sound, time) {
+       
+        console.log("fading out: " + sound)
         var self = this;
 
         this.PlayOnce(sound);
@@ -214,9 +279,27 @@ var SoundHandler = Class.extend({
                     self.SetVolume(sound, this.volume);
                 }).start();
     },
+
+    findSoundBase: function(key) {
+        var theSound = null;
+        _.each(this.soundList, function(sound) {
+
+            if(!_.isObject(sound)) {
+                sound = {file: sound};
+            }
+            if(sound.file.toLowerCase().indexOf(key.toLowerCase()) >= 0) {
+                theSound = sound;
+            }
+        });
+        return theSound;
+
+    },
     SetVolume: function(sound, volume) {
-     volume *= (this.soundList[sound].volume !== undefined) ? this.soundList[sound].volume : this.DEFAULT_VOLUME;
-        soundManager.setVolume(sound, volume);
+        var soundTemplate = this.findSoundBase(sound);
+        if(soundTemplate === undefined) return;
+     volume *= (soundTemplate.volume !== undefined) ? soundTemplate.volume : this.DEFAULT_VOLUME;
+     var theSound = this.sounds[sound];
+        theSound.setVolume(volume);
     },
     FadeIn: function(sound, time) {
         var self = this;
@@ -229,29 +312,43 @@ var SoundHandler = Class.extend({
                 }).start();
     },
     OnLoad: function(sound) {
-        if (sound === "theme") {
+        console.log("onload: " + sound);
+        if (sound === "music/ib_theme") {
             this.loadedMainMenuMusic = true;
         }
     },
     PlayOnce: function(sound, position) {
+        console.log("playing once " + sound);
         if (!hudHandler.allowSound) {
             return;
         }
-
+        if(this.getAllSounds(sound).length === 0) {
+            console.log("sound " + sound + " not found");
+            return;
+        }
         if (this.sounds[sound].playState !== 0) {
           return;
         }
 
         this.Play(sound, position);
     },
-    Play: function(sound, position) {
+    getAllSounds: function(s) {
+        var sounds = [];
+        for(var loadedSound in this.sounds) {
+            if(loadedSound.toLowerCase().indexOf(s.toLowerCase()) >= 0) {
+                sounds.push(this.sounds[loadedSound]);                
+            }
+        }
+        return sounds;
+    },
+    Play: function(s, position) {
         if (!hudHandler.allowSound) {return;}
-
-        if (!(sound in this.sounds)) {
-            ba('Sound \'' + sound + '\' does not exist!');
+        var sounds = this.getAllSounds(s);
+        if(sounds.length === 0) {
+            console.log("sound " + s + " not found");
             return;
         }
-
+        var sound = ChooseRandom(sounds);
         var distance = 0;
 
         if (position) {
@@ -265,13 +362,8 @@ var SoundHandler = Class.extend({
         volume = 1 - volume.clamp(0, 1);
         volume = volume * 100;
         volume = volume.clamp(0, 100);
-
-        this.SetVolume(sound, volume);
         //soundManager.setPan(sound, 80);
-
-        this.sounds[sound].play({
-            loops: this.soundList[sound].loops
-        });
+        sound.play();
     },
     StopAll: function() {
         soundManager.stopAll();

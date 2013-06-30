@@ -54,7 +54,7 @@ var Lever = ToggleableObstacle.extend({
     this.targetRotation.x = this.startRotation.x + 90 * mp;
         
         
-    soundHandler.Play("switch");
+    soundHandler.Play("misc/switch");
 
   },
   Tick: function(dTime) {

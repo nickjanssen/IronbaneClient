@@ -31,7 +31,7 @@ var meleeTime = 0.3;
 
 var Fighter = Unit.extend({
   Init: function(position, rotation, id, name, param, size, health, armor, healthMax, armorMax) {
-
+    this.npctype = name;
     health = health || 0;
     healthMax = healthMax || 0;
     armor = armor || 0;
@@ -105,7 +105,7 @@ var Fighter = Unit.extend({
 
     this.spriteIndex = 0;
 
-
+console.log(this);
     (function(unit){
       setTimeout(function(){
         if ( unit.health <= 0 ) unit.Die(true);
@@ -508,7 +508,7 @@ var Fighter = Unit.extend({
           rotateY = 40;
           targetWalkAngleZ1 = 30;
           targetWalkAngleZ3 = -30;
-          targetWalkOffsetX1 = 0.0
+          targetWalkOffsetX1 = 0.0;
           targetWalkOffsetX3 = -0.15;
           swingZamount = -90;
 
@@ -528,7 +528,7 @@ var Fighter = Unit.extend({
 
           offset.z = -0.015;
 
-          targetWalkOffsetX1 = 0.05
+          targetWalkOffsetX1 = 0.05;
           targetWalkOffsetX3 = -0.15;
           swingZamount = -90;
 
@@ -833,19 +833,21 @@ var Fighter = Unit.extend({
 
     if ( weapon ) {
 
+
+
       switch (weapon.subtype) {
         case 'bow':
-          soundHandler.Play(ChooseRandom(["fireArrow"]), this.position);
+          soundHandler.Play("battle/fireArrow", this.position);
           break;
         case 'staff':
-          soundHandler.Play(ChooseRandom(["fireStaff"]), this.position);
+          soundHandler.Play("battle/fireStaff", this.position);
           break;
         default:
-          // soundHandler.Play(ChooseRandom(["swing1","swing2","swing3"]), this.position);
-          soundHandler.Play(ChooseRandom(["swing1"]), this.position);
+          soundHandler.Play("battle/swing", this.position);
           break;
       }
     }
+   
     // this.meleeHitPosition = pos;
     // this.meleeHitPosition.y += 0.5;
 
@@ -870,8 +872,13 @@ var Fighter = Unit.extend({
     this.allowCheckGround = false;
 
     this.allowJump = false;
-
-    soundHandler.Play(ChooseRandom(["jump"]), this.position);
+    if(this.template.type !== UnitTypeEnum.PLAYER) {
+      soundHandler.Play(this.npctype + "/jump", this.position);
+    }
+    else
+    {
+      soundHandler.Play("player/jump/", this.position);
+    }
   },
   DoMeleeHitAnimation: function(position, power) {
 
@@ -928,19 +935,31 @@ var Fighter = Unit.extend({
 
     if ( this.health <= 0 ) {
 
-      soundHandler.Play(ChooseRandom(["die1","die2","die3"]), this.position);
+      this.playSound("die");
 
       this.Die();
 
     }
     else {
-      soundHandler.Play(ChooseRandom(["hit1","hit2","hit3"]), this.position);
+      this.playSound("hit");
     }
 
 
   },
+
+  playSound: function(sound) {
+if(this.template.type !== UnitTypeEnum.PLAYER) {
+      soundHandler.Play("npcs/" +this.npctype + "/" + sound, this.position);
+    }
+    else
+    {
+      soundHandler.Play("player/" + sound, this.position);
+    }
+
+  },
   Die: function(noParticle) {
 
+      console.log("dies!");
     noParticle = noParticle || false;
 
     this.mesh.visible = false;

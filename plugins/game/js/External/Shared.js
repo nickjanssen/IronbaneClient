@@ -74,7 +74,7 @@ zoneTypeConfig[ZoneTypeEnum.WORLD] = {
   "cloudDensity":0.80,
   "cloudLevel": 45,
   "skyboxShader": "world",
-  "music": ["ib2","ib4","ib5"]
+  "music": ["music/IRONBANE 2","music/IRONBANE 4","music/IRONBANE 5"]
 };
 
 zoneTypeConfig[ZoneTypeEnum.DUNGEON] = {
@@ -87,7 +87,7 @@ zoneTypeConfig[ZoneTypeEnum.DUNGEON] = {
   "cloudDensity":0.0,
   "cloudLevel": 0,
   "skyboxShader": "dungeon",
-  "music": ["underground"]
+  "music": ["music/underground"]
 };
 
 zoneTypeConfig[ZoneTypeEnum.TUTORIAL] = {
@@ -100,7 +100,7 @@ zoneTypeConfig[ZoneTypeEnum.TUTORIAL] = {
   "cloudDensity":0.0,
   "cloudLevel": 0,
   "skyboxShader": "dungeon",
-  "music": ["tutorial"]
+  "music": ["music/tutorial"]
 };
 
 zoneTypeConfig[ZoneTypeEnum.CASTLE] = {
@@ -113,7 +113,7 @@ zoneTypeConfig[ZoneTypeEnum.CASTLE] = {
   "cloudDensity":0.0,
   "cloudLevel": 0,
   "skyboxShader": "dungeon",
-  "music": ["castle"]
+  "music": ["music/castle"]
 };
 
 var LootBagTypeEnum = {
