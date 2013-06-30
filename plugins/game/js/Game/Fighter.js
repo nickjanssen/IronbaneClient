@@ -27,6 +27,7 @@ var fighterFriction = 3;
 var fighterMaxSpeed = 5;
 
 var attackSwingTime = 0.5;
+var walkSoundTime = 0.4;
 var meleeTime = 0.3;
 
 var Fighter = Unit.extend({
@@ -62,6 +63,8 @@ var Fighter = Unit.extend({
 
     this.spriteStatus = this.SpriteStatusEnum.STAND;
     this.spriteForward = true;
+
+this.walkSoundTimer = 0.0;
 
 
     this.spriteStep = 0;
@@ -307,6 +310,7 @@ console.log(this);
 
 
 
+
     //        this.weaponMesh.position.y = 0.3;
     //        this.weaponMesh.position.x = -0.3;
 
@@ -359,6 +363,7 @@ console.log(this);
     if ( this.meleeHitTimer > 0.0 ) this.meleeHitTimer -= dTime;
     if ( this.meleeAttackTimer > 0.0 ) this.meleeAttackTimer -= dTime;
     if ( this.attackTimeout > 0.0 ) this.attackTimeout -= dTime;
+    if (this.walkSoundTimer > 0.0 ) this.walkSoundTimer -= dTime;
 
     //        debug.SetWatch('speed', this.speed);
     //        debug.SetWatch(this.id+': name', this.name);
@@ -759,10 +764,17 @@ console.log(this);
     //        }
 
 
-
+    // this needs partly be moved to Player.js for slight performance improvements
 
     if ( this.speed > 0.1 ) {
       this.spriteStatus = this.SpriteStatusEnum.WALK;
+      if(this.walkSoundTimer <= 0 ) {
+        if(this instanceof Player) {
+      soundHandler.Play("Footsteps");
+      console.log("walking sound");
+      }
+      this.walkSoundTimer = walkSoundTime;
+    }
     }
     else {
       this.spriteStatus = this.SpriteStatusEnum.STAND;
