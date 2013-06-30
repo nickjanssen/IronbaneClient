@@ -591,7 +591,7 @@ var Player = Fighter.extend({
 
     if ( socketHandler.serverOnline ) {
       if ( this.sendDataTimeout <= 0.0 ) {
-        this.sendDataTimeout = 0.1;
+        this.sendDataTimeout = 0.25;
         this.SendData();
       }
     }
