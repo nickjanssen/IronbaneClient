@@ -438,61 +438,12 @@ var Unit = PhysicsObject.extend({
       // instead of laggy teleports all the time
       if ( !(this instanceof Player) && !(this instanceof Projectile) ) {
 
-        //var newvel = this.targetPosition.clone().subSelf(this.localPosition);
-        //
-        //                var distance = newvel.length();
-        //
-        //                //
-        //                if ( distance > 1.5 ) {
-        //                    //this.steeringForce = this.steeringBehaviour.Seek(this.targetPosition);
-        //
-        //                    this.targetRotation.y = (Math.atan2(this.velocity.z, this.velocity.x)).ToDegrees();
-        //                    if ( this.targetRotation.y < 0 ) this.targetRotation.y += 360;
-        //                    this.targetRotation.y = 360 - this.targetRotation.y ;
-        //
-        //                }
-        //                else {
-        //                //this.steeringForce = this.steeringBehaviour.Arrive(this.targetPosition, 0.1);
-        //                //this.velocity.set(0,0,0)
-        //                //                    var tempVel = newvel;
-        //                //                    tempVel.normalize();
-        //                //                    tempVel.multiplyScalar(distance);
-        //                //                    this.velocity.x = tempVel.x;
-        //                //                    this.velocity.z = tempVel.z;
-        //                }
-        // TODO: Keep in mind only the X and Z coords for bots! They need to be able to climb on mountains/objects
-
-        // x1 = x + vt;
-        // x1/t = x + v;
-        // (x1/t)-x = v;
-
-        // x1 = x + vt;
-        // x1 - x = vt;
-        // (x1 - x)/t = v;
-
-        //this.steeringForce = this.steeringBehaviour.Arrive(this.targetPosition, 0.1);
-        //this.localPosition.lerpSelf(this.targetPosition, dTime*2);
-
-        //                var targetVelX = (this.targetPosition.x-this.position.x)/dTime;
-        //                var targetVelZ = (this.targetPosition.z-this.position.z)/dTime;
-        //
         this.localPosition.x = this.localPosition.x.Lerp(this.targetPosition.x, dTime*2);
         this.localPosition.z = this.localPosition.z.Lerp(this.targetPosition.z, dTime*2);
-      //
-      //                this.fakeVelocity.x = this.fakeVelocity.x.Lerp(targetVelX, dTime*2);
-      //                this.fakeVelocity.z = this.fakeVelocity.z.Lerp(targetVelZ, dTime*2);
 
-      //                this.velocity.x = this.velocity.x.Lerp(targetVelX, dTime*2);
-      //                this.velocity.z = this.velocity.z.Lerp(targetVelZ, dTime*2);
       }
 
-      // Also, move towards our targetPosition
       this.RotateTowardsTargetPosition(dTime);
-
-        // sw("this.targetRotation", this.targetRotation.ToString());
-        // sw("this.rotation", this.rotation.ToString());
-
-
 
       var cp = WorldToCellCoordinates(this.position.x, this.position.z, cellSize);
 
@@ -514,9 +465,6 @@ var Unit = PhysicsObject.extend({
 
         }
         if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel') ) {
-
-          //this.allowCheckGround = false;
-
           if ( this.waterSplashTimeout >= 0 ) this.waterSplashTimeout -= dTime;
           else {
             this.waterSplashTimeout = 0.1;
@@ -631,7 +579,7 @@ var Unit = PhysicsObject.extend({
 
           for ( var ro=0;ro<rayList.length;ro++ ) {
 
-            if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel')-0.5 ) continue;
+            //if ( GetZoneConfig("enableFluid") && this.position.y < GetZoneConfig('fluidLevel')-0.5 ) continue;
 
             var rayCastPos = this.position.clone().addSelf(rayList[ro]);
 
@@ -751,29 +699,27 @@ var Unit = PhysicsObject.extend({
           // 31/10/12: Removed, as we require raycastGroundPosition anyway.
           // Even when building underground we'll have a valid raycastGroundPosition since we're standing on a mesh
           // 8/6/13: Removed again due to skybox-only approach
-          // if ( !raycastGroundPosition ) {
-          //   // We didn't find anything for our shadow
-          //   // Reverse a raycast
-          //   ray = new THREE.Ray( this.position, new THREE.Vector3(0, 1, 0));
+          if ( GetZoneConfig("enableFluid") && this.position.y <= GetZoneConfig('fluidLevel') ) {
+            if ( !raycastGroundPosition ) {
+              // We didn't find anything for our shadow
+              // Reverse a raycast
+              ray = new THREE.Ray( this.position, new THREE.Vector3(0, 1, 0));
 
+              var intersects = terrainHandler.RayTest(ray, {
+                testMeshesNearPosition:this.position,
+                unitReference: this,
+                unitRayName: "colunderneath"
+              });
 
-          //   var intersects = terrainHandler.RayTest(ray, {
-          //     testMeshesNearPosition:this.position,
-          //     unitReference: this,
-          //     unitRayName: "colunderneath"
-          //   });
-
-
-          //   if ( (intersects.length > 0 ) ) {
-          //     raycastNormal = intersects[0].face.normal;
-          //     raycastGroundPosition = intersects[0].point;
-          //     //this.position = ConvertVector3(intersects[0].point);
-          //     this.localPosition.y = intersects[0].point.y;
-          //   //bm("underneath!");
-          //   }
-          // }
-
-
+              if ( (intersects.length > 0 ) ) {
+                raycastNormal = intersects[0].face.normal;
+                raycastGroundPosition = intersects[0].point;
+                //this.position = ConvertVector3(intersects[0].point);
+                this.localPosition.y = intersects[0].point.y;
+              //bm("underneath!");
+              }
+            }
+          }
         }
 
         //debug.SetWatch("this.terrainAngle", this.terrainAngle);
