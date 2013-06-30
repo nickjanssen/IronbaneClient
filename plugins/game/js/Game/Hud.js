@@ -134,7 +134,7 @@ var HUDHandler = Class.extend({
         }, 0);
 
         var clickAction = function() {
-            soundHandler.Play("click");
+            soundHandler.Play("ui/click");
         };
 
         var handleClick = function(noSound) {
@@ -724,17 +724,14 @@ var HUDHandler = Class.extend({
             itemInfo += infoRow('Price', priceHtml);
         }
 
-        // for now only show cash value
-        if(template.type === 'cash') {
-            var valueHTML = [
-                    '<span class="amount" style="color:gold;padding-left: 16px;',
-                    'background-image:url(/plugins/game/images/misc/coin_full.png);',
-                    'background-repeat:no-repeat;">',
-                    'x ', item.value,
-                    '</span>'
-            ].join('');
-            itemInfo += infoRow('Value', valueHTML);
-        }
+        var valueHTML = [
+                '<span class="amount" style="color:gold;padding-left: 16px;',
+                'background-image:url(plugins/game/images/misc/coin_full.png);',
+                'background-repeat:no-repeat;">',
+                'x ', item.value,
+                '</span>'
+        ].join('');
+        itemInfo += infoRow('Value', valueHTML);
 
         if (debugging) {
             itemInfo += infoRow('ID', item.id);
@@ -790,25 +787,25 @@ var HUDHandler = Class.extend({
             //$('#'+name).css('background-color','orange');
             //var hue = 'rgb(' + getRandomInt(50,255) + ',' + getRandomInt(50,255) + ',' + getRandomInt(50,255) + ')';
             //$('#'+name).css('background-color', hue);
+
+
             $('#' + name).css('background-repeat', 'no-repeat');
             $('#' + name).css('background-position', 'center');
+
 
             // Clicking it uses it!
             // But not dragging!
             //if ( !isLoot ) {
             (function(item) {
-                $('#' + name).click(function(e) {
+                $('#' + name).click(function() {
                     if ($(this).hasClass('noclick')) {
                         $(this).removeClass('noclick');
                     } else {
                         if (_.contains(socketHandler.playerData.items, item)) {
-                            if(e.shiftKey) {
-                                ironbane.player.splitItem(item.slot);
-                            } else {
-                                ironbane.player.UseItem(item.slot);
-                            }
+                            ironbane.player.UseItem(item.slot);
                         }
                     }
+
                 });
             })(item);
 
@@ -821,6 +818,7 @@ var HUDHandler = Class.extend({
         }
 
         hudHandler.UpdateEquippedItems();
+
     },
     ReloadInventory: function() {
         if (ironbane.player) {
@@ -1454,6 +1452,8 @@ var HUDHandler = Class.extend({
                     if (string == 'OK') {
 
                         $.post('gamehandler.php?action=getchars', function(data) {
+
+                            console.log(data);
                             eval(data);
                             startdata.loggedIn = true;
 
