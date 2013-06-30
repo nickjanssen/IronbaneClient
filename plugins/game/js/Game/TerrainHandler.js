@@ -335,12 +335,12 @@ var TerrainHandler = Class.extend({
   RebuildOctree: function() {
     this.lastOctreeBuildPosition = terrainHandler.GetReferenceLocation();
     this.octreeResults = terrainHandler.skybox.terrainOctree
-                            .search(this.lastOctreeBuildPosition, 20, true);
+                            .search(this.lastOctreeBuildPosition, 15, true);
 
     var me = this;
     _.each(terrainHandler.cells, function(cell) {
       me.octreeResults = me.octreeResults
-        .concat(cell.octree.search(me.lastOctreeBuildPosition, 20, true));
+        .concat(cell.octree.search(me.lastOctreeBuildPosition, 15, true));
     });
   },
   Tick: function(dTime) {
