@@ -493,7 +493,6 @@ var HUDHandler = Class.extend({
                 }
             }
 
-
             // If it was armor, update our appearance
             if (startItem.equipped) {
                 if (items[startItem.template].type === 'armor') {
@@ -503,14 +502,14 @@ var HUDHandler = Class.extend({
                     items[startItem.template].type === 'tool') {
                     ironbane.player.UpdateWeapon(0);
                 }
+                if(items[startItem.template].type === 'cash') {
+                    hudHandler.MakeCoinBar(true);
+                }
             }
 
             startItem.equipped = 0;
-
             hudHandler.UpdateEquippedItems();
-
             soundHandler.Play(ChooseRandom(["bag1"]));
-
         });
     },
     SwitchItem: function(slotNumber, startItem, itemID, slotID, inLoot) {
@@ -766,18 +765,13 @@ var HUDHandler = Class.extend({
 
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
-
             var template = items[item.template];
-
 
             var name = isLoot ? 'li' + item.id : 'ii' + item.id;
             $('#gameFrame').append('<div id="' + name + '" class="itemSlot"></div>');
 
             var targetName = isLoot ? 'ls' + item.slot : 'is' + item.slot;
             TeleportElement(name, targetName);
-
-
-            //
             this.MakeItemHover(name, item);
 
             //bm("item:"+item.id+",slot"+item.slot+"");
@@ -814,8 +808,6 @@ var HUDHandler = Class.extend({
 
                 });
             })(item);
-            //}
-
 
             $('#' + name).draggable({
                 containment: "#gameFrame",
