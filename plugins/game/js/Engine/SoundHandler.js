@@ -16,6 +16,7 @@
 */
 
 var SoundHandler = Class.extend({
+    DEFAULT_VOLUME : 0.3,
     soundList: {
         "theme": {
             file: "music/ib_theme.mp3",
@@ -187,13 +188,15 @@ var SoundHandler = Class.extend({
             if(!_.isObject(sound)) {
                 sound = {file: sound};
             }
-            sound.volume = sound.volume || 0.3;
+            //30-6-2013: Ingmar: if sound.volume is undefined, get a fixed value
+            sound.volume = (sound.volume !== undefined) ? sound.volume : self.DEFAULT_VOLUME;
             self.sounds[key] = soundManager.createSound({
                 id: key,
                 url: ironbane_root_directory + 'plugins/game/sound/' + sound.file,
                 autoLoad: !!sound.preload,
                 onload: function(success) {
                     if(success) {
+                        console.log("loaded sound: " + key);
                         self.OnLoad(key);
                     }
                 }
@@ -212,8 +215,7 @@ var SoundHandler = Class.extend({
                 }).start();
     },
     SetVolume: function(sound, volume) {
-        volume *= this.soundList[sound].volume;
-
+     volume *= (this.soundList[sound].volume !== undefined) ? this.soundList[sound].volume : this.DEFAULT_VOLUME;
         soundManager.setVolume(sound, volume);
     },
     FadeIn: function(sound, time) {
@@ -263,7 +265,6 @@ var SoundHandler = Class.extend({
         volume = 1 - volume.clamp(0, 1);
         volume = volume * 100;
         volume = volume.clamp(0, 100);
-        //bm("volume : "+volume );
 
         this.SetVolume(sound, volume);
         //soundManager.setPan(sound, 80);
