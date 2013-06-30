@@ -361,6 +361,13 @@ a:hover {
     color: #1beee7;
 }
 
+#chatContent .messages .delim:after {
+    content: ',';
+}
+#chatContent .messages .delim {
+    margin-right: 4px;
+}
+
 #chatInputBox {
   width:100%;
   height:20px;
