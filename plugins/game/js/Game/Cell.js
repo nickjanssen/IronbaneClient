@@ -308,7 +308,7 @@ var Cell = Class.extend({
 
             var graph = this.graphData;
 
-            if ( graph && _.isUndefined(graph.nodes)) {
+            if ( graph && !_.isUndefined(graph.nodes)) {
                 for(var n=0;n<graph.nodes.length;n++) {
                     var node = graph.nodes[n];
 
