@@ -118,11 +118,13 @@ var Skybox = PhysicsObject.extend({
 
     // Check if there's a map inside the material, and if it contains a sourceFile
     _.each(textures, function(texture) {
-      geometry.materials.push(textureHandler.GetTexture('plugins/game/'+texture + '.png', false, {
+      var mat = textureHandler.GetTexture('plugins/game/'+texture + '.png', false, {
         transparent:false,
         alphaTest:0.1,
         useLighting:true
-      }));
+      });
+      mat.side = THREE.DoubleSide;
+      geometry.materials.push(mat);
     });
 
     // _.each(geometry.materials, function(m) {
