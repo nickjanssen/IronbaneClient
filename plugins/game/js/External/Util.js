@@ -99,14 +99,14 @@ if ( !SERVER ) {
       uniforms.opacity = {
         type: 'f',
         value: options.opacity
-      }
+      };
     }
 
     if ( options.vertexShader == "vertex_world" ) {
       uniforms.camPos = {
         type: 'v3',
         value: ironbane.camera.position.clone()
-      }
+      };
     }
 
     return new THREE.ShaderMaterial({
@@ -251,9 +251,9 @@ if ( !SERVER ) {
       lockZ = lockZ || 0;
 
 
-      if ( lockX != 0 ) this.matrix.rotateX(lockX);
-      if ( lockY != 0 ) this.matrix.rotateY(lockY);
-      if ( lockZ != 0 ) this.matrix.rotateZ(lockZ);
+      if ( lockX !== 0 ) this.matrix.rotateX(lockX);
+      if ( lockY !== 0 ) this.matrix.rotateY(lockY);
+      if ( lockZ !== 0 ) this.matrix.rotateZ(lockZ);
 
       if ( this.rotationAutoUpdate ) {
 
@@ -264,7 +264,7 @@ if ( !SERVER ) {
       //this.matrix.rotateY(Math.PI);
 
       return;
-      var target = position.clone();
+      //var target = position.clone();
       //            var vector = new THREE.Vector3(lookat.x, this.position.y, lookat.z)
       //
       //
@@ -424,7 +424,7 @@ if ( !SERVER ) {
     mesh.geometry.faceVertexUvs[0][0] = faceuv;
 
     mesh.geometry.uvsNeedUpdate = true;
-  };
+  }
 
 
   function GetRandomVector() {
@@ -505,7 +505,7 @@ function CheckVector(obj) {
 // Cells are supposed to be numbered next to eachother
 function WorldToCellCoordinates(x, z, cellsize) {
 
-  if ( cellsize % 2 != 0 ) console.error("Cellsize not dividable by 2!");
+  if ( cellsize % 2 !== 0 ) console.error("Cellsize not dividable by 2!");
 
   var cellhalf = cellsize / 2;
   //  5 / 20 = 0
@@ -521,7 +521,7 @@ function WorldToCellCoordinates(x, z, cellsize) {
 
 function CellToWorldCoordinates(x, z, cellsize) {
 
-  if ( cellsize % 2 != 0 ) console.error("Cellsize not dividable by 2!");
+  if ( cellsize % 2 !== 0 ) console.error("Cellsize not dividable by 2!");
 
   var cellhalf = cellsize / 2;
   // 0 * 20 - 10 = -10;
@@ -633,14 +633,15 @@ String.prototype.trim = function() {
 
 
 
-
-function roundNumber(number, decimals) {
-  var newnumber = new Number(number+'').toFixed(parseInt(decimals));
+//This already exists in shared.js
+/*function roundNumber(number, decimals) {
+  var newnumber = new Number(number+'').toFixed(parseInt(decimals, 10));
   return parseFloat(newnumber);
 }
+*/
 
 Number.prototype.Round2 = function() {
-  return this % 2 == 0 ? this : this+1;
+  return this % 2 === 0 ? this : this+1;
 };
 Number.prototype.Round = function(digits) {
   return roundNumber(this, digits);
@@ -698,7 +699,7 @@ function RawVector3(vec) {
 
 function ISDEF(o) {
   return typeof o !== "undefined";
-};
+}
 
 
 function isNumber(n) {
@@ -833,7 +834,7 @@ function timeSince(since) {
 
     var name = dateChunks[i][1];
 
-    if ((count = Math.floor(since / seconds)) != 0) {
+    if ((count = Math.floor(since / seconds)) !== 0) {
 
       break;
 
@@ -860,7 +861,7 @@ function reverseArray(array) {
 
   var length = array.length;
 
-  if ( length == 0 ) return array;
+  if ( length === 0 ) return array;
 
   var left = null;
   var right = null;

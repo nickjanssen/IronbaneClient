@@ -545,7 +545,7 @@ var ParticleTypeEnum = {
     },
     TELEPORTENTRANCE: {
         texture: function(){
-            return ChooseRandom(['particles/spark1','particles/spark2','particles/spark3'])
+            return ChooseRandom(['particles/spark1','particles/spark2','particles/spark3']);
         },
         delay: 0,
         particleSpawnOffset: new THREE.Vector3(0, 0.5, 0),
@@ -563,7 +563,7 @@ var ParticleTypeEnum = {
     },
     TELEPORTEXIT: {
         texture: function(){
-            return ChooseRandom(['particles/spark1','particles/spark2','particles/spark3'])
+            return ChooseRandom(['particles/spark1','particles/spark2','particles/spark3']);
         },
         delay: 0,
         particleSpawnOffset: new THREE.Vector3(0, 0.5, 0),

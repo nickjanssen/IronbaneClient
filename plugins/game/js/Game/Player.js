@@ -26,7 +26,7 @@ var Player = Fighter.extend({
         this._super(position, rotation, id, name, 0,
             socketHandler.playerData.size, socketHandler.playerData.health, socketHandler.playerData.armor,
             socketHandler.playerData.healthMax, socketHandler.playerData.armorMax);
-        this.template = {}
+        this.template = {};
         this.template.type = UnitTypeEnum.PLAYER;
         console.log(this);
 
