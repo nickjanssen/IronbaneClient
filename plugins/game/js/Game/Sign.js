@@ -49,7 +49,7 @@ var Sign = Mesh.extend({
 
     var c = document.createElement('canvas');
     var ctx = c.getContext('2d');
-    var fillText = this.metadata['text'];
+    var fillText = this.metadata.text;
 
     c.width= 500;
     c.height= 500;
@@ -63,18 +63,18 @@ var Sign = Mesh.extend({
 
     //fillText = 'It was a dark and stormy night.\nWe had just begin cleaning\nup the room when we suddenly\nheard this big BANG!'
     //this.metadata['fontSize']+'
-    ctx.textAlign = 'center'
+    ctx.textAlign = 'center';
     var dim = ctx.measureText(fillText);
 
 
     //c.getContext('2d').textAlign= 'center';
 
     var lines = fillText.split('|');
-    var lineheight = this.metadata['fontSize']*1.5;
+    var lineheight = this.metadata.fontSize*1.5;
 
     for (var i = 0; i<lines.length; i++) {
       var total = lines.length * lineheight;
-      ctx.fillText(lines[i], c.width/2, 10+(this.metadata['fontSize']*0.8) + c.height/2 - (total / 2) + (i * lineheight));
+      ctx.fillText(lines[i], c.width/2, 10+(this.metadata.fontSize*0.8) + c.height/2 - (total / 2) + (i * lineheight));
       //ctx.strokeText(lines[i], c.width/2, c.height/2 - (total / 2) + (i * lineheight));
     }
 

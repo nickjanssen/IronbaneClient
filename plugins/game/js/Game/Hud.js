@@ -981,7 +981,7 @@ var HUDHandler = Class.extend({
         var content = this.GetStatContent(ironbane.player.armor, doFlash ? 'misc/armor_medium_flash' : 'misc/armor_medium', ironbane.player.armorMax);
         $('#armorBar').html(content);
         if (doFlash) setTimeout(function() {
-                hudHandler.MakeArmorBar()
+                hudHandler.MakeArmorBar();
             }, 50);
     },
     HideAlert: function() {
@@ -1124,12 +1124,12 @@ var HUDHandler = Class.extend({
         }
 
         if (startdata.loggedIn) {
-            charSelect += '<button id="btnPrevChar" class="ibutton' + (charCount == 0 ? '_disabled' : '') + '" style="float:left;width:40px">&#9664;</button>';
+            charSelect += '<button id="btnPrevChar" class="ibutton' + (charCount === 0 ? '_disabled' : '') + '" style="float:left;width:40px">&#9664;</button>';
         }
 
         if (startdata.loggedIn) {
             if (startdata.characterUsed === 0) {
-                charSelect += '<button id="btnNewChar" class="ibutton' + (slotsLeft == 0 ? '_disabled' : '') + '" style="width:216px">Create Character</button>';
+                charSelect += '<button id="btnNewChar" class="ibutton' + (slotsLeft === 0 ? '_disabled' : '') + '" style="width:216px">Create Character</button>';
             } else {
 
                 //charSelect += '<button id="btnEnterChar" class="ibutton" style="width:214px">Enter Ironbane</button>';
@@ -1141,7 +1141,7 @@ var HUDHandler = Class.extend({
 
 
         if (startdata.loggedIn) {
-            charSelect += '<button id="btnNextChar" class="ibutton' + (charCount == 0 ? '_disabled' : '') + '" style="width:40px">&#9654;</button><br>';
+            charSelect += '<button id="btnNextChar" class="ibutton' + (charCount === 0 ? '_disabled' : '') + '" style="width:40px">&#9654;</button><br>';
         }
 
         if (startdata.loggedIn) {
@@ -1153,7 +1153,7 @@ var HUDHandler = Class.extend({
                 var body = 0;
                 var feet = 0;
 
-                if (myChar.equipment != '') {
+                if (myChar.equipment !== '') {
                     var charItems = myChar.equipment.split(',');
                     for (var i = 0; i < charItems.length; i++) {
                         var item = items[charItems[i]];
@@ -1218,13 +1218,13 @@ var HUDHandler = Class.extend({
 
         $('#btnPrevChar').click(function() {
 
-            if (startdata.characterUsed == 0) {
+            if (startdata.characterUsed === 0) {
                 startdata.characterUsed = chars[((chars.length) - 1)].id;
             } else {
                 for (var c = 0; c < chars.length; c++) {
                     if (chars[c].id == startdata.characterUsed) {
-                        var next = parseInt(c) - 1;
-                        if (!_.isUndefined(chars[next])) {
+                        var next = parseInt(c, 10) - 1;
+                        if (ISDEF(chars[next])) {
                             startdata.characterUsed = chars[next].id;
                         } else {
                             startdata.characterUsed = 0;
@@ -1243,7 +1243,7 @@ var HUDHandler = Class.extend({
 
         $('#btnNextChar').click(function() {
 
-            if (startdata.characterUsed == 0) {
+            if (startdata.characterUsed === 0) {
 
 
                 startdata.characterUsed = chars[0].id;
@@ -1252,8 +1252,8 @@ var HUDHandler = Class.extend({
             } else {
                 for (var c = 0; c < chars.length; c++) {
                     if (chars[c].id == startdata.characterUsed) {
-                        var next = parseInt(c) + 1;
-                        if (!_.isUndefined(chars[next])) {
+                        var next = parseInt(c, 10) + 1;
+                        if (ISDEF(chars[next])) {
                             startdata.characterUsed = chars[next].id;
                         } else {
                             startdata.characterUsed = 0;
@@ -1400,7 +1400,7 @@ var HUDHandler = Class.extend({
                     }
 
                     charCount = chars.length;
-                    if (charCount > 0 && startdata.characterUsed == 0) startdata.characterUsed = chars[0].id;
+                    if (charCount > 0 && startdata.characterUsed === 0) startdata.characterUsed = chars[0].id;
 
                     hudHandler.MakeCharSelectionScreen();
 
