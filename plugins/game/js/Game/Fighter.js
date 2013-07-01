@@ -476,7 +476,7 @@ this.walkSoundTimer = 0.0;
       var pivotY = 0.25;
 
       var time = (new Date()).getTime()/1000.0;
-
+      
       var swingXamount = 0;
       var swingYamount = 0;
       var swingZamount = 0;
@@ -547,7 +547,7 @@ this.walkSoundTimer = 0.0;
           rotateY = -40;
           rotateX = 0;
 
-          offset.z = -0.005
+          offset.z = -0.005;
 
           targetWalkAngleZ1 = -30;
           targetWalkAngleZ3 = 30;
@@ -595,7 +595,7 @@ this.walkSoundTimer = 0.0;
           rotateX = 0;
 
 
-          targetWalkOffsetX1 = -0.05
+          targetWalkOffsetX1 = -0.05;
           targetWalkOffsetX3 = 0.05;
 
           swingZamount = -90;
@@ -769,7 +769,8 @@ this.walkSoundTimer = 0.0;
       this.spriteStatus = this.SpriteStatusEnum.WALK;
       if(this.walkSoundTimer <= 0 ) {
         if(this instanceof Player) {
-          //soundHandler.Play("Footsteps");
+      soundHandler.Play("Footsteps");
+      //console.log("walking sound");
       }
       this.walkSoundTimer = walkSoundTime;
     }
@@ -857,7 +858,7 @@ this.walkSoundTimer = 0.0;
           break;
       }
     }
-
+   
     // this.meleeHitPosition = pos;
     // this.meleeHitPosition.y += 0.5;
 
@@ -880,21 +881,21 @@ this.walkSoundTimer = 0.0;
       this.velocity.y = 2;
     }
 
+    
+
     this.lastJumpTimer = 1.0;
+
 
     this.allowCheckGround = false;
 
     this.allowJump = false;
-
-    // if(this.template.type !== UnitTypeEnum.PLAYER) {
-    //   soundHandler.Play(this.npctype + "/jump", this.position);
-    // }
-    // else
-    // {
-    //   soundHandler.Play("player/jump/", this.position);
-    // }
-
-    soundHandler.Play("jump", this.position);
+    if(this.template.type !== UnitTypeEnum.PLAYER) {
+      soundHandler.Play(this.npctype + "/jump", this.position);
+    }
+    else
+    {
+      soundHandler.Play("player/jump/", this.position);
+    }
   },
   DoMeleeHitAnimation: function(position, power) {
 
@@ -964,19 +965,18 @@ this.walkSoundTimer = 0.0;
   },
 
   playSound: function(sound) {
-
-    soundHandler.Play(sound, this.position);
-
-    // if(this.template.type !== UnitTypeEnum.PLAYER) {
-    //   soundHandler.Play("npcs/" +this.npctype + "/" + sound, this.position);
-    // }
-    // else
-    // {
-    //   soundHandler.Play("player/" + sound, this.position);
-    // }
+if(this.template.type !== UnitTypeEnum.PLAYER) {
+      soundHandler.Play("npcs/" +this.npctype + "/" + sound, this.position);
+    }
+    else
+    {
+      soundHandler.Play("player/" + sound, this.position);
+    }
 
   },
   Die: function(noParticle) {
+
+      console.log("dies!");
     noParticle = noParticle || false;
 
     this.mesh.visible = false;
@@ -1073,7 +1073,7 @@ this.walkSoundTimer = 0.0;
             particleHandler.Add(heal ? ParticleTypeEnum.HEAL2 : ParticleTypeEnum.DAMAGE2, {
               followUnit:victim
             });
-          }, delay)
+          }, delay);
           })(this);
         delay += 100;
         delay -= fullHearts * 2;
@@ -1087,7 +1087,7 @@ this.walkSoundTimer = 0.0;
             particleHandler.Add(heal ? ParticleTypeEnum.HEAL1 : ParticleTypeEnum.DAMAGE1, {
               followUnit:victim
             });
-          }, delay)
+          }, delay);
           })(this);
       }
 
@@ -1137,7 +1137,7 @@ this.walkSoundTimer = 0.0;
             particleHandler.Add(heal ? ParticleTypeEnum.ARMORHEAL2 : ParticleTypeEnum.ARMORHIT2, {
               followUnit:victim
             });
-          }, delay)
+          }, delay);
           })(this);
         delay += 100;
         delay -= fullHearts * 2;
@@ -1151,7 +1151,7 @@ this.walkSoundTimer = 0.0;
             particleHandler.Add(heal ? ParticleTypeEnum.ARMORHEAL1 : ParticleTypeEnum.ARMORHIT1, {
               followUnit:victim
             });
-          }, delay)
+          }, delay);
           })(this);
       }
 
