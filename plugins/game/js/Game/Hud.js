@@ -385,7 +385,7 @@ var HUDHandler = Class.extend({
             data.acceptOffer = true;
         }
         socketHandler.socket.emit('putItem', data, function(reply) {
-            console.log('putItem reply', reply);
+            //console.log('putItem reply', reply);
             if (!_.isUndefined(reply.errmsg)) {
                 hudHandler.MessageAlert(reply.errmsg);
                 // Teleport back!
@@ -523,7 +523,7 @@ var HUDHandler = Class.extend({
         }
 
         socketHandler.socket.emit('switchItem', data, function(reply) {
-            console.log('switchItem reply', reply);
+            //console.log('switchItem reply', reply);
             if (reply.errmsg) {
                 hudHandler.MessageAlert(reply.errmsg);
 
@@ -1672,7 +1672,7 @@ var HUDHandler = Class.extend({
 
                 constrainCustomizers();
 
-                console.log("skin:" + selectedSkin + ",eyes:" + selectedEyes + ",hair:" + selectedHair);
+                //console.log("skin:" + selectedSkin + ",eyes:" + selectedEyes + ",hair:" + selectedHair);
 
                 var cachefile = '';
 
