@@ -145,7 +145,7 @@ var SoundHandler = Class.extend({
         "fireArrow2" : "battle/fireArrow2.wav",
 
         // "jump1": "player/jump/Player_Jump_01.wav",
-        "jump2": "player/jump/Player_Jump_02.wav",
+        // "jump2": "player/jump/Player_Jump_02.wav",
         // "jump3": "player/jump/Player_Jump_03.wav",
         // "jump4": "player/jump/Player_Jump_04.wav",
         // "jump5": "player/jump/Player_Jump_05.wav",
@@ -362,6 +362,9 @@ var SoundHandler = Class.extend({
         volume = 1 - volume.clamp(0, 1);
         volume = volume * 100;
         volume = volume.clamp(0, 100);
+
+        //this.SetVolume(s, volume);
+        sound.setVolume(volume);
         //soundManager.setPan(sound, 80);
         sound.play();
     },
