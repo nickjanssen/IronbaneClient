@@ -343,6 +343,7 @@ a:hover {
   text-align:right;
   overflow:auto;
   padding-bottom:20px;
+  word-wrap:break-word;
 }
 
 #chatContent .jspVerticalBar {

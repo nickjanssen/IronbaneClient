@@ -17,7 +17,8 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
             scope.messages = [];
 
             var scroller = el.jScrollPane({
-                animateScroll: true
+                animateScroll: true,
+                contentWidth:400
             }).data('jsp');
 
             // hook into external (non-angular) sources
