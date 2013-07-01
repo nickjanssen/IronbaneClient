@@ -412,11 +412,9 @@ var SocketHandler = Class.extend({
             // occurs when someone nearby loots from a bag
             // refresh the bag
             console.log('lootFromBag REPLY:', data);
-
+            hudHandler.ReloadInventory();
             if (ironbane.player.canLoot) {
-                // var npcID = data.bag;
                 ironbane.player.lootItems = data.loot;
-                hudHandler.MakeSlotItems(true);
             }
         });
 
