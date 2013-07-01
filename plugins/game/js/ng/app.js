@@ -73,7 +73,7 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
             };
 
             // if we are a died type message, choose our message
-            if(scope.data.type.search('died') >= 0) {
+            if(scope.data.type && scope.data.type.search('died') >= 0) {
                 scope.deathMessage = getDeathMsg();
             }
 
