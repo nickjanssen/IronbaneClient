@@ -477,7 +477,7 @@ console.log(this);
       var pivotY = 0.25;
 
       var time = (new Date()).getTime()/1000.0;
-      
+
       var swingXamount = 0;
       var swingYamount = 0;
       var swingZamount = 0;
@@ -770,8 +770,7 @@ console.log(this);
       this.spriteStatus = this.SpriteStatusEnum.WALK;
       if(this.walkSoundTimer <= 0 ) {
         if(this instanceof Player) {
-      soundHandler.Play("Footsteps");
-      console.log("walking sound");
+          //soundHandler.Play("Footsteps");
       }
       this.walkSoundTimer = walkSoundTime;
     }
@@ -859,7 +858,7 @@ console.log(this);
           break;
       }
     }
-   
+
     // this.meleeHitPosition = pos;
     // this.meleeHitPosition.y += 0.5;
 
@@ -882,10 +881,7 @@ console.log(this);
       this.velocity.y = 2;
     }
 
-    
-
     this.lastJumpTimer = 1.0;
-
 
     this.allowCheckGround = false;
 
@@ -966,18 +962,19 @@ console.log(this);
   },
 
   playSound: function(sound) {
-if(this.template.type !== UnitTypeEnum.PLAYER) {
-      soundHandler.Play("npcs/" +this.npctype + "/" + sound, this.position);
-    }
-    else
-    {
-      soundHandler.Play("player/" + sound, this.position);
-    }
+
+    soundHandler.Play(sound, this.position);
+
+    // if(this.template.type !== UnitTypeEnum.PLAYER) {
+    //   soundHandler.Play("npcs/" +this.npctype + "/" + sound, this.position);
+    // }
+    // else
+    // {
+    //   soundHandler.Play("player/" + sound, this.position);
+    // }
 
   },
   Die: function(noParticle) {
-
-      console.log("dies!");
     noParticle = noParticle || false;
 
     this.mesh.visible = false;

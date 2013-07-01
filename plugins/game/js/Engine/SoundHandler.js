@@ -70,7 +70,7 @@ var SoundHandler = Class.extend({
             // volume:0,
             loops: 1
         },
-        
+
          "ib7": {
             file: "music/IRONBANE 7.mp3",
             volume: 0.5,
@@ -91,9 +91,9 @@ var SoundHandler = Class.extend({
             // volume:0,
             loops: 1
         },
-        
-        
-        
+
+
+
 
 
         "underground": {
@@ -122,31 +122,34 @@ var SoundHandler = Class.extend({
         "splash1": "environment/splash1.wav",
         "splash2": "environment/splash2.wav",
 
-        // "arrowHit1": "battle/arrowHit01.wav",
-        // "arrowHit2": "battle/arrowHit02.wav",
-        // "arrowHit3": "battle/arrowHit03.wav",
+        "arrowHit1": "battle/arrowHit1.wav",
+        "arrowHit2": "battle/arrowHit2.wav",
+        "arrowHit3": "battle/arrowHit3.wav",
 
         "swing1": "battle/swing1.wav",
         "swing2": "battle/swing2.wav",
         "swing3": "battle/swing3.wav",
+
         "hit1": "battle/hit1.wav",
         "hit2": "battle/hit2.wav",
         "hit3": "battle/hit3.wav",
+
         "die1": "battle/die1.wav",
         "die2": "battle/die2.wav",
         "die3": "battle/die3.wav",
 
-        "mutant" : "die/mutant.wav",
+        //"mutant" : "die/mutant.wav",
 
         "fireStaff": "battle/fireStaff.wav",
         "fireArrow": "battle/fireArrow.wav",
         "fireArrow2" : "battle/fireArrow2.wav",
 
-        "jump1": "player/jump/Player_Jump_01.wav",
+        // "jump1": "player/jump/Player_Jump_01.wav",
         "jump2": "player/jump/Player_Jump_02.wav",
-        "jump3": "player/jump/Player_Jump_03.wav",
-        "jump4": "player/jump/Player_Jump_04.wav",
-        "jump5": "player/jump/Player_Jump_05.wav",
+        // "jump3": "player/jump/Player_Jump_03.wav",
+        // "jump4": "player/jump/Player_Jump_04.wav",
+        // "jump5": "player/jump/Player_Jump_05.wav",
+
         "getItem": "player/GetItem/PLAYER_GET_ITEM_01.wav",
         "regenHealth": "player/RegenHealth/PLAYER_REGEN_HEALTH_03.wav",
         "getCoin1": "player/GetCoins/PLAYER_GET_COINS_01.wav",
@@ -212,12 +215,14 @@ var SoundHandler = Class.extend({
         "deaths" : "monster/deaths.wav",
         "grunt1" : "monster/grunt1.wav",
         "grunt2" : "monster/grunt2.wav",
+
         "painb" : "monster/painb.wav",
         "paind" : "monster/paind.wav",
         "paine" : "monster/paine.wav",
         "painp" : "monster/painp.wav",
         "painr" : "monster/painr.wav",
         "pains" : "monster/pains.wav",
+
         "piggrunt1" : "monster/piggrunt1",
         "piggrunt2" : "monster/piggrunt2",
 
@@ -259,7 +264,6 @@ var SoundHandler = Class.extend({
                 autoLoad: !!sound.preload,
                 onload: function(success) {
                     if(success) {
-                        console.log("loaded sound: " + key);
                         self.OnLoad(key);
                     }
                 }
@@ -267,8 +271,6 @@ var SoundHandler = Class.extend({
         });
     },
     FadeOut: function(sound, time) {
-       
-        console.log("fading out: " + sound)
         var self = this;
 
         this.PlayOnce(sound);
@@ -312,13 +314,11 @@ var SoundHandler = Class.extend({
                 }).start();
     },
     OnLoad: function(sound) {
-        console.log("onload: " + sound);
         if (sound === "music/ib_theme") {
             this.loadedMainMenuMusic = true;
         }
     },
     PlayOnce: function(sound, position) {
-        console.log("playing once " + sound);
         if (!hudHandler.allowSound) {
             return;
         }
@@ -336,7 +336,7 @@ var SoundHandler = Class.extend({
         var sounds = [];
         for(var loadedSound in this.sounds) {
             if(loadedSound.toLowerCase().indexOf(s.toLowerCase()) >= 0) {
-                sounds.push(this.sounds[loadedSound]);                
+                sounds.push(this.sounds[loadedSound]);
             }
         }
         return sounds;
