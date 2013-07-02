@@ -38,7 +38,7 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
 .directive('chatMessage', ['$log', '$compile', 'DEATH_MESSAGES', function($log, $compile, DEATH_MESSAGES) {
     // logic for all of the different types of messages that are supported
     var templates = {
-        welcome: '<div><span>Hey there, {{ data.user.name }}</span><br>Players online: <span ng-repeat="user in data.online" class="name {{user.rank}}" ng-class="{delim: !$last}">{{ user.name }}</span></div>',
+        welcome: '<div style="color:green;"><span>Hey there, {{ data.user.name }}</span><br>Players online: <span ng-repeat="user in data.online" class="name {{user.rank}}" ng-class="{delim: !$last}">{{ user.name }}</span></div>',
         join: '<div><span class="name {{ data.user.rank }}">{{ data.user.name }}</span> has joined the game!</div>',
         died: '<div><span class="name {{ data.victim.rank }}">{{ data.victim.name }}</span> was {{ deathMessage }} by <span class="name {{ data.killer.rank }}">{{ data.killer.name }}.</span>',
         diedspecial: '<div><span class="name {{ data.victim.rank }}">{{ data.victim.name }}</span> was {{ deathMessage }} by {{ data.cause }}.',
@@ -76,6 +76,12 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
             // if we are a died type message, choose our message
             if(scope.data.type && scope.data.type.search('died') >= 0) {
                 scope.deathMessage = getDeathMsg();
+            }
+
+            if(scope.data.type && scope.data.type === 'welcome') {
+                if(scope.data.online.length === 0) {
+                    scope.data.online.push({name: 'None', rank: 'fool'});
+                }
             }
 
             el.html(getTemplate(scope.type));
