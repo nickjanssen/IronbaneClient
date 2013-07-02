@@ -220,10 +220,10 @@ var TerrainHandler = Class.extend({
     if ( ironbane.player ) {
       ironbane.player.onChangeZone(newZone);
     }
-    var zoneMusicPiece = ChooseRandom(GetZoneConfig("music"));
+    
 
     if ( socketHandler.loggedIn ) {
-      this.targetMusic = zoneMusicPiece;
+      this.targetMusic = ChooseRandom(GetZoneConfig("music"));
     }
 
   },
@@ -340,11 +340,10 @@ var TerrainHandler = Class.extend({
     this.octreeResults = terrainHandler.skybox.terrainOctree
                             .search(this.lastOctreeBuildPosition, 15, true);
 
-    var me = this;
     _.each(terrainHandler.cells, function(cell) {
-      me.octreeResults = me.octreeResults
+      this.octreeResults = me.octreeResults
         .concat(cell.octree.search(me.lastOctreeBuildPosition, 15, true));
-    });
+    }, this);
   },
   Tick: function(dTime) {
 
@@ -423,15 +422,14 @@ var TerrainHandler = Class.extend({
             if ( !p.InRangeOf(cell.worldPosition, cellLoadRange+16)) {
               cell.Destroy();
             }
+            else {
+               cell.Tick(dTime);
+            }
         });
 
 
         if ( this.skybox ) this.skybox.Tick(dTime);
 
-        _.each(this.cells, function(cell) {
-          cell.Tick(dTime);
-        });
-        break;
     }
 
     if ( this.targetMusic != this.currentMusic ) {

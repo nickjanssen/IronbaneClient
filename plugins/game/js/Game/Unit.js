@@ -426,7 +426,7 @@ var Unit = PhysicsObject.extend({
       this.size = this.targetSize;
     }
 
-    var radians = (this.rotation.y + 90) * (Math.PI/180);
+    //var radians = (this.rotation.y + 90) * (Math.PI/180);
 
     if ( this.dynamic
       && socketHandler.readyToReceiveUnits
@@ -616,8 +616,8 @@ var Unit = PhysicsObject.extend({
               //            if ( succesfulRays > 0 ) {
               //debug.SetWatch("collision distance", intersects[0].distance);
 
-              raycastNormal = normal;
-              raycastGroundPosition = point;
+              //raycastNormal = normal;
+              //raycastGroundPosition = point;
 
               //sw("raycastGroundPosition", raycastGroundPosition);
 
