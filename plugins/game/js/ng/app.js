@@ -7,7 +7,7 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
         template: [
             '<div class="content">',
                 '<ul class="messages">',
-                    '<li ng-repeat="msg in messages">',
+                    '<li ng-repeat="msg in messages | limitTo:-50">',
                         '<chat-message type="{{ msg.type }}" data="msg"></chat-message>',
                     '</li>',
                 '</ul>',
