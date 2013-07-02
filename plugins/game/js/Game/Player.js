@@ -862,66 +862,63 @@ var Player = Fighter.extend({
 
   },
   AttemptAttack: function(position) {
+    var player = this;
 
-    if ( this.attackTimeout > 0.0 ) return;
-
-    var rotTest = this.heading.dot(ConvertVector3(position).subSelf(this.position).normalize());
-    if ( rotTest < -0.5 ) return;
-
-    var weapon = this.GetEquippedWeapon();
-
-    if ( weapon ) {
-      var template = items[weapon.template];
-
-
-
-      if ( template['type'] == 'weapon') {
-
-        // Don't return if out of range, instead adjust the position where we're
-        // shooting at
-        if ( DistanceSq(position, this.position) > Math.pow(WeaponRanges[template['subtype']], 2) ) {
-          var playerToPoint = position.clone().subSelf(this.position);
-          playerToPoint.normalize().multiplyScalar(WeaponRanges[template['subtype']]);
-          position = this.position.clone().addSelf(playerToPoint);
-        }
-
-
-        var particle = template['particle'];
-
-
-        var proj = new Projectile(this.position.clone().addSelf(this.side.clone().multiplyScalar(0.4)), position.clone(), this);
-
-        proj.velocity.addSelf(this.velocity);
-
-        ironbane.unitList.push(proj);
-
-        this.SwingWeapon(null, template);
-
-
-        // Send the projectile
-        socketHandler.socket.emit('addProjectile', {
-          s:this.position.clone().Round(2),
-          t:position.clone().Round(2),
-          w:weapon.id,
-          o:this.id,
-          sw:true
-        }, function (reply) {
-
-          if ( ISDEF(reply.errmsg) ) {
-              hudHandler.MessageAlert(reply.errmsg);
-              // hudHandler.ShowMenuScreen();
-              return;
-          }
-
-        });
-
-      }
-
-
-      this.attackTimeout = template.delay;
+    if (player.attackTimeout > 0.0) {
+      return;
     }
 
+    var rotTest = player.heading.dot(ConvertVector3(position).subSelf(player.position).normalize());
+    if (rotTest < -0.5) {
+      return;
+    }
 
+    var weapon = player.GetEquippedWeapon();
+
+    if (weapon) {
+      var template = items[weapon.template];
+      if (template.type === 'weapon') {
+        // Don't return if out of range, instead adjust the position where we're
+        // shooting at
+        if (DistanceSq(position, player.position) > Math.pow(WeaponRanges[template.subtype], 2)) {
+          var playerToPoint = position.clone().subSelf(player.position);
+          playerToPoint.normalize().multiplyScalar(WeaponRanges[template.subtype]);
+          position = player.position.clone().addSelf(playerToPoint);
+        }
+
+        var newDelay = template.delay;
+        // Send the projectile
+        socketHandler.socket.emit('addProjectile', {
+          s: player.position.clone().Round(2),
+          t: position.clone().Round(2),
+          w: weapon.id,
+          o: player.id,
+          sw: true
+        }, function(reply) {
+          //console.log('addProjectile reply', reply);
+          if (ISDEF(reply.errmsg)) {
+            hudHandler.MessageAlert(reply.errmsg);
+            // hudHandler.ShowMenuScreen();
+            return;
+          }
+
+          if(reply.delay) {
+            newDelay = reply.delay;
+          } else {
+            //console.log('shoot dammit');
+            // don't actually fire the projectile locally until OK'd
+            var particle = template.particle;
+            var proj = new Projectile(player.position.clone().addSelf(player.side.clone().multiplyScalar(0.4)), position.clone(), player);
+            proj.velocity.addSelf(player.velocity);
+            ironbane.unitList.push(proj);
+            player.SwingWeapon(null, template);
+          }
+
+          // either way wait to set delay until after reply
+          player.attackTimeout = newDelay;
+        });
+      }
+    }
   },
   UseItem: function(barIndex) {
 
