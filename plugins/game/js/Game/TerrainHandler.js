@@ -356,7 +356,7 @@ var TerrainHandler = Class.extend({
       var cellPos = WorldToCellCoordinates(p.x, p.z, 10);
       var worldPos = CellToWorldCoordinates(cellPos.x, cellPos.z, 10);
 
-      var id = worldPos.x+'-'+worldPos.z;
+      //var id = worldPos.x+'-'+worldPos.z;
 
       terrainHandler.waterMesh.position.x = worldPos.x;
       terrainHandler.waterMesh.position.z = worldPos.z;
