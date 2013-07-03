@@ -341,8 +341,8 @@ var TerrainHandler = Class.extend({
                             .search(this.lastOctreeBuildPosition, 15, true);
 
     _.each(terrainHandler.cells, function(cell) {
-      this.octreeResults = me.octreeResults
-        .concat(cell.octree.search(me.lastOctreeBuildPosition, 15, true));
+      this.octreeResults = this.octreeResults
+        .concat(cell.octree.search(this.lastOctreeBuildPosition, 15, true));
     }, this);
   },
   Tick: function(dTime) {
