@@ -1236,8 +1236,6 @@ var HUDHandler = Class.extend({
                 }
             }
 
-
-
             hudHandler.MakeCharSelectionScreen();
 
             //$('#charSelect').html(charSelect);
