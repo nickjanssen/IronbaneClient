@@ -30,7 +30,9 @@ IronbaneApp.directive('chatWindow', ['$log', function($log) {
                 });
 
                 scroller.reinitialise();
-                scroller.scrollToBottom();
+                if(scroller.getPercentScrolledY() == 1) {
+                    scroller.scrollToBottom();
+                }
             });
         }
     };
