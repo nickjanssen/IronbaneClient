@@ -616,8 +616,8 @@ var Unit = PhysicsObject.extend({
               //            if ( succesfulRays > 0 ) {
               //debug.SetWatch("collision distance", intersects[0].distance);
 
-              //raycastNormal = normal;
-              //raycastGroundPosition = point;
+              raycastNormal = normal;
+              raycastGroundPosition = point;
 
               //sw("raycastGroundPosition", raycastGroundPosition);
 
