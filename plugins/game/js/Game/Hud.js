@@ -1245,7 +1245,6 @@ var HUDHandler = Class.extend({
 
             if (startdata.characterUsed == 0) {
 
-
                 startdata.characterUsed = chars[0].id;
 
 
