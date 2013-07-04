@@ -524,11 +524,11 @@ function CellToWorldCoordinates(x, z, cellsize) {
 
   if ( cellsize % 2 != 0 ) console.error("Cellsize not dividable by 2!");
 
-  var cellhalf = cellsize / 2;
+  //var cellhalf = cellsize / 2;
   // 0 * 20 - 10 = -10;
   // 1 * 20 - 10 = 10;
-  x = (x * cellsize) + cellhalf;
-  z = (z * cellsize) + cellhalf;
+  x = (x * cellsize) ;
+  z = (z * cellsize) ;
 
   return {
     x: x,
