@@ -426,7 +426,7 @@ var Unit = PhysicsObject.extend({
       this.size = this.targetSize;
     }
 
-    var radians = (this.rotation.y + 90) * (Math.PI/180);
+    //var radians = (this.rotation.y + 90) * (Math.PI/180);
 
     if ( this.dynamic
       && socketHandler.readyToReceiveUnits
