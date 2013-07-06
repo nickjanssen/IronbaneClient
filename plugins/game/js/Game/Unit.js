@@ -474,7 +474,7 @@ var Unit = PhysicsObject.extend({
         else {
           this.velocity.lerpSelf(new THREE.Vector3(this.velocity.x, 0, this.velocity.z), dTime*2);
 
-          soundHandler.Play("stepWater", this.position);
+          soundHandler.Play("step/Water", this.position);
         }
 
 
