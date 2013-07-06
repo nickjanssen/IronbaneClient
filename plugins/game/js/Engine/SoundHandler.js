@@ -17,132 +17,100 @@
 
 var SoundHandler = Class.extend({
     DEFAULT_VOLUME : 0.3,
-    soundList: {
-        "theme": {
+    soundList: [{
             file: "music/ib_theme.mp3",
             volume: 0.5,
             // volume:0,
             loops: 999,
             preload: true
-        },
-
-        "castle": {
+        },{
             file: "music/castle.mp3",
             volume: 0.5,
             // volume:0,
-            loops: 1
-        },
-
-        "tutorial": {
+        },{
             file: "music/tutorial.mp3",
             volume: 0.5,
             // volume:0,
-            loops: 1
-        },
-
-        "ib2": {
+        },{
             file: "music/IRONBANE 2.mp3",
             preload: true,
             volume: 0.5,
             // volume:0,
-            loops: 1
-        },
-
-        "ib4": {
+        },{
             file: "music/IRONBANE 4.mp3",
             volume: 0.5,
             preload: true,
             // volume:0,
-            loops: 1
-        },
-
-        "ib5": {
+        },{
             file: "music/IRONBANE 5.mp3",
             volume: 0.5,
             preload: true,
             // volume:0,
             loops: 1
-        },
-
-         "ib6": {
+        },{
             file: "music/IRONBANE 6.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
-        },
-
-         "ib7": {
+        },{
             file: "music/IRONBANE 7.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
-        },
-
-         "ib8": {
+        },{
             file: "music/IRONBANE 8.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
-        },
-
-         "ib10": {
+        },{
             file: "music/IRONBANE 10.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
-        },
-
-
-
-
-
-        "underground": {
+        },{
             file: "music/underground.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
-        },
-
-        "click": "ui/click.wav",
-
-        "switch": "misc/switch.wav",
-        "switch2": "misc/switch2.wav",
-        "bag1": "misc/bag1.wav",
-        "bag2": "misc/bag2.wav",
-        "drop": "misc/drop.wav",
-        "enterGame": "misc/enterGame.wav",
+        },"ui/click.wav",
+        "misc/switch.wav",
+        "misc/switch2.wav",
+        "misc/bag1.wav",
+        "misc/bag2.wav",
+        "misc/drop.wav",
+        "misc/enterGame.wav",
 
 
-        "equipSword1": "equip/equipSword1.wav",
-        "equipSword2": "equip/equipSword2.wav",
-        "equipSword3": "equip/equipSword3.wav",
-        "equip1": "equip/equip1.wav",
-        "equip2": "equip/equip2.wav",
+        "equip/equipSword1.wav",
+        "equip/equipSword2.wav",
+        "equip/equipSword3.wav",
+        "equip/equip1.wav",
+        "equip/equip2.wav",
 
-        "splash1": "environment/splash1.wav",
-        "splash2": "environment/splash2.wav",
+       "environment/splash1.wav",
+        "environment/splash2.wav",
 
-        "arrowHit1": "battle/arrowHit1.wav",
-        "arrowHit2": "battle/arrowHit2.wav",
-        "arrowHit3": "battle/arrowHit3.wav",
+        "battle/arrowHit1.wav",
+        "battle/arrowHit2.wav",
+        "battle/arrowHit3.wav",
 
-        "swing1": "battle/swing1.wav",
-        "swing2": "battle/swing2.wav",
-        "swing3": "battle/swing3.wav",
+        "battle/swing1.wav",
+        "battle/swing2.wav",
+        "battle/swing3.wav",
 
-        "hit1": "battle/hit1.wav",
-        "hit2": "battle/hit2.wav",
-        "hit3": "battle/hit3.wav",
+        "battle/hit1.wav",
+        "battle/hit2.wav",
+        "battle/hit3.wav",
 
-        "die1": "battle/die1.wav",
-        "die2": "battle/die2.wav",
-        "die3": "battle/die3.wav",
+        "battle/die1.wav",
+        "battle/die2.wav",
+        "battle/die3.wav",
 
         //"mutant" : "die/mutant.wav",
 
-        "fireStaff": "battle/fireStaff.wav",
-        "fireArrow": "battle/fireArrow.wav",
-        "fireArrow2" : "battle/fireArrow2.wav",
+        "battle/fireStaff.wav",
+        "battle/fireArrow.wav",
+         "battle/fireArrow2.wav",
 
         // "jump1": "player/jump/Player_Jump_01.wav",
         // "jump2": "player/jump/Player_Jump_02.wav",
@@ -150,88 +118,87 @@ var SoundHandler = Class.extend({
         // "jump4": "player/jump/Player_Jump_04.wav",
         // "jump5": "player/jump/Player_Jump_05.wav",
 
-        "getItem": "player/GetItem/PLAYER_GET_ITEM_01.wav",
-        "regenHealth": "player/RegenHealth/PLAYER_REGEN_HEALTH_03.wav",
-        "getCoin1": "player/GetCoins/PLAYER_GET_COINS_01.wav",
-        "getCoin2": "player/GetCoins/PLAYER_GET_COINS_01.wav",
-        "getCoin3": "player/GetCoins/PLAYER_GET_COINS_01.wav",
-        "takeDamage": "player/TakeDamage/PLAYER_TAKE_DAMAGE_03.wav",
+        "player/GetItem/PLAYER_GET_ITEM_01.wav",
+        "player/RegenHealth/PLAYER_REGEN_HEALTH_03.wav",
+        "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "player/GetCoins/PLAYER_GET_COINS_01.wav",
+        "player/TakeDamage/PLAYER_TAKE_DAMAGE_03.wav",
 
-        "greenSlime1": "NPCs/GreenSlime/01.wav",
-        "greenSlime2": "NPCs/GreenSlime/02.wav",
-        "greenSlime3": "NPCs/GreenSlime/03.wav",
+        "NPCs/GreenSlime/01.wav",
+        "NPCs/GreenSlime/02.wav",
+        "NPCs/GreenSlime/03.wav",
 
-        "fireLongbow": "Weapons/WEAPON_LONG_BOW_01.wav",
-        "fireAcidstaff": "Weapons/WEAPON_ACID_STAFF_02.wav",
+        "Weapons/WEAPON_LONG_BOW_01.wav",
+        "Weapons/WEAPON_ACID_STAFF_02.wav",
 
-        "atmosDay": "Atmos/ATMOS_WORLD_DAY.wav",
-        "atmosNight": "Atmos/ATMOS_WORLD_NIGHT.wav",
+        "Atmos/ATMOS_WORLD_DAY.wav",
+        "Atmos/ATMOS_WORLD_NIGHT.wav",
 
-        "dirtFootStep1": "player/Footsteps/Dirt/01.wav",
-        "dirtFootStep2": "player/Footsteps/Dirt/02.wav",
-        "dirtFootStep3": "player/Footsteps/Dirt/03.wav",
-        "dirtFootStep4": "player/Footsteps/Dirt/04.wav",
-        "dirtFootStep5": "player/Footsteps/Dirt/05.wav",
-        "dirtFootStep6": "player/Footsteps/Dirt/06.wav",
-        "grassFootStep1": "player/Footsteps/Grass/01.wav",
-        "grassFootStep2": "player/Footsteps/Grass/02.wav",
-        "grassFootStep3": "player/Footsteps/Grass/03.wav",
-        "grassFootStep4": "player/Footsteps/Grass/04.wav",
-        "grassFootStep5": "player/Footsteps/Grass/05.wav",
-        "grassFootStep6": "player/Footsteps/Grass/06.wav",
-        "woodFootStep1": "player/Footsteps/Wood/01.wav",
-        "woodFootStep2": "player/Footsteps/Wood/02.wav",
-        "woodFootStep3": "player/Footsteps/Wood/03.wav",
-        "woodFootStep4": "player/Footsteps/Wood/04.wav",
-        "woodFootStep5": "player/Footsteps/Wood/05.wav",
-        "woodFootStep6": "player/Footsteps/Wood/06.wav",
-        "stoneFootStep1": "player/Footsteps/Stone/01.wav",
-        "stoneFootStep2": "player/Footsteps/Stone/02.wav",
-        "stoneFootStep3": "player/Footsteps/Stone/03.wav",
-        "stoneFootStep4": "player/Footsteps/Stone/04.wav",
-        "stoneFootStep5": "player/Footsteps/Stone/05.wav",
-        "stoneFootStep6": "player/Footsteps/Stone/06.wav",
-        "bubble1": "inventory/bubble1.wav",
-        "bubble2": "inventory/bubble2.wav",
-        "bubble3": "inventory/bubble3.wav",
+        "player/Footsteps/Dirt/01.wav",
+        "player/Footsteps/Dirt/02.wav",
+        "player/Footsteps/Dirt/03.wav",
+        "player/Footsteps/Dirt/04.wav",
+        "player/Footsteps/Dirt/05.wav",
+        "player/Footsteps/Dirt/06.wav",
+        "player/Footsteps/Grass/01.wav",
+        "player/Footsteps/Grass/02.wav",
+        "player/Footsteps/Grass/03.wav",
+        "player/Footsteps/Grass/04.wav",
+        "player/Footsteps/Grass/05.wav",
+        "player/Footsteps/Grass/06.wav",
+        "player/Footsteps/Wood/01.wav",
+        "player/Footsteps/Wood/03.wav",
+        "player/Footsteps/Wood/04.wav",
+        "player/Footsteps/Wood/05.wav",
+        "player/Footsteps/Wood/06.wav",
+        "player/Footsteps/Stone/01.wav",
+        "player/Footsteps/Stone/02.wav",
+        "player/Footsteps/Stone/03.wav",
+        "player/Footsteps/Stone/04.wav",
+        "player/Footsteps/Stone/05.wav",
+        "player/Footsteps/Stone/06.wav",
+        "inventory/bubble1.wav",
+        "inventory/bubble2.wav",
+        "inventory/bubble3.wav",
 
-        "IBfire": "NPCs/IRONBANE/Fireattack.wav",
-        "IBbreath1": "NPCs/IRONBANE/breath1.wav",
-        "IBbreath2": "NPCs/IRONBANE/breath2.wav",
-        "IBgrowl": "NPCs/IRONBANE/growl3.wav",
-        "IBattack": "NPCs/IRONBANE/attack2.wav",
+        "NPCs/IRONBANE/Fireattack.wav",
+        "NPCs/IRONBANE/breath1.wav",
+        "NPCs/IRONBANE/breath2.wav",
+        "NPCs/IRONBANE/growl3.wav",
+        "NPCs/IRONBANE/attack2.wav",
 
         // "step1": "step/grass1.wav",
         // "step2": "step/grass2.wav",
-        "stepWater1": "step/water1.wav",
-        "stepWater2": "step/water2.wav",
+        "step/water1.wav",
+        "step/water2.wav",
 
-        "jump": "fighter/jump.wav",
-        "ratdie" : "npcs/rat/die",
+        "fighter/jump.wav",
+         "npcs/rat/die",
 
-        "deathb" : "monster/deathb.wav",
-        "deathd" : "monster/deathd.wav",
-        "deathe" : "monster/deathe.wav",
-        "deathr" : "monster/deathr.wav",
-        "deaths" : "monster/deaths.wav",
-        "grunt1" : "monster/grunt1.wav",
-        "grunt2" : "monster/grunt2.wav",
+         "monster/deathb.wav",
+         "monster/deathd.wav",
+         "monster/deathe.wav",
+         "monster/deathr.wav",
+         "monster/deaths.wav",
+         "monster/grunt1.wav",
+         "monster/grunt2.wav",
 
-        "painb" : "monster/painb.wav",
-        "paind" : "monster/paind.wav",
-        "paine" : "monster/paine.wav",
-        "painp" : "monster/painp.wav",
-        "painr" : "monster/painr.wav",
-        "pains" : "monster/pains.wav",
+         "monster/painb.wav",
+         "monster/paind.wav",
+         "monster/paine.wav",
+         "monster/painp.wav",
+         "monster/painr.wav",
+         "monster/pains.wav",
 
-        "piggrunt1" : "monster/piggrunt1",
-        "piggrunt2" : "monster/piggrunt2",
+         "monster/piggrunt1",
+         "monster/piggrunt2",
 
         //      "race": "battle/02_-_rage_racer.mp3",
         //      "splash": "battle/splash.ogg",
 
-        "placeholder": "placeholder"
-    },
+        "placeholder"
+    ],
     sounds: {},
     loadedMainMenuMusic: false,
     Init: function() {
@@ -284,17 +251,15 @@ var SoundHandler = Class.extend({
     },
 
     findSoundBase: function(key) {
-        var theSound = null;
-        _.each(this.soundList, function(sound) {
+        return _.find(this.soundList, function(sound) {
 
             if(!_.isObject(sound)) {
                 sound = {file: sound};
             }
             if(sound.file.toLowerCase().indexOf(key.toLowerCase()) >= 0) {
-                theSound = sound;
+                return sound;
             }
         });
-        return theSound;
 
     },
     SetVolume: function(sound, volume) {
