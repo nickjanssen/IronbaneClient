@@ -44,7 +44,9 @@ var SocketHandler = Class.extend({
 
         if (this.serverOnline) {
 
-            this.socket = io.connect('http://' + ironbane_hostname + ':' + ironbane_port + '/');
+            this.socket = io.connect('http://' + ironbane_hostname + ':' + ironbane_port + '/', {
+                reconnect: false
+            });
 
             this.socket.emit('getStartData', {}, function(reply) {
                 numberOfPlayersOnline = reply.numberOfPlayersOnline;
