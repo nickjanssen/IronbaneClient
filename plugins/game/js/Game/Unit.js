@@ -458,7 +458,7 @@ var Unit = PhysicsObject.extend({
           if ( this.velocity.y < -0.5 ) {
             this.velocity.addSelf(new THREE.Vector3(0, dTime*15, 0));
 
-            // soundHandler.PlayOnce(ChooseRandom(["splash1","splash2"]), this.position);
+            soundHandler.Play("splash", this.position);
 
           }
 
@@ -480,7 +480,7 @@ var Unit = PhysicsObject.extend({
         else {
           this.velocity.lerpSelf(new THREE.Vector3(this.velocity.x, 0, this.velocity.z), dTime*2);
 
-        //soundHandler.PlayOnce(ChooseRandom(["stepWater1","stepWater2"]), this.position);
+          soundHandler.Play("stepWater", this.position);
         }
 
       //                if ( this.velocity.y < 0 ) {

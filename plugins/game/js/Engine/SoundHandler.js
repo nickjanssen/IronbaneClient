@@ -203,8 +203,9 @@ var SoundHandler = Class.extend({
 
         // "step1": "step/grass1.wav",
         // "step2": "step/grass2.wav",
-        // "stepWater1": "step/water1.wav",
-        // "stepWater2": "step/water2.wav",
+        "stepWater1": "step/water1.wav",
+        "stepWater2": "step/water2.wav",
+
         "jump": "fighter/jump.wav",
         "ratdie" : "npcs/rat/die",
 
