@@ -113,9 +113,6 @@ var Unit = PhysicsObject.extend({
     this.rayOffsetListPlayer = [new THREE.Vector3(0.1, 0.5, 0.1),new THREE.Vector3(-0.1, 0.5, -0.1)];
 
 
-    this.tickTimeout = 0.0;
-
-
 
   },
   // Taking into account the current camera position and the unit's rotation, get the appropriate vertical sprite index
@@ -393,26 +390,6 @@ var Unit = PhysicsObject.extend({
 
     this._super(dTime);
 
-    if ( !(this instanceof Player) && ironbane.player ) {
-      if ( this.tickTimeout >= 0.0 ) {
-        this.tickTimeout -= dTime;
-      }
-      else {
-
-        // Now set a good this.tickTimeout based on the distance to the player
-        var dist = DistanceSq(this.position, ironbane.player.position);
-
-        if ( dist > 40*40 ) {
-          this.tickTimeout = 2.0;
-        }
-        // else if ( dist > 25*25 ) {
-        //   this.tickTimeout = 2.0;
-        // }
-        // else if ( dist > 10*10 ) {
-        //   this.tickTimeout = 0.5;
-        // }
-      }
-    }
     // Automatic scaling
     var sizeMod = sizeScalingSpeed * dTime;
 
@@ -428,10 +405,24 @@ var Unit = PhysicsObject.extend({
 
     //var radians = (this.rotation.y + 90) * (Math.PI/180);
 
+    if ( ironbane.player ) {
+      if ( this instanceof Player ) {
+        this.unitStandingOn = null;
+      }
+      else {
+        if ( !this.InRangeOfUnit(ironbane.player, 15) ) {
+          this.allowCheckGround = false;
+          this.enableGravity = false;
+        }
+        else {
+          this.enableGravity = true;
+        }
+      }
+    }
+
     if ( this.dynamic
       && socketHandler.readyToReceiveUnits
-      && !(this instanceof Mesh)
-      && this.tickTimeout <= 0.0 ) {
+      && !(this instanceof Mesh)) {
 
 
       // For all server-controlled units, simulate their actual position by walking to their targetPosition
@@ -441,6 +432,9 @@ var Unit = PhysicsObject.extend({
         this.localPosition.x = this.localPosition.x.Lerp(this.targetPosition.x, dTime*2);
         this.localPosition.z = this.localPosition.z.Lerp(this.targetPosition.z, dTime*2);
 
+        if ( !this.enableGravity ) {
+          this.localPosition.y = this.localPosition.y.Lerp(this.targetPosition.y, dTime*2);
+        }
       }
 
       this.RotateTowardsTargetPosition(dTime);
@@ -483,32 +477,17 @@ var Unit = PhysicsObject.extend({
           soundHandler.Play("stepWater", this.position);
         }
 
-      //                if ( this.velocity.y < 0 ) {
-      //                    this.velocity.y = Math.min(this.velocity.y, 0.01);
-      //                }
 
-
-      //this.velocity.Truncate(3);
       }
 
-      //debug.SetWatch("this.isTouchingGround", this.isTouchingGround);
-                 debug.SetWatch("this.allowCheckGround", this.allowCheckGround);
-                 debug.SetWatch("cellStandingOn", cellStandingOn);
-      //
-      if ( currentMouseToWorldData ) {
-      //debug.SetWatch("currentMouseToWorldData.point", currentMouseToWorldData.point.ToString());
-      }
 
-      //debug.SetWatch("this.unitStandingOn", this.unitStandingOn);
 
       // Used to align the shadow cast on the ground
       var raycastNormal = null;
       var raycastGroundPosition = null;
       this.isTouchingGround = false;
 
-      if ( this instanceof Player ) {
-        this.unitStandingOn = null;
-      }
+
 
       if ( this.allowCheckGround && cellStandingOn ) {
         // Handle collisions
@@ -699,7 +678,9 @@ var Unit = PhysicsObject.extend({
           // 31/10/12: Removed, as we require raycastGroundPosition anyway.
           // Even when building underground we'll have a valid raycastGroundPosition since we're standing on a mesh
           // 8/6/13: Removed again due to skybox-only approach
-          if ( GetZoneConfig("enableFluid") && this.position.y <= GetZoneConfig('fluidLevel') ) {
+          // 6/7/13: Only allow for the main player
+          if ( (this instanceof Player) &&
+            GetZoneConfig("enableFluid") && this.position.y <= GetZoneConfig('fluidLevel') ) {
             if ( !raycastGroundPosition ) {
               // We didn't find anything for our shadow
               // Reverse a raycast
