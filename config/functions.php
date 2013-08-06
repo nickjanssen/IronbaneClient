@@ -552,7 +552,7 @@ function getNewestMember() {
 function getNumberOfOnlineMembers() {
 
 
-    $query2 = "SELECT count(*) FROM bcs_users WHERE online = 1";
+    $query2 = "SELECT count(id) FROM bcs_users WHERE online = 1";
 
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
@@ -566,24 +566,26 @@ function getListOfLastDayVisitors() {
 
     global $time;
 
-    $list = "";
 
-    $query = "SELECT id from bcs_users WHERE last_session > " . ($time - 86400) . "";
+    $query = "SELECT id from bcs_users WHERE last_session > " . ($time - 86400) . " ORDER BY last_session";
+    //echo $query;
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-    for ($y = 0; $y < mysql_num_rows($result); $y++) {
-
+    $visitors = array();
+    $totalvisitors = mysql_num_rows($result);
+    $visitors_to_show = 10;
+    $number = min($totalvisitors, $visitors_to_show);
+    for($i = 0; $i < $number ; $i++) {
         $row = mysql_fetch_array($result);
-
-
-        $list .= memberLink($row["id"]);
-
-        if ($y < mysql_num_rows($result) - 1)
-            $list .= ", ";
-
+        $visitors[] = memberLink($row["id"]); 
     }
 
-    return empty($list) ? "None" : $list;
+    $visitors = implode(', ', $visitors);
+    if($totalvisitors > $visitors_to_show) {
+        $visitors .= " and ". ($totalvisitors - $visitors_to_show) . " more";
+    }
+
+
+    return empty($visitors) ? "None" : $visitors;
 }
 
 function getArrayOfOnlineMembers($criteria="") {

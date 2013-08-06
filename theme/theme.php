@@ -29,7 +29,7 @@ if (!defined('BCS')) {
 // Build page
 //
 
-$c_head .= '<script type="text/javascript" src="plugins/game/shared.js"></script>
+$c_head .= '<script src="plugins/game/shared.js"></script>
 ';
 
 
