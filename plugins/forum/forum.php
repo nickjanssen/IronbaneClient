@@ -1770,21 +1770,17 @@ function refresh_username(selected_username)
     }
 
     // View all boards available
-    $querycats = "SELECT * FROM forum_cats WHERE modonly <= '$userdata[editor]' ORDER BY `order` ASC";
+    $querycats = "SELECT id, name FROM forum_cats WHERE modonly <= '$userdata[editor]' ORDER BY `order` ASC";
     $resultcats = bcs_query($querycats) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
 
 
-    for ($z = 0; $z < mysql_num_rows($resultcats); $z++) {
-        $rowcats = mysql_fetch_array($resultcats);
+    while($rowcats = mysql_fetch_array($resultcats)) {
 
 
         // View all boards available
-        $query = "SELECT * FROM forum_boards WHERE forumcat = '$rowcats[id]' ORDER BY `order` ASC";
+        $query = "SELECT id, name, description FROM forum_boards WHERE forumcat = '$rowcats[id]' ORDER BY `order` ASC";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-
-
 
         $catrow_content .= '
 			  <tr>
@@ -1801,13 +1797,7 @@ function refresh_username(selected_username)
 			  </tr>
 			  ';
 
-
-
-
-
-
-        for ($x = 0; $x < mysql_num_rows($result); $x++) {
-            $row = mysql_fetch_array($result);
+        while($row = mysql_fetch_array($result)) {
 
 
 
@@ -1817,14 +1807,14 @@ function refresh_username(selected_username)
 
             $topic_read = true;
 
-            $query2 = "SELECT * FROM forum_topics WHERE board_id = '$row[id]'";
+            $query2 = "SELECT id, time FROM forum_topics WHERE board_id = $row[id]";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             $ntopics = mysql_num_rows($result2);
-            for ($y = 0; $y < $ntopics; $y++) {
-                $row2 = mysql_fetch_array($result2);
-                $query3 = "SELECT * FROM forum_posts WHERE topic_id = '$row2[id]'";
+            while($row2 = mysql_fetch_array($result2)) {
+                $query3 = "SELECT COUNT(id) as c FROM forum_posts WHERE topic_id = $row2[id]";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-                $nposts += mysql_num_rows($result3);
+               
+                $nposts += mysql_fetch_array($result3)['c'];
 
                 if ($row2["time"] > $userdata["last_session"]) {
                     $topic_read = false;
@@ -1835,9 +1825,8 @@ function refresh_username(selected_username)
 
             $query2 = "SELECT id, title, user, time, topic_id FROM forum_posts ORDER BY time DESC ";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-            for ($y = 0; $y < mysql_num_rows($result2); $y++) {
-                $row2 = mysql_fetch_array($result2);
-                $query3 = "SELECT * FROM forum_topics WHERE id = '$row2[topic_id]'";
+            while($row2 = mysql_fetch_array($result2)){
+                $query3 = "SELECT board_id FROM forum_topics WHERE id = '$row2[topic_id]'";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
                 $row3 = mysql_fetch_array($result3);
                 if ($row3["board_id"] === $row["id"]) {
