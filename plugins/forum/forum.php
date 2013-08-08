@@ -302,7 +302,7 @@ if ($action === "deletetopic") {
         }
     }
 
-    if ($s_editor !== 1 && $board === 7 && $newtopic === 1) {
+    if ($s_editor !== 1 && (int) $board === 7 && $newtopic === 1) {
         die('error 4');
     }
 
@@ -1180,8 +1180,6 @@ function refresh_username(selected_username)
     }
     //}
 
-
-
     $c_main = '
 
 
@@ -1194,7 +1192,7 @@ function refresh_username(selected_username)
 	  <td align="right" valign="bottom" nowrap="nowrap"></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
 	<tr>
 	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $boardtitle . '</span></span></td>
@@ -1236,7 +1234,7 @@ function refresh_username(selected_username)
 	  <td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">All times are GMT ' . ((intval($userdata["gmt"]) >= 0 ? '+' : '') . $userdata["gmt"]) . '</span><br /><span class="nav"></span></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
   </table>
 
@@ -1618,7 +1616,7 @@ function refresh_username(selected_username)
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && (int) $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
 	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
@@ -1661,7 +1659,7 @@ function refresh_username(selected_username)
 	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
