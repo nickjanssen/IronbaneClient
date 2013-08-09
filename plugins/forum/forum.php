@@ -302,7 +302,7 @@ if ($action === "deletetopic") {
         }
     }
 
-    if ($s_editor !== 1 && $board === 7 && $newtopic === 1) {
+    if ($s_editor !== 1 && (int) $board === 7 && $newtopic === 1) {
         die('error 4');
     }
 
@@ -1180,8 +1180,6 @@ function refresh_username(selected_username)
     }
     //}
 
-
-
     $c_main = '
 
 
@@ -1194,7 +1192,7 @@ function refresh_username(selected_username)
 	  <td align="right" valign="bottom" nowrap="nowrap"></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
 	<tr>
 	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $boardtitle . '</span></span></td>
@@ -1236,7 +1234,7 @@ function refresh_username(selected_username)
 	  <td align="right" valign="middle" nowrap="nowrap"><span class="gensmall">All times are GMT ' . ((intval($userdata["gmt"]) >= 0 ? '+' : '') . $userdata["gmt"]) . '</span><br /><span class="nav"></span></td>
 	</tr>
 	<tr>
-	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
+	  <td align="left" valign="middle" width="50" colspan="2">'.(($s_editor != 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $board . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" /></a>').'</td>
 	</tr>
   </table>
 
@@ -1413,8 +1411,7 @@ function refresh_username(selected_username)
 
     $postrow_content = "";
 
-    for ($x = 0; $x < mysql_num_rows($result); $x++) {
-        $row = mysql_fetch_array($result);
+    while($row = mysql_fetch_array($result)) {
 
 
         $moreinfo = "";
@@ -1618,7 +1615,7 @@ function refresh_username(selected_username)
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && (int) $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
 	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
@@ -1661,7 +1658,7 @@ function refresh_username(selected_username)
 	<td align="left" valign="middle" width="100%"><span class="nav"><a href="forum.php" class="nav">Ironbane Forum</a>&nbsp;&raquo;&nbsp;<a href="forum.php?action=board&board=' . $board . '" class="nav">' . $boardname . '</a>&nbsp;&raquo;&nbsp;<span class="nav">' . $row4["title"] . '</span></span></td>
   </tr>
   <tr>
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && $board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav">'.(($s_editor !== 1 && (int)$board === 7)?'':'<a href="forum.php?action=reply&board=' . $row2["board_id"] . '"><img src="theme/images/lang_english/new_topic.gif" border="0" alt="Post new topic" align="middle" /></a>').'&nbsp;&nbsp;&nbsp;<a href="index.php?plugin=forum&action=reply&topic=' . $topic . '"><img src="theme/images/lang_english/post_reply.gif" border="0" alt="Reply to topic" align="middle" /></a></span></td>
   </tr>
   <tr>
 	<td align="left" colspan="3"><span class="genbig">' . $nav_pages . '</span></td>
@@ -1772,21 +1769,17 @@ function refresh_username(selected_username)
     }
 
     // View all boards available
-    $querycats = "SELECT * FROM forum_cats WHERE modonly <= '$userdata[editor]' ORDER BY `order` ASC";
+    $querycats = "SELECT id, name FROM forum_cats WHERE modonly <= '$userdata[editor]' ORDER BY `order` ASC";
     $resultcats = bcs_query($querycats) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 
 
 
-    for ($z = 0; $z < mysql_num_rows($resultcats); $z++) {
-        $rowcats = mysql_fetch_array($resultcats);
+    while($rowcats = mysql_fetch_array($resultcats)) {
 
 
         // View all boards available
-        $query = "SELECT * FROM forum_boards WHERE forumcat = '$rowcats[id]' ORDER BY `order` ASC";
+        $query = "SELECT id, name, description FROM forum_boards WHERE forumcat = '$rowcats[id]' ORDER BY `order` ASC";
         $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-
-
-
 
         $catrow_content .= '
 			  <tr>
@@ -1803,13 +1796,7 @@ function refresh_username(selected_username)
 			  </tr>
 			  ';
 
-
-
-
-
-
-        for ($x = 0; $x < mysql_num_rows($result); $x++) {
-            $row = mysql_fetch_array($result);
+        while($row = mysql_fetch_array($result)) {
 
 
 
@@ -1819,36 +1806,33 @@ function refresh_username(selected_username)
 
             $topic_read = true;
 
-            $query2 = "SELECT * FROM forum_topics WHERE board_id = '$row[id]'";
+            $query2 = "SELECT count(id) as c FROM forum_topics WHERE board_id = $row[id]";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-            $ntopics = mysql_num_rows($result2);
-            for ($y = 0; $y < $ntopics; $y++) {
-                $row2 = mysql_fetch_array($result2);
-                $query3 = "SELECT * FROM forum_posts WHERE topic_id = '$row2[id]'";
-                $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-                $nposts += mysql_num_rows($result3);
-
-                if ($row2["time"] > $userdata["last_session"]) {
-                    $topic_read = false;
-                }
-            }
+            $ntopics = mysql_fetch_array($result2)['c'];
+            $query_totalposts = "SELECT COUNT(forum_posts.id) AS c FROM forum_topics INNER JOIN `forum_posts` ON `forum_posts`.`topic_id` = `forum_topics`.`id` WHERE `forum_topics`.`board_id` = $row[id]";
+            $result_total = bcs_query($query_totalposts) or bcs_error("QQ");
+            $nposts = mysql_fetch_array($result_total)['c'];
+            $query_unread_post = "select count(id) as c from forum_topics where board_id = $row[id] and time > $userdata[last_session]";
+            $unread_total = bcs_query($query_unread_post) or bcs_error("");
+            $topic_read = mysql_fetch_array($unread_total)['c']>0;
+            
             // Calculate topics & posts
 
 
-            $query2 = "SELECT id, title, user, time, topic_id FROM forum_posts ORDER BY time DESC ";
+            $query2 = "SELECT id, title, user, time, topic_id FROM forum_posts ORDER BY time DESC";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-            for ($y = 0; $y < mysql_num_rows($result2); $y++) {
-                $row2 = mysql_fetch_array($result2);
-                $query3 = "SELECT * FROM forum_topics WHERE id = '$row2[topic_id]'";
+            while($row2 = mysql_fetch_array($result2)){
+                $query3 = "SELECT board_id FROM forum_topics WHERE id = '$row2[topic_id]'";
                 $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
                 $row3 = mysql_fetch_array($result3);
                 if ($row3["board_id"] === $row["id"]) {
                     // We found one !
-                    if (strlen($row2["title"]) > $max_title_length) {
+                    /*if (strlen($row2["title"]) > $max_title_length) {
                         $limitname = substr($row2["title"], 0, $max_title_length) . "...";
                     } else {
                         $limitname = $row2["title"];
                     }
+                    */
                     $lastpost = timeAgo($row2["time"]) . ' ago<br>by ' . memberLink($row2["user"]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2["topic_id"] . '#' . $row2["id"] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
                     break;
                 } else {
