@@ -530,7 +530,7 @@ function parse_smilies($text) {
 
 
 function getRowCount($table) {
-    $query = "SELECT count(*) FROM " . $table . "";
+    $query = "SELECT count(id) FROM " . $table . "";
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $total = mysql_fetch_array($result);
     return $total[0];
@@ -639,7 +639,7 @@ function getListOfOnlineMembers($glue, $criteria="") {
 
 function getTotalUserPosts($user) {
     $user = parseToDB($user);
-    $query2 = "SELECT count(*) FROM forum_posts WHERE user = '$user'";
+    $query2 = "SELECT count(id) FROM forum_posts WHERE user = '$user'";
     $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
     $total = mysql_fetch_array($result2);
 
@@ -995,41 +995,6 @@ function AddTeamAction($user, $action, $link, $previous_data) {
     $result = bcs_query($query) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
 }
 
-function deleteAll($directory, $empty = false) {
-    if(substr($directory,-1) == "/") {
-        $directory = substr($directory,0,-1);
-    }
-
-    if(!file_exists($directory) || !is_dir($directory)) {
-        return false;
-    } elseif(!is_readable($directory)) {
-        return false;
-    } else {
-        $directoryHandle = opendir($directory);
-
-        while ($contents = readdir($directoryHandle)) {
-            if($contents != '.' && $contents != '..') {
-                $path = $directory . "/" . $contents;
-
-                if(is_dir($path)) {
-                    deleteAll($path);
-                } else {
-                    unlink($path);
-                }
-            }
-        }
-
-        closedir($directoryHandle);
-
-        if($empty == false) {
-            if(!rmdir($directory)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
 
 function create_blank($width, $height){
     //create image with specified sizes
@@ -1041,23 +1006,6 @@ function create_blank($width, $height){
     //filling created image with transparent color
     imagefill($image, 0, 0, $transparent);
     return $image;
-}
-
-function fromRGB($R, $G, $B){
-    //http://forum.codecall.net/topic/51801-rgb-to-hex-colors-and-hex-colors-to-rgb-php/
-     $R=dechex($R);
-     If (strlen($R)<2)
-     $R='0'.$R;
-
-      $G=dechex($G);
-     If (strlen($G)<2)
-     $G='0'.$G;
-
-     $B=dechex($B);
-     If (strlen($B)<2)
-     $B='0'.$B;
-
-     return '#' . $R . $G . $B;
 }
 
 function writeChatMessage($author, $text, $type) {

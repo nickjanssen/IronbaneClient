@@ -1411,8 +1411,7 @@ function refresh_username(selected_username)
 
     $postrow_content = "";
 
-    for ($x = 0; $x < mysql_num_rows($result); $x++) {
-        $row = mysql_fetch_array($result);
+    while($row = mysql_fetch_array($result)) {
 
 
         $moreinfo = "";
@@ -1807,23 +1806,20 @@ function refresh_username(selected_username)
 
             $topic_read = true;
 
-            $query2 = "SELECT id, time FROM forum_topics WHERE board_id = $row[id]";
+            $query2 = "SELECT count(id) as c FROM forum_topics WHERE board_id = $row[id]";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-            $ntopics = mysql_num_rows($result2);
-            while($row2 = mysql_fetch_array($result2)) {
-                $query3 = "SELECT COUNT(id) as c FROM forum_posts WHERE topic_id = $row2[id]";
-                $result3 = bcs_query($query3) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-               
-                $nposts += mysql_fetch_array($result3)['c'];
-
-                if ($row2["time"] > $userdata["last_session"]) {
-                    $topic_read = false;
-                }
-            }
+            $ntopics = mysql_fetch_array($result2)['c'];
+            $query_totalposts = "SELECT COUNT(forum_posts.id) AS c FROM forum_topics INNER JOIN `forum_posts` ON `forum_posts`.`topic_id` = `forum_topics`.`id` WHERE `forum_topics`.`board_id` = $row[id]";
+            $result_total = bcs_query($query_totalposts) or bcs_error("QQ");
+            $nposts = mysql_fetch_array($result_total)['c'];
+            $query_unread_post = "select count(id) as c from forum_topics where board_id = $row[id] and time > $userdata[last_session]";
+            $unread_total = bcs_query($query_unread_post) or bcs_error("");
+            $topic_read = mysql_fetch_array($unread_total)['c']>0;
+            
             // Calculate topics & posts
 
 
-            $query2 = "SELECT id, title, user, time, topic_id FROM forum_posts ORDER BY time DESC ";
+            $query2 = "SELECT id, title, user, time, topic_id FROM forum_posts ORDER BY time DESC";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
             while($row2 = mysql_fetch_array($result2)){
                 $query3 = "SELECT board_id FROM forum_topics WHERE id = '$row2[topic_id]'";
@@ -1831,11 +1827,12 @@ function refresh_username(selected_username)
                 $row3 = mysql_fetch_array($result3);
                 if ($row3["board_id"] === $row["id"]) {
                     // We found one !
-                    if (strlen($row2["title"]) > $max_title_length) {
+                    /*if (strlen($row2["title"]) > $max_title_length) {
                         $limitname = substr($row2["title"], 0, $max_title_length) . "...";
                     } else {
                         $limitname = $row2["title"];
                     }
+                    */
                     $lastpost = timeAgo($row2["time"]) . ' ago<br>by ' . memberLink($row2["user"]) . ' <a href="index.php?plugin=forum&amp;action=topic&amp;topic=' . $row2["topic_id"] . '#' . $row2["id"] . '"><img src="theme/images/icon_latest_reply.gif"></a>';
                     break;
                 } else {
