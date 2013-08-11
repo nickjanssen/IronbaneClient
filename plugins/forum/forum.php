@@ -302,7 +302,7 @@ if ($action === "deletetopic") {
         }
     }
 
-    if ($s_editor !== 1 && (int) $board === 7 && $newtopic === 1) {
+    if ((int)$s_editor !== 1 && (int) $board === 7 && $newtopic === 1) {
         die('error 4');
     }
 
@@ -1806,15 +1806,24 @@ function refresh_username(selected_username)
 
             $topic_read = true;
 
+
+
             $query2 = "SELECT count(id) as c FROM forum_topics WHERE board_id = $row[id]";
             $result2 = bcs_query($query2) or bcs_error("<b>SQL ERROR</b> in <br>file " . __FILE__ . " on line " . __LINE__ . "<br><br><b>" . $query . "</b><br><br>" . mysql_error());
-            $ntopics = mysql_fetch_array($result2)['c'];
+
+			$temp = mysql_fetch_array($result2);
+			$ntopics = $temp['c'];
+			
             $query_totalposts = "SELECT COUNT(forum_posts.id) AS c FROM forum_topics INNER JOIN `forum_posts` ON `forum_posts`.`topic_id` = `forum_topics`.`id` WHERE `forum_topics`.`board_id` = $row[id]";
             $result_total = bcs_query($query_totalposts) or bcs_error("QQ");
-            $nposts = mysql_fetch_array($result_total)['c'];
+            
+            $temp = (mysql_fetch_array($result_total));
+            $nposts = $temp['c'];
+            
             $query_unread_post = "select count(id) as c from forum_topics where board_id = $row[id] and time > $userdata[last_session]";
             $unread_total = bcs_query($query_unread_post) or bcs_error("");
-            $topic_read = mysql_fetch_array($unread_total)['c']>0;
+            $temp = mysql_fetch_array($unread_total);
+            $topic_read = $temp['c']>0;
             
             // Calculate topics & posts
 
