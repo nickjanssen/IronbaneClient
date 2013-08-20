@@ -1,7 +1,7 @@
 <?php
 
 
-header("Location: play.ironbane.com");
+header("Location: http://play.ironbane.com");
 exit;
 
 /*
