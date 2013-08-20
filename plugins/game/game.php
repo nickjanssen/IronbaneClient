@@ -1,4 +1,9 @@
 <?php
+
+
+header("Location: play.ironbane.com");
+exit;
+
 /*
     This file is part of Ironbane MMO.
 
