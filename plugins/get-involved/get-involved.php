@@ -45,7 +45,7 @@ switch ($interest) {
 
         <h2>How do I contribute?</h2>
 
-        <p>By making pull requests on <a href="https://github.com/ironbane" target="_new">the repository</a> you\'re working on! It\'s that simple. Make a pull request and one of the lead developers will check it out and give you feedback. If the code looks fine, it will be pushed live to Ironbane.com instantly. In the meantime, you earn <b>reputation</b>!</p>
+        <p>By making pull requests on <a href="https://github.com/ironbane" target="_new">the repository</a> you\'re working on! It\'s that simple. Make a pull request and one of the lead developers will check it out and give you feedback. If the code looks fine, it will be pushed live to Ironbane.com instantly.</p>
 
         <p>Start by reading the <b>Getting started</b> pages on the <a href="https://github.com/ironbane" target="_new">GitHub repository</a>. If you need help, feel free to make an issue there or here on the <a href="forum.php">forums</a>.
 
@@ -230,37 +230,6 @@ switch ($interest) {
         <h2>How does this work?</h2>
 
         <p>Anyone can contribute something at any time. All you need is an account for Ironbane.</p>
-
-        <p>When you add a contribution, you earn <b>reputation</b> (rep), which will be visible on your profile and on the forum. A higher rep allows you to get more privileges, such as becoming a moderator or game master, GitHub access, the ability to give others reputation for their work and more. We want to reward people for their work.</p>
-
-        <h2>How much rep do I get for a contribution?</h2>
-
-        <p>This will depends on the quality of work you provide, but here are some generic guidelines:
-
-        <h4>Generic reputation award table</h4>
-
-        <table width="100%" border="1" cellspacing="0" cellpadding="4" class="forumcontainer">
-            <tr>
-                <th>Action</th>
-                <th>Reward</th>
-            </tr>
-            <tr>
-                <td class="row1">Forum post</td>
-                <td class="row1">1 rep</td>
-            </tr>
-            <tr>
-                <td class="row2">Bug report</td>
-                <td class="row2">5 rep</td>
-            </tr>
-             <tr>
-                <td class="row1">Contributed content (art/music/model)</td>
-                <td class="row1">10 rep (+ Bonus depending on quality)</td>
-            </tr>
-            <tr>
-                <td class="row2">Accepted pull request</td>
-                <td class="row2">20 rep (+ Bonus depending on quality)</td>
-            </tr>
-        </table>
 
         <h2>What can I work on?</h2>
 
