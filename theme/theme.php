@@ -17,8 +17,8 @@
 */
 
 
-if ( !isset($special_message) && $s_editor ) {
-    //$special_message = "The very first version is online :D";
+if ( !isset($special_message) && $s_auth ) {
+   // $special_message = '<b>Level editors wanted!</b> For our upcoming v0.4 release we are looking for people who want to decorate houses, dungeons and other areas using our in-game editor! Interested? Contact me at <a href="mailto:nikke@ironbane.com">nikke@ironbane.com</a>';
 }
 
 if (!defined('BCS')) {
@@ -82,19 +82,18 @@ if (!$use_simple_rendering) {
             <div id="topcontent"></div>
             <div id="content">
 ' . (!empty($special_message) ? '
-                <div style="width:100%;min-height:50px;">
-                    <div style="float:left"><img src=theme/images/attention.png></div>
-                    <div style="float:left;padding:15px">
+                <table><tr>
+                    <td width="60"><img src=theme/images/attention.png></td>
+                    <td width="100%"><div style="float:left;padding:15px">
                     ' . $special_message . '
-                    </div>
-                </div>
+                    </td>
+                </tr></table>
                 <hr>
     ' : '') . '
       <div align="center">
         <a href="index.php">About</a>
         | <a href="forum.php">Forum</a>
         | <a href="game.php">Play Ironbane</a>
-        | <a href="get-involved.php">Get Involved</a>
         | <a href="https://github.com/ironbane" target="_new">GitHub</a>
         | <a href="https://twitter.com/IronbaneMMO" target="_new">Twitter</a>
         | '.(!$s_auth?'<a href="login.php">Log In</a>':'<a href="preferences.php">Preferences</a>

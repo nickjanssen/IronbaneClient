@@ -81,7 +81,7 @@ $c_title = "Ironbane MMO";
 
 $c_main = '
 <div class="ib-news-banner">
-    <div class="ib-news-banner-text">Ironbane is an open source 3D online role-playing game!</div>
+    <div class="ib-news-banner-text">Ironbane is a 3D online action MMO!</div>
     <div class="ib-news-banner-play">
         <button class="ibutton_attention" onclick="window.location=\'game.php\'">Play it now!</button>
         <span>
@@ -90,12 +90,6 @@ $c_main = '
     </div>
 
 
-    <div class="ib-news-banner-get-involved">
-        <span>
-            We\'re always looking for motivated people!
-        </span>
-        <button class="ibutton_attention2" onclick="window.location=\'get-involved.php\'">Get involved!</button>
-    </div>
 </div>
 <hr>
 <h1>News</h1>

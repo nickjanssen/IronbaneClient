@@ -675,7 +675,7 @@ ul.dropdown_form ul li a					{width: 100%; display: inline-block;}
 
     position: relative;
 
-    background-image: url(../plugins/portal/images/banner.png);
+    background-image: url(../plugins/portal/images/banner.jpg);
     width:780px;
     height:600px;
 
@@ -736,7 +736,7 @@ margin: 3px;
 .ib-news-banner-play {
     position: absolute;
     top: 100px;
-    left:50px;
+    left:280px;
     max-width: 255px;
 }
 
@@ -748,8 +748,8 @@ margin: 3px;
     font-size: 16px;
     color: rgb(17, 224, 150);
     text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
-
-    text-align: right;
+    margin-left:-20px;
+    text-align: center;
 }
 
 
