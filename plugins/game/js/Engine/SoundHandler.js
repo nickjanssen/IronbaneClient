@@ -1,18 +1,18 @@
 /*
-    This file is part of Ironbane MMO.
+    This file is part of ironbane MMO.
 
-    Ironbane MMO is free software: you can redistribute it and/or modify
+    ironbane MMO is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Ironbane MMO is distributed in the hope that it will be useful,
+    ironbane MMO is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
+    along with ironbane MMO.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 var SoundHandler = Class.extend({
@@ -32,38 +32,38 @@ var SoundHandler = Class.extend({
             volume: 0.5,
             // volume:0,
         },{
-            file: "music/IRONBANE 2.mp3",
+            file: "music/ironbane2.mp3",
             preload: true,
             volume: 0.5,
             // volume:0,
         },{
-            file: "music/IRONBANE 4.mp3",
+            file: "music/ironbane4.mp3",
             volume: 0.5,
             preload: true,
             // volume:0,
         },{
-            file: "music/IRONBANE 5.mp3",
+            file: "music/ironbane5.mp3",
             volume: 0.5,
             preload: true,
             // volume:0,
             loops: 1
         },{
-            file: "music/IRONBANE 6.mp3",
+            file: "music/ironbane6.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
         },{
-            file: "music/IRONBANE 7.mp3",
+            file: "music/ironbane7.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
         },{
-            file: "music/IRONBANE 8.mp3",
+            file: "music/ironbane8.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
         },{
-            file: "music/IRONBANE 10.mp3",
+            file: "music/ironbane10.mp3",
             volume: 0.5,
             // volume:0,
             loops: 1
@@ -72,7 +72,11 @@ var SoundHandler = Class.extend({
             volume: 0.5,
             // volume:0,
             loops: 1
-        },"ui/click.wav",
+        },
+        "ui/click.mp3",
+        "ui/blip.mp3",
+        "ui sound/uisound1.mp3"
+
         "misc/switch.wav",
         "misc/switch2.wav",
         "misc/bag1.wav",
@@ -135,38 +139,39 @@ var SoundHandler = Class.extend({
         "Atmos/ATMOS_WORLD_DAY.wav",
         "Atmos/ATMOS_WORLD_NIGHT.wav",
 
-        "player/Footsteps/Dirt/01.wav",
-        "player/Footsteps/Dirt/02.wav",
-        "player/Footsteps/Dirt/03.wav",
-        "player/Footsteps/Dirt/04.wav",
-        "player/Footsteps/Dirt/05.wav",
-        "player/Footsteps/Dirt/06.wav",
-        "player/Footsteps/Grass/01.wav",
-        "player/Footsteps/Grass/02.wav",
-        "player/Footsteps/Grass/03.wav",
-        "player/Footsteps/Grass/04.wav",
-        "player/Footsteps/Grass/05.wav",
-        "player/Footsteps/Grass/06.wav",
-        "player/Footsteps/Wood/01.wav",
-        "player/Footsteps/Wood/03.wav",
-        "player/Footsteps/Wood/04.wav",
-        "player/Footsteps/Wood/05.wav",
-        "player/Footsteps/Wood/06.wav",
-        "player/Footsteps/Stone/01.wav",
-        "player/Footsteps/Stone/02.wav",
-        "player/Footsteps/Stone/03.wav",
-        "player/Footsteps/Stone/04.wav",
-        "player/Footsteps/Stone/05.wav",
-        "player/Footsteps/Stone/06.wav",
+        "footsteps/Dirt1.wav",
+        "footsteps/Dirt2.wav",
+        "footsteps/Dirt3.wav",
+        "footsteps/Dirt4.wav",
+        "footsteps/Dirt5.wav",
+        "footsteps/Dirt6.wav",
+        "footsteps/Grass1.wav",
+        "footsteps/Grass2.wav",
+        "footsteps/Grass3.wav",
+        "footsteps/Grass4.wav",
+        "footsteps/Grass5.wav",
+        "footsteps/Grass6.wav",
+        "footsteps/Wood1.wav",
+        "footsteps/Wood2.wav",
+        "footsteps/Wood3.wav",
+        "footsteps/Wood4.wav",
+        "footsteps/Wood5.wav",
+        "footsteps/Wood6.wav",
+        "footsteps/Stone1.wav",
+        "footsteps/Stone2.wav",
+        "footsteps/Stone3.wav",
+        "footsteps/Stone4.wav",
+        "footsteps/Stone5.wav",
+        "footsteps/Stone6.wav",
         "inventory/bubble1.wav",
         "inventory/bubble2.wav",
         "inventory/bubble3.wav",
 
-        "NPCs/IRONBANE/Fireattack.wav",
-        "NPCs/IRONBANE/breath1.wav",
-        "NPCs/IRONBANE/breath2.wav",
-        "NPCs/IRONBANE/growl3.wav",
-        "NPCs/IRONBANE/attack2.wav",
+        "NPCs/ironbane/Fireattack.wav",
+        "NPCs/ironbane/breath1.wav",
+        "NPCs/ironbane/breath2.wav",
+        "NPCs/ironbane/growl3.wav",
+        "NPCs/ironbane/attack2.wav",
 
         // "step1": "step/grass1.wav",
         // "step2": "step/grass2.wav",
@@ -226,7 +231,7 @@ var SoundHandler = Class.extend({
             sound.volume = (sound.volume !== undefined) ? sound.volume : self.DEFAULT_VOLUME;
             sound.loops = (sound.loops !== undefined) ? sound.loops : 1;
             var key = sound.file.substring(0, sound.file.length - 4);
-            self.sounds[key] = soundManager.createSound({
+            self.sounds[key] = {sound: soundManager.createSound({
                 id: key,
                 url: ironbane_root_directory + 'plugins/game/sound/' + sound.file,
                 autoLoad: !!sound.preload,
@@ -235,8 +240,11 @@ var SoundHandler = Class.extend({
                         self.OnLoad(key);
                     }
                 }
-            });
-        });
+            }),
+                loops: sound.loops,
+                baseVolume: sound.volume
+        }
+    });
     },
     FadeOut: function(sound, time) {
         var self = this;
@@ -246,28 +254,13 @@ var SoundHandler = Class.extend({
         var tween = new TWEEN.Tween({volume: 100})
                 .to({volume: 0}, time)
                 .onUpdate(function() {
-                    self.SetVolume(sound, this.volume);
+                        self.SetVolume(sound, this.volume);
                 }).start();
     },
 
-    findSoundBase: function(key) {
-        return _.find(this.soundList, function(sound) {
-
-            if(!_.isObject(sound)) {
-                sound = {file: sound};
-            }
-            if(sound.file.toLowerCase().indexOf(key.toLowerCase()) >= 0) {
-                return sound;
-            }
-        });
-
-    },
     SetVolume: function(sound, volume) {
-        var soundTemplate = this.findSoundBase(sound);
-        if(soundTemplate === undefined) return;
-     volume *= (soundTemplate.volume !== undefined) ? soundTemplate.volume : this.DEFAULT_VOLUME;
-     var theSound = this.sounds[sound];
-        theSound.setVolume(volume);
+        
+        this.sounds[sound].sound.setVolume(volume);
     },
     FadeIn: function(sound, time) {
         var self = this;
@@ -284,19 +277,18 @@ var SoundHandler = Class.extend({
             this.loadedMainMenuMusic = true;
         }
     },
-    PlayOnce: function(sound, position) {
+    PlayOnce: function(soundID, position) {
         if (!hudHandler.allowSound) {
             return;
         }
-        if(this.getAllSounds(sound).length === 0) {
-            console.log("sound " + sound + " not found");
+        if(this.getAllSounds(soundID).length === 0) {
             return;
         }
-        if (this.sounds[sound].playState !== 0) {
+        if (this.sounds[soundID].sound.playState !== 0) {
           return;
         }
 
-        this.Play(sound, position);
+        this.Play(soundID, position);
     },
     getAllSounds: function(s) {
         var sounds = [];
@@ -307,9 +299,9 @@ var SoundHandler = Class.extend({
         }
         return sounds;
     },
-    Play: function(s, position) {
+    Play: function(soundID, position) {
         if (!hudHandler.allowSound) {return;}
-        var sounds = this.getAllSounds(s);
+        var sounds = this.getAllSounds(soundID);
         if(sounds.length === 0) {
             console.log("sound " + s + " not found");
             return;
@@ -330,9 +322,9 @@ var SoundHandler = Class.extend({
         volume = volume.clamp(0, 100);
 
         //this.SetVolume(s, volume);
-        sound.setVolume(volume);
+        sound.sound.setVolume(volume);
         //soundManager.setPan(sound, 80);
-        sound.play();
+        sound.sound.play();
     },
     StopAll: function() {
         soundManager.stopAll();
